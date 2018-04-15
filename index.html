@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Quinn James Online</title>
+	<meta charset="UTF-8">
+</head>
+<body style="overflow:hidden;">
+	<div id="parent" style="position:relative; cursor:none; font-family:'Lucida Console', monospace; font-size:12px; line-height:12px; width:151ch; margin:auto;">
+		<iframe id=frame src=" " allowfullscreen="" style="top:296px;left:504px;position:absolute;z-index:-1;" width="372" height="225" frameborder="0" scrolling="no"></iframe>
+		<img id=image src="images/rotoball.jpg" style="top:296px;left:504px;position:absolute;z-index:-1;" width="372" height="225"/>
+		<div id="main"></div>
+	</div>
+	
+	
+	<!-
+	ie9  -  draws lines no background
+	qbe  -  3d cube
+	snk  -  snek
+	dow  -  graphs
+	utf  -  character corruptions
+	okg  -  flame
+	xls  -  spreadsheet
+	->
+	
+	<script>
+		const outputWidth = 150;
+		const outputHeight = 50;
+		const main = document.getElementById("main");
+		const frame = document.getElementById("frame");
+		const image = document.getElementById("image");
+		const parent = document.getElementById("parent");
+		var o = new Array();
+		var draw = {drawCursor:true,drawInvert:false,hitbox:0};
+		var hitboxes = [];
+		var mouse = {x:0,y:0,oldX:0,oldY:0,under:'┌',cursor:'█'};
+		var pageIndex = -1;
+		var pageImg = true;
+		var snip = {x1:-1,x2:-1,y1:-1,y2:-1,state:0}
+		
+		//pages Enabled, posx, posy, width, height, text, links
+		var pages = [
+			
+			{enabled:true,posX:1,posY:1,width:18,height:1,
+			text:"QUINN JAMES ONLINE",
+			links:[
+				[0,0,17,0,function() {pages[1].enabled=true;pages[2].enabled=true;pages[3].enabled=true;pages[4].enabled=true;}]
+				]
+			},
+			
+			{enabled:false,posX:21,posY:1,width:8,height:1,
+			text:"Projects",
+			links:[
+				[0,0,7,0,function() {flicker(5);}]
+				]
+			},
+			
+			{enabled:false,posX:31,posY:1,width:9,height:1,
+			text:"Minecraft",
+			links:[
+				[0,0,8,0,function() {flicker(6);}]
+				]
+			},
+			
+			{enabled:false,posX:42,posY:1,width:7,height:1,
+			text:"Contact",
+			links:[
+				[0,0,6,0,function() {flicker(9);}]
+				]
+			},
+			
+			{enabled:false,posX:51,posY:1,width:5,height:1,
+			text:"Utils",
+			links:[
+				[0,0,4,0,function() {flicker(10,11)}]
+				]
+			},
+			
+			{enabled:false,posX:2,posY:5,width:30,height:5,
+			text:"Unity: Let's Go Bowling`n`nUnity: Rotoball`n`nVoid: A Python Raycaster",
+			links:[
+				[0,0,29,0,function() {setPage(2);}],
+				[0,2,29,2,function() {setPage(1);}],
+				[0,4,29,4,function() {setPage(0);}]
+				]
+			},
+			
+			{enabled:false,posX:35,posY:5,width:30,height:15,
+			text:"Map: Presentable Liberty`n`nMap: Beyond Perception 2`n`nMap: Note`n`nMap: Skypillar`n`nMap: St. Josephine's`n`nMap: 60 Minute Maps`n`nBuild: Rube Goldberg Machine`n`nBuild: Mob Combat Training",
+			links:[
+				[0,0,29,0,function() {setPage(17)}],
+				[0,2,29,2,function() {setPage(16)}],
+				[0,4,29,4,function() {setPage(15)}],
+				[0,6,29,6,function() {setPage(14)}],
+				[0,8,29,8,function() {setPage(13)}],
+				[0,10,29,10,function() {setPage(12)}],
+				[0,12,29,12,function() {setPage(11)}],
+				[0,14,29,14,function() {setPage(10)}]
+				]
+			},
+			
+			/*reserved for future menu*/
+			{enabled:false,posX:2,posY:25,width:30,height:17,
+			text:"reserved for future menu",
+			links:[]
+			},
+			
+			/*reserved for future menu*/
+			{enabled:false,posX:35,posY:25,width:30,height:17,
+			text:"reserved for future menu",
+			links:[]
+			},
+			
+			{enabled:false,posX:2,posY:45,width:144,height:1,
+			text:"(c)2018 by Quinn James. ######## Contact me here: [QJ@QUINNJAM.ES] [@QCJAMES53] [AWESOME_1 MINECRAFT] ######## CLICK HERE to get a free Bitcoin!",
+			links:[
+				[51,0,64,0,function() {window.open('mailto:qj@quinnjam.es','_self');mouseUp();}],
+				[68,0,77,0,function() {getPage('https://twitter.com/Qcjames53');}],
+				[81,0,99,0,function() {getPage('https://www.youtube.com/c/Awesome1Minecraft');}],
+				[111,0,120,0,function() {getPage('https://hackertyper.net/');}]
+				]
+			},
+			
+			{enabled:false,posX:145,posY:0,width:3,height:48,
+			text:"cls`n`nsnp`n`nie9`n`nsnk`n`ndow`n`nutf`n`nokg`n`nxls`n`ndel`n`nskl`n`ncol",
+			links:[
+				[0,0,2,0,function() {util(0)}],
+				[0,3,2,3,function() {util(1)}],
+				[0,6,2,6,function() {util(2)}],
+				[0,9,2,9,function() {util(3)}],
+				[0,12,2,12,function() {util(4)}],
+				[0,15,2,15,function() {util(5)}],
+				[0,18,2,18,function() {util(6)}],
+				[0,21,2,21,function() {util(7)}],
+				[0,24,2,24,function() {util(8)}],
+				[0,27,2,27,function() {util(9)}],
+				[0,30,2,30,function() {util(10)}]
+				]
+			},
+			
+			{enabled:false,posX:69,posY:4,width:72,height:18,
+			text:"",
+			links:[]
+			},
+			
+			{enabled:false,posX:69,posY:24,width:51,height:18,
+			text:"",
+			links:[]
+			},
+			
+			{enabled:false,posX:122,posY:24,width:13,height:1,
+			text:"PROCURE FILES",
+			links:[
+				[0,0,12,0,function() {getPage()}]
+				]
+			},
+			
+			{enabled:false,posX:122,posY:27,width:13,height:1,
+			text:"EXAMINE IMAGE",
+			links:[
+				[0,0,12,0,function() {setPageElement(true)}]
+				]
+			},
+			
+			{enabled:false,posX:122,posY:30,width:13,height:1,
+			text:"EXAMINE VIDEO",
+			links:[
+				[0,0,12,0,function() {setPageElement(false)}]
+				]
+			}
+		]
+		
+		var texts = [
+			//projects
+			[
+				"VOID`n`n`nA short yet difficult Minecraft-graphics raycasting engine coded from `nscratch in python.`n`nRequires Python 2.7 and Pygame.",
+				"",
+				"dl/raycaster.zip",
+				"images/raycaster.jpg"
+			],
+			[
+				"Rotoball`n`n`nThe first step in a (hopefully) long journey of Unity projects. `n`nClassic Atari Breakout but with a 360 degree twist. `n`nNo download required! ",
+				"",
+				"unity/rotoball/",
+				"images/rotoball.jpg"
+			],
+			[
+				"Let's Go Bowling`n`n`nSingleplayer bowling with accurate masses and friction. Click, drag, and`nrelease to send the ball flying!`n`nAudio: Jardins du Luxembourg by Jahzzar",
+				"",
+				"dl/lgb.zip",
+				"images/lgb.png"
+			],
+			[
+				"",
+				"",
+				"",
+				""
+			],
+			[
+				"",
+				"",
+				"",
+				""
+			],
+			[
+				"",
+				"",
+				"",
+				""
+			],
+			[
+				"",
+				"",
+				"",
+				""
+			],
+			[
+				"",
+				"",
+				"",
+				""
+			],
+			[
+				"",
+				"",
+				"",
+				""
+			],
+			[
+				"",
+				"",
+				"",
+				""
+			],
+			//minecraft
+			[
+				"MOB COMBAT TRAINING`n`n`nEntering the arena, you pick up a sword and bow, and prepeare to fight`nto stay alive through this apocalyptic haunted house.`n`nTechnical elements include a custom flushing mob farm, an ilmango mob`nsorter, secondary buffer sorters, piston translocation mob dispensers,`nand a beautiful urban environment to serve as the backdrop.`n`nThis build was inspired by Mumbo Jumbo's Combat Training. I wanted to`nsee what it would take to make one with actual mobs. Turns out it's`nactually quite a lot!`n`nRequires Minecraft 1.10.2",
+				"",
+				"dl/mob_combat_training.zip",
+				"images/mobcombat.jpg"
+			],
+			[
+				"PORK: A MINECRAFT RUBE GOLDBERG MACHINE`n`n`nA Rube Goldberg Machine built within Minecraft, designed to deliver a`ncooked porkchop to a dinner table at the press of a button.`n`nMusic is Brunch Club (Extended Edition) by Tyler Twombly",
+				"https://www.youtube.com/embed/_aMH4KhSP44",
+				"dl/rube_goldberg_machine.zip",
+				""
+			],
+			[
+				"WHAT IS A 60 MINUTE MAP?`n`nA map made in 60 minutes. Each contestant is given a random theme to`nbuild with. They are given 60 minutes. At the end of this time limit,`nthey turn in whatever they have, most of the time to ridiculous results.`nMapmakers CDFDMAN and Recabilly originally coined the concept in 2016.`nSoon after, Rsmalec began his own competition between members of his`ncommunity. I was hooked.`n`nAfter 2 years, here's what I have. It's all in one zip file. Have fun!`n`nIf you would rather watch the video series (I would) I have providied`nthe playlist below.",
+				"https://www.youtube.com/embed/videoseries?list=PLX3RuL_SSofWYHe2FMx9G2MfcddVqsDLz",
+				"dl/60_minute_maps.zip",
+				"images/60mm.jpg"
+			],
+			[
+				"ST JOSEPHINE'S`n`n`nThe original horror map that started it all.`n`nIn St. Josephine's, you take on the role of the mysterious lawyer John`nDaniels. After your company forecloses on an abandoned hospital, you`nare commissioned to retrieve various articles of paperwork that remain`ninside the building. Getting in is the easy part. Escaping from the`ndark secrets lying within this building will be the real challenge.`n`nA psychological horror map with several jumpscares, puzzles, parkour`nelements, cutscenes, boss battles, custom sounds, a light show, and a`ndeep plotline to tie it all together.`n`nRequires Minecraft 1.8.10",
+				"https://www.youtube.com/embed/cahqW_jX4y0",
+				"http://adf.ly/1K9fKy",
+				"images/st-josephines.jpg"
+			],
+			[
+				"SKYPILLAR`n`n`nThis is SkyBlock, taken to new heights. A 100 block tall pillar of`nnatural Minecraft terrain that will test your resourcefulness and`nattention to detail as a Minecraft player. The map includes a list of`nchallenges such as creating a nether portal, building a mob grinder,`nand slaying the ender dragon! Supports multiplayer.`n`nRequires Minecraft 1.10.2",
+				"",
+				"http://adf.ly/1KdTn2",
+				"images/skypillar.jpg"
+			],
+			[
+				"NOTE`n`n`nHow do you describe note?`nNote is a map about loss, but is a story of gain.`nNote is a map about despair, but is a story of hope.`nNote is a map about interaction, but is a story of isolation.`nNote is a map you should play for the story.`n`nA lonely spawn island greets you at the gates of a very unique`nMinecraft server. Communication is blocked, except for notes left by`nplayers on the ground. Prepare for an emotional rollercoaster ride like`nnothing before. Welcome to Note.`n`nNote contains mature themes. This map may not be suitable for younger`nMinecrafters.`n`nRequires Minecraft 1.9.4",
+				"https://www.youtube.com/embed/IWb0NG2c3sQ",
+				"http://adf.ly/1alEV0",
+				"images/note.jpg"
+			],
+			[
+				"BEYOND PERCEPTION 2`n`n`nCo-developed with the creators of the original map, Beyond Perception`ncomes part two in the series.`n`nThe map uses a mechanic brand new to minecraft, turning the shading`noff. This presents some rather interesting illusions and optical puzzles`nthat will reform everything you know about perspective and shade.`n`nGive it a try at the link below!`n`nRequires Minecraft 1.9.2",
+				"https://www.youtube.com/embed/t5-6n2V--xI",
+				"http://www.minecraftforum.net/forums/mapping-and-modding/maps/2676688-beyond-perception-2-a-minecraft-visual-puzzle-map",
+				"images/beyond2.jpg"
+			],
+			[
+				"PRESENTABLE LIBERTY`n`n`nYou have been imprisoned without being told why. All you can hear day`nin day out is the faint ticking of a clock in your cell. That is, until`nthe first of 5 fateful days begins.`n`nBased on the original indie game, this map is a complete port of`nWertpol's Masterpiece, complete with updated graphics, 4 unique`nminigames, 275+ block and item models, and all taking place in the same`nrestrictive 2x3 meter room.`n`nRequires Minecraft 1.11.2",
+				"https://www.youtube.com/embed/DUvtbOpdrfg",
+				"http://adf.ly/1kzvqx",
+				"images/presentableliberty.jpg"
+			],
+			[
+				"",
+				"",
+				""
+			],
+			[
+				"",
+				"",
+				""
+			]
+		]
+		
+		
+		function start() {
+			for(var i = 0; i < outputWidth; i++) {
+				o.push(new Array(outputHeight));
+				for(var j = 0; j < outputWidth; j++) {
+					o[i][j] = '#';
+				}
+			}
+			
+			for(var i = 0; i < pages.length; i++) {
+				for(var j = 0; j < pages[i].links.length; j++) {
+					var tempX = pages[i].posX + 1;
+					var tempY = pages[i].posY + 1;
+					hitboxes.push( [pages[i].links[j][0]+tempX,pages[i].links[j][1]+tempY,pages[i].links[j][2]+tempX,pages[i].links[j][3]+tempY,pages[i].links[j][4],i] );
+				}
+			}
+			
+			frame.src = "";
+			image.style = "top:296px;left:504px;position:absolute;z-index:-1;display: none;";
+			document.addEventListener("mousemove",mouseMove);
+			document.addEventListener("mousedown",mouseDown);
+			document.addEventListener("mouseup",mouseUp);
+			document.addEventListener("keydown",keyDown);
+			update();
+		}
+		
+		function mouseMove(evt) {
+			mouse.x = Math.min(Math.max(Math.floor((evt.clientX - parent.offsetLeft) / main.clientWidth * outputWidth),0),outputWidth-1);
+			mouse.y = Math.min(Math.max(Math.floor((evt.clientY - parent.offsetTop) / main.clientHeight * outputHeight),0),outputHeight-1);
+			moveCursorEfficient();
+		}
+		
+		function moveCursorEfficient() {
+			o[mouse.oldX][mouse.oldY] = mouse.under;
+			mouse.under = o[mouse.x][mouse.y];
+			mouse.oldX = mouse.x;
+			mouse.oldY = mouse.y;
+			if(snip.state!=0) drawSnip();
+			o[mouse.x][mouse.y] = mouse.cursor;
+			blit();
+		}
+		
+		function mouseDown(evt) {
+			for(var i = 0; i < hitboxes.length; i++) {
+				if(pages[hitboxes[i][5]].enabled && hitboxes[i][0] <= mouse.x && hitboxes[i][1] <= mouse.y && hitboxes[i][2] >= mouse.x && hitboxes[i][3] >= mouse.y) {
+					draw.drawInvert = true;
+					draw.hitbox = i;
+					hitboxes[i][4]();
+				}
+				update();
+			}
+		}	
+		
+		function mouseUp(evt) {
+			draw.drawInvert = false;
+			update();
+		}
+		
+		function keyDown(evt) {
+			switch(evt.keyCode) {
+				case 38:
+				case 73:
+				case 87:
+				case 104:
+					mouse.y = Math.min(Math.max(mouse.y-1,0),outputHeight-1);
+					moveCursorEfficient();
+				break;
+				case 40:
+				case 75:
+				case 83:
+				case 98:
+					mouse.y = Math.min(Math.max(mouse.y+1,0),outputHeight-1);
+					moveCursorEfficient();
+				break;
+				case 37:
+				case 74:
+				case 65:
+				case 100:
+					mouse.x = Math.min(Math.max(mouse.x-1,0),outputWidth-1);
+					moveCursorEfficient();
+				break;
+				case 39:
+				case 76:
+				case 68:
+				case 102:
+					mouse.x = Math.min(Math.max(mouse.x+1,0),outputWidth-1);
+					moveCursorEfficient();
+				break;
+				case 13:
+				case 32:
+					if(snip.state == 0) {
+						mouseDown();
+						setTimeout(mouseUp,100);
+						update();
+					}
+					else {
+						snipDown();
+					}
+				break;
+			}
+			
+		}
+		
+		function text(t, x, y, wrap, maxX) {
+			if(typeof wrap === "undefined") wrap = true;
+			if(typeof maxX === "undefined") maxX = outputWidth-1;
+			var initX = x;
+			for(var i = 0; i < t.length; i++) {
+				while(t.charAt(i) == '`' && t.charAt(i+1) == 'n') {
+					x = initX;
+					y++;
+					i += 2;
+				}
+				
+				o[x][y] = t.charAt(i);
+				x++;
+				if(wrap && x > maxX) {
+					x = initX;
+					y++;
+				}
+			}
+		}
+		
+		function fillspace(startX, startY, endX, endY, border, fillchar, invert) {
+			if(typeof border === "undefined") border = false;
+			if(typeof fillchar === "undefined" || fillchar == "") fillchar = "&nbsp;";
+			if(typeof invert === "undefined") invert = false;
+			
+			if(!invert && fillchar != "`t") {
+				if(fillchar.length <= 1 || fillchar == "&nbsp;") {
+					for(var i = startX; i <= endX; i++) {
+						for(var j = startY; j < endY; j++) {
+							o[i][j] = fillchar;
+						}
+					}
+				}
+				else {
+					for(var i = startX; i <= endX; i++) {
+						for(var j = startY; j < endY; j++) {
+							o[i][j] = '&nbsp;';
+						}
+					}
+					text(fillchar, startX+1, startY+1, true, endX - 1)
+				}
+			}
+			
+			if(border) {
+				o[startX][startY] = '┌';
+				o[endX][startY] = '┐';
+				o[startX][endY] = '└';
+				o[endX][endY] = '┘';
+				for(var i = startX + 1; i < endX; i++) {
+					o[i][startY] = '─';
+					o[i][endY] = '─';
+				}
+				for(var i = startY + 1; i < endY; i++) {
+					o[startX][i] = '│';
+					o[endX][i] = '│';
+				}
+			}
+			
+			if(invert) {
+				for(var i = startX; i <= endX; i++) {
+					for(var j = startY; j <= endY; j++) {
+						o[i][j] = "<span style='color:white; background-color:black;'>" + o[i][j] + "</span>";
+					}
+				}
+			}
+		}
+		
+		function flicker(pageId, perms) {
+			if(typeof perms === "undefined") perms = 1;
+			pages[pageId].enabled = !pages[pageId].enabled;
+			update();
+			if(perms > 1) setTimeout(flicker,20,pageId,perms-1);
+		}
+		
+		function setPage(index) {
+			if(index == pageIndex) {
+				pages[11].enabled = false;
+				pages[12].enabled = false;
+				pages[13].enabled = false;
+				pages[14].enabled = false;
+				pages[15].enabled = false;
+				pageIndex = -1;
+				frame.style = "top:296px;left:504px;position:absolute;z-index:-1;";
+				frame.src = "";
+				image.style = "top:296px;left:504px;position:absolute;z-index:-1;display: none;";
+			}
+			else {
+				if(!(typeof index === "undefined")) {
+					pageIndex = index;
+					pageImg = false;
+				}
+				pages[11].enabled = true;
+				pages[12].enabled = true;
+				pages[13].enabled = true;
+				pages[14].enabled = true;
+				pages[15].enabled = true;
+				pages[11].text = texts[pageIndex][0];
+				
+				if(texts[pageIndex][1] == "") {
+					pages[15].enabled = false;
+					pageImg = true;
+				}
+				
+				if(texts[pageIndex][3] == "") {
+					pages[14].enabled = false;
+					pageImg = false;
+				}
+				
+				frame.style = "top:296px;left:504px;position:absolute;z-index:-1;";
+				frame.src = "";
+				image.style = "top:296px;left:504px;position:absolute;z-index:-1;display: none;";
+				
+				if(pageImg) {
+					image.src = texts[pageIndex][3];
+					image.style = "top:296px;left:504px;position:absolute;z-index:-1;display: inline-block;";
+				}
+				else {
+					frame.style = "top:296px;left:504px;position:absolute;z-index:1;";
+					frame.src = texts[pageIndex][1];
+				}
+			}
+			
+		}
+		
+		function setPageElement(set) {
+			pageImg = set;
+			setPage();
+		}
+		
+		function getPage(link) {
+			if(typeof link === "undefined" && pageIndex > -1) link = texts[pageIndex][2]; 
+			window.open(link,'_blank');
+			mouseUp();
+		}
+		
+		function util(num) {
+			document.removeEventListener("mousemove",mouseMove);
+			document.removeEventListener("mousedown",mouseDown);
+			document.removeEventListener("mouseup",mouseUp);
+			document.removeEventListener("keydown",keyDown);
+			frame.style = "top:296px;left:504px;position:absolute;z-index:-1;";
+			frame.src = "";
+			image.style = "top:296px;left:504px;position:absolute;z-index:-1;display: none;";
+			if(num == 0) {
+				flicker(0,10);
+				flicker(1,10);
+				flicker(2,10);
+				flicker(3,10);
+				flicker(4,10);
+				flicker(5,10);
+				flicker(6,10);
+				flicker(7,10);
+				flicker(8,10);
+				flicker(9,10);
+				flicker(10,10);
+				flicker(11,10);
+				flicker(12,10);
+				flicker(13,10);
+				flicker(14,10);
+				flicker(15,10);
+				setTimeout(function() {main.innerHTML = "Operation successful.";},400);
+			}
+			if(num == 1) {
+				document.addEventListener("mousemove",mouseMove);
+				document.addEventListener("mousedown",snipDown);
+				document.addEventListener("mouseup",snipUp);
+				document.addEventListener("keydown",keyDown);
+				flicker(0,6);
+				flicker(1,6);
+				flicker(2,6);
+				flicker(3,6);
+				flicker(4,6);
+				flicker(5,6);
+				flicker(6,6);
+				flicker(7,6);
+				flicker(8,6);
+				flicker(9,6);
+				flicker(10,6);
+				flicker(11,6);
+				flicker(12,6);
+				flicker(13,6);
+				flicker(14,6);
+				flicker(15,6);
+				snip.state = 1;
+				mouse.cursor = '╬';
+			}
+			if(num == 2) {
+				parent.style="position:relative;";
+				document.addEventListener("mousemove",mouseMove);
+				document.addEventListener("mousedown",mouseDown);
+				document.addEventListener("mouseup",mouseUp);
+				document.addEventListener("keydown",keyDown);
+				image.src = "images/edge.png";
+				image.style = "top:296px;left:504px;position:absolute;z-index:-1;display: inline-block;";
+			}
+		}
+		
+		function drawSnip(evt) {
+			if(snip.state != 0) {
+				update();
+				text("CLICK AND DRAG",66,0);
+				if(snip.state==2) {
+					text("DRAG AND RELEASE TO SAVE",61,0);
+					fillspace(snip.x1,snip.y1,Math.max(mouse.x,snip.x1+1),Math.max(mouse.y,snip.y1+1),true,"`t");
+				}
+				blit();
+			}
+		}
+		
+		function snipDown(evt) {
+			snip.state = 2;
+			snip.x1 = mouse.x;
+			snip.y1 = mouse.y;
+		}
+		
+		function snipUp(evt) {
+			if(snip.state == 2) {
+				window.open("https://www.youtube.com/watch?v=oHg5SJYRHA0&autoplay=1",'_blank');
+				window.location.reload();
+			}
+		}
+		
+		function update() {
+			fillspace(0,0,outputWidth-1,outputHeight-1,true,'-');			
+			for(var i = 0; i < pages.length; i++)
+				if(pages[i].enabled)
+					fillspace(pages[i].posX, pages[i].posY, pages[i].posX + pages[i].width + 1, pages[i].posY + pages[i].height + 1, true, pages[i].text);
+			if(draw.drawInvert) 
+				fillspace(hitboxes[draw.hitbox][0]-1,hitboxes[draw.hitbox][1]-1,hitboxes[draw.hitbox][2]+1,hitboxes[draw.hitbox][3]+1,false,'-',true);
+			blit();
+		}
+		
+		function blit() {
+			var temp = "";
+			for(var i = 0; i < outputHeight; i++) {
+				for(var j = 0; j < outputWidth; j++) {
+					temp += o[j][i];
+				}
+				temp += "<br/>";
+			}
+			main.innerHTML = temp;
+		}
+		
+		document.body.onload = function() { start() };
+	</script>
+</body>
+</html>
