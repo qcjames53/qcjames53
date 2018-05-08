@@ -43,6 +43,7 @@
 		
 		function pagesReqListener () {
 			pages = JSON.parse(this.responseText);
+			start();
 		}
 		
 		function start() {
@@ -331,7 +332,7 @@
 			main.innerHTML = temp;
 		}
 		
-		document.body.onload = function() { start() };
+		//document.body.onload = function() {  };
 	</script>
 </body>
 </html>
