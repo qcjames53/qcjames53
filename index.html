@@ -26,7 +26,27 @@
 		var pageImg = true; //display video/image on content draw
 		var texts; //json of all texts for content
 		var pages; //pages Enabled, posx, posy, width, height, text, [links hitx1, hity1, hitx2, hity2, togglepage, setcontentwindowpage, enablepage, disablepage, openlink]
-
+		var terminal = {lines:0, width:0, text:"", prevText:["Terminal loaded."], prevCommands:new Array(), commands:[]};
+		var simpleResponseCommands = [
+			["CD","No disk inserted. Please insert a disk and try again."],
+			["LS","Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding. Try 'LSD' instead."],
+			["HELLO","hi"],
+			["HI","how are ya?"],
+			["ROBLOX","oof"],
+			["LINUX","Ign http://us.archive.ubuntu.com trusty InRelease Get:1 http://us.archive.ubuntu.com trusty-updates InRelease [65.9 kB] Hit http://ppa.launchpad.net trusty InRelease Get:2 http://security.ubuntu.com trusty-security InRelease [65.9 kB] Hit http://us.archive.ubuntu.com trusty-backports InRelease Hit http://us.archive.ubuntu.com trusty Release.gpg Get:3 http://us.archive.ubuntu.com trusty-updates/main Sources [416 kB] Hit http://ppa.launchpad.net trusty/main amd64 Packages Get:4 http://us.archive.ubuntu.com trusty-updates/restricted Sources [322 B] Get:5 http://us.archive.ubuntu.com trusty-updates/universe Sources [200 kB] Get:6 http://us.archive.ubuntu.com trusty-updates/multiverse Sources [386 B] Get:7 http://security.ubuntu.com trusty-security/main Sources [154 kB] Get:8 http://us.archive.ubuntu.com trusty-updates/main amd64 Packages [176 kB] Hit http://ppa.launchpad.net trusty/main i386 Packages Get:9 http://us.archive.ubuntu.com trusty-updates/restricted amd64 Packages [17.2 kB] Get:10 http://us.archive.ubuntu.com trusty-updates/universe amd64 Packages [453 kB] Get:11 http://us.archive.ubuntu.com trusty-updates/multiverse amd64 Packages [14.6 kB] Get:12 http://us.archive.ubuntu.com trusty-updates/main i386 Packages [118 kB] Fetched 7,265 kB in 4s (1,534 kB/s) Reading package lists... Done"],
+			["SUDO","Sudo make me a sandwich."],
+			["APT-GET","Error: Repository list could not be read. Please reinstall apt to load repositories."],
+			["APT","Error: Repository list could not be read. Please reinstall apt to load repositories."],
+			["VI","Due to GNU GPL issues, vim can no loger be offered for web users."],
+			["VIM","Due to GNU GPL issues, vim can no loger be offered for web users."],
+			["EMACS","Loading..."],
+			["","Welcome to null island. Current populaion: NaN"],
+			["MINECRAFT","Bro do you even Java"],
+			["FOOD","Food machine broke."],
+			["LA","The note that follows SO"],
+			["SO","So what?"],
+			["STAR","That subcommand word better be WARS."]
+		];
 		var textsReq = new XMLHttpRequest();
 		textsReq.addEventListener("load", textsReqListener);
 		textsReq.open("GET", "texts.json");
@@ -44,6 +64,74 @@
 		function pagesReqListener () {
 			pages = JSON.parse(this.responseText);
 			start();
+		}
+		
+		function terminalInput(input) {
+			if(input=="BACKSPACE") {
+				if(terminal.text.length > 0) {
+					terminal.text = terminal.text.substring(0,terminal.text.length-1);
+				}
+			}
+			else if(input=="ENTER") {
+				terminalRun();
+			}
+			else {
+				if(terminal.text.length < terminal.width-3) {
+					terminal.text += input;
+				}
+			}
+			terminalDisplay();
+		}
+		function terminalText(input) {
+			if(input.length <= terminal.width-1) {
+				terminal.prevText.push(input);
+			}
+			else {
+				var mid = terminal.width;
+				while(mid > 0 && input.charAt(mid) != " ") mid--;
+				if(mid <= 0) mid = terminal.width-1;
+				terminal.prevText.push(input.substring(0,mid));
+				terminalText(input.substring(mid+1));
+			}
+		}
+		function terminalRun() {
+			terminalText(terminal.text);
+			if(terminal.text != terminal.prevCommands[terminal.prevCommands.length-1]) terminal.prevCommands.push(terminal.text);
+			
+			//command stuff here
+			var spaceIndex = terminal.text.indexOf(" ");
+			if(spaceIndex == -1) spaceIndex = terminal.text.length;
+			var command = terminal.text.substring(0,spaceIndex).toUpperCase();
+			var subcommand = terminal.text.substring(spaceIndex+1).toUpperCase();
+			var foundCommand = false;
+			
+			for(var i = 0; !foundCommand && i < simpleResponseCommands.length; i++) {
+				if(command == simpleResponseCommands[i][0]) {
+					terminalText(simpleResponseCommands[i][1]);
+					foundCommand = true;
+				}
+			}
+			
+			if(!foundCommand) {
+				switch(command) {
+					default:
+						terminalText("'" + command + "' is not recognised as an internal or external command.");
+					break;
+				}
+			}
+			
+			terminal.text = "";
+		}
+		function terminalDisplay() {
+			while(terminal.prevText.length > terminal.lines-1) {
+				terminal.prevText.shift();
+			}
+			pages[10].text = "";
+			for(var i = 0; i < terminal.prevText.length; i++) {
+				pages[10].text += terminal.prevText[i] + "~n";
+			}
+			pages[10].text += ">" + terminal.text + "█";
+			update();
 		}
 		
 		function start() {
@@ -69,6 +157,9 @@
 			document.addEventListener("mousedown",mouseDown);
 			document.addEventListener("mouseup",mouseUp);
 			document.addEventListener("keydown",keyDown);
+			terminal.width = pages[10].width;
+			terminal.lines = pages[10].height;
+			pages[10].text = terminal.prevText[0] + "~n>";
 			
 			update();
 			
@@ -119,8 +210,8 @@
 					}
 					if(hitboxes[i][8] != null) {
 						for(var j = 0; j < hitboxes[i][8].length; j++) {
-							if (hitboxes[i][8][j] == "PAGELINK") getPage();
-							else getPage(hitboxes[i][8][j]);
+							if (hitboxes[i][8][j] == "PAGELINK") openLink();
+							else openLink(hitboxes[i][8][j]);
 						}
 					}
 				}
@@ -135,43 +226,40 @@
 		}
 		
 		function keyDown(evt) {
-			switch(evt.keyCode) {
-				case 38:
-				case 73:
-				case 87:
-				case 104:
-					mouse.y = Math.min(Math.max(mouse.y-1,0),outputHeight-1);
-					moveCursorEfficient();
-				break;
-				case 40:
-				case 75:
-				case 83:
-				case 98:
-					mouse.y = Math.min(Math.max(mouse.y+1,0),outputHeight-1);
-					moveCursorEfficient();
-				break;
-				case 37:
-				case 74:
-				case 65:
-				case 100:
-					mouse.x = Math.min(Math.max(mouse.x-1,0),outputWidth-1);
-					moveCursorEfficient();
-				break;
-				case 39:
-				case 76:
-				case 68:
-				case 102:
-					mouse.x = Math.min(Math.max(mouse.x+1,0),outputWidth-1);
-					moveCursorEfficient();
-				break;
-				case 13:
-				case 32:
-					mouseDown();
-					setTimeout(mouseUp,100);
-					update();
-				break;
+			if(pages[10].enabled) {
+				var code = evt.keyCode;
+				if(code == 8) terminalInput("BACKSPACE");
+				if(code == 13) terminalInput("ENTER");
+				if(code == 32) terminalInput(" ");
+				if(code == 173 || code == 189) terminalInput("-");
+				if(code == 190) terminalInput(".");
+				if(code >= 48 && code <= 90) terminalInput(String.fromCharCode(code));
 			}
-			
+			else {
+				switch(evt.keyCode) {
+					case 38:
+						mouse.y = Math.min(Math.max(mouse.y-1,0),outputHeight-1);
+						moveCursorEfficient();
+					break;
+					case 40:
+						mouse.y = Math.min(Math.max(mouse.y+1,0),outputHeight-1);
+						moveCursorEfficient();
+					break;
+					case 37:
+						mouse.x = Math.min(Math.max(mouse.x-1,0),outputWidth-1);
+						moveCursorEfficient();
+					break;
+					case 39:
+						mouse.x = Math.min(Math.max(mouse.x+1,0),outputWidth-1);
+						moveCursorEfficient();
+					break;
+					case 13:
+						mouseDown();
+						setTimeout(mouseUp,100);
+						update();
+					break;
+				}
+			}
 		}
 		
 		function text(t, x, y, wrap, maxX) {
@@ -252,7 +340,6 @@
 				pageImg = index;
 				setPage();
 			}
-			
 			else if(index == pageIndex || index == "CLOSE") {
 				pages[11].enabled = false;
 				pages[12].enabled = false;
@@ -304,7 +391,7 @@
 			
 		}
 		
-		function getPage(link) {
+		function openLink(link) {
 			if(typeof link === "undefined" && pageIndex > -1) link = texts[pageIndex][2]; 
 			window.open(link,'_blank');
 			mouseUp();
@@ -331,8 +418,6 @@
 			}
 			main.innerHTML = temp;
 		}
-		
-		//document.body.onload = function() {  };
 	</script>
 </body>
 </html>
