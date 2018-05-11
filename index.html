@@ -26,7 +26,7 @@
 		var pageImg = true; //display video/image on content draw
 		var texts; //json of all texts for content
 		var pages; //pages Enabled, posx, posy, width, height, text, [links hitx1, hity1, hitx2, hity2, togglepage, setcontentwindowpage, enablepage, disablepage, openlink]
-		var terminal = {lines:0, width:0, text:"", prevText:["Terminal loaded."], prevCommands:new Array(), commands:[]};
+		var terminal = {lines:0, width:0, text:"", prevText:["Terminal functionality is still under development."], prevCommands:new Array(), commands:[]};
 		var simpleResponseCommands = [
 			["CD","No disk inserted. Please insert a disk and try again."],
 			["LS","Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding. Try 'LSD' instead."],
@@ -114,6 +114,11 @@
 			
 			if(!foundCommand) {
 				switch(command) {
+					case "INTERNETEXPLORER":
+					case "IE":
+					case "INTERNET-EXPLORER":
+						
+					break;
 					default:
 						terminalText("'" + command + "' is not recognised as an internal or external command.");
 					break;
