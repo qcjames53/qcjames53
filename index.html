@@ -37,16 +37,112 @@
 			["SUDO","Sudo make me a sandwich."],
 			["APT-GET","Error: Repository list could not be read. Please reinstall apt to load repositories."],
 			["APT","Error: Repository list could not be read. Please reinstall apt to load repositories."],
-			["VI","Due to GNU GPL issues, vim can no loger be offered for web users."],
-			["VIM","Due to GNU GPL issues, vim can no loger be offered for web users."],
+			["VI","Due to GNU GPL issues, vim can no longer be offered for web users."],
+			["VIM","Due to GNU GPL issues, vim can no longer be offered for web users."],
 			["EMACS","Loading..."],
 			["","Welcome to null island. Current populaion: NaN"],
 			["MINECRAFT","Bro do you even Java"],
 			["FOOD","Food machine broke."],
 			["LA","The note that follows SO"],
 			["SO","So what?"],
-			["STAR","That subcommand word better be WARS."]
+			["STAR","That subcommand word better be WARS."],
+			["XKCD","Yeah I use way too many references"],
+			["OPEN", "I'm sorry Dave. I'm afraid I can't do that."],
+			["CMD","CMD is no longer supported. Try 'POWERSHELL' instead."],
+			["POWERSHELL","POWERSHELL is out of date. Use 'POWERSHELL-X64' instead."],
+			["POWERSHELL-X64","Due to security concerns, POWERSHELL-X64 can no longer modify system settings. Use 'CONTROL-PANEL' instead."],
+			["CONTROL-PANEL","CONTROL-PANEL is legacy. Use 'SETTINGS' instead."],
+			["SETTINGS","SETTINGS is depreciated. Please use 'QUICK-ACCESS' instead."],
+			["QUICK-ACCESS","QUICK-ACCESS requires specialised hardware. Try 'STORE' for general installations."],
+			["STORE","STORE is offline. For legacy software, use 'SOFTWARE-INSTALL-WISARD'."],
+			["SOFTWARE-INSTALL-WISARD","SOFTWARE-INSTALL-WISARD is no longer supported. Try 'CMD' for program installs."]
 		];
+		
+		var images = [
+			[	
+				"GOL_GOSPER_GLIDER_GUN.ASCII",
+				"                                    ",
+				"                                    ",
+				"                                    ",
+				"                                    ",
+				"                        X           ",
+				"                      X X           ",
+				"            XX      XX            XX",
+				"           X   X    XX            XX",
+				"XX        X     X   XX              ",
+				"XX        X   X XX    X X           ",
+				"          X     X       X           ",
+				"           X   X                    ",
+				"            XX                      ",
+				"                                    ",
+				"                                    ",
+				"                                    ",
+				"                                    "
+			],
+			[
+				"ONE_WITH_VOID.ASCII",
+				"+++#########''++''++#++'+###########++++",
+				"''''''''+'';''+''+++++##++++############",
+				"'''''''''':'''''''''+#++#'+++###+++'''+'",
+				"+++#++++#;;;;';''''''++#+++++####+++++''",
+				"'''''''';;;';:;;++++++++####+#####+++###",
+				"'''''''''+';;'+;'''''''++##########+++++",
+				"'''''''''+;;;;;''';::;;;++#########+++++",
+				"'''''''';'';;:;;:,,,,,::;;'++#######++++",
+				"'''''''''';:..````....,,::;'''##@####+++",
+				"'''''';'+'.``     ``..,,,:::;'+######+++",
+				"'''''';';:        `.`.,,,,::;;+######+++",
+				"''';''';;,      `````.,,,:::;;'+#####+++",
+				";''''';':.       ````..,,::::;;'+####+++",
+				";'';';'':`       ````..,,,::;;;'++###+'+",
+				";;''';++;`  ``    ````.,,::;;;;'+####+++",
+				";;''';+'' .::'',`` `...:;'+'+'''#####+++",
+				";;';;;+';`,..,:;:,``.,:'++++'+''+####+++",
+				";;';;;+'; ``.,:,..``,:;'';::::''+####+++",
+				";;;;;;+': `:.'+;:`  ,;'';::;;;;''#@##+++",
+				";;;;';;':`.#:@#''`` ,;'+;@+##';;'##+++++",
+				";;;;;;;::  ``.,,`` `:''';:;;;;:;'#++++++",
+				";;;;;;'`;` ``..``` .:;';::,:::;''#;#++++",
+				";;;;;;'`,`  ``.`` `.;;;;:::,::;'++'#++++",
+				";;;;;;;``    ``  ``.:;;:::,,,:;'#';+++++",
+				";;;;;;':     ``.`  .,;'':,,,::;'';;+++++",
+				";;;;;;;;``   `,` ``.:;;;;,,,::;';;++++++",
+				":;;;;;;;;`  `,, `,.,;''';:,,::;';'##++++",
+				":;;;;;;;;.  ,,    .:;;;;;;:,:;;'+###++++",
+				":;;;;;;;;,  :`    `..,:;;;::,;;+++##++++",
+				":;;;;;;;;:  ,:::.,,::;;;;;;,.;;+++##++++",
+				";;;;;;;;;;  `,:.   `.::,'#,,,;;++##+#+++",
+				";;;;;;';;;   ` ...  .,,:':,.;;'+++++++++",
+				";;;:;::;;;`     `.,:;;:;':,:;;'#######++",
+				":::;::;;;'`     ``.,,:;;;::;;''########@",
+				",,:;:::;'+:`     `.::::;;::;''+########+",
+				"::,:::;':'+``   ``.,:::;::;'''+########+",
+				":::::::;':'``   ```..,:,;:''''#######+++",
+				":;::::::;;;```    ``.,,:;;''+'#######+#+",
+				":::;::::;;;.```  ``..,::;''''+########++",
+				"::;;;::::;;...`.`...,::;'''''#########++"
+			],
+			[
+				"QUBE.ASCII",
+				"     QQQQQQQQQQQQQ",
+				"   QQQQ        QQQ",
+				" QQ QQ       QQ  Q",
+				"QQQQQQQQQQQQQ    Q",
+				"Q    QQ    QQ    Q",
+				"Q    QQ    QQ    Q",
+				"Q    QQ    QQ    Q",
+				"Q    QQ    QQ    Q",
+				"Q    QQ    QQ    Q",
+				"Q    QQ    QQ    Q",
+				"Q    QQ    QQ    Q",
+				"Q    QQ    QQ    Q",
+				"Q    QQQQQQQQQQQQQ",
+				"Q  QQ      QQ  QQ ",
+				"QQQ        QQQQ   ",
+				"QQQQQQQQQQQQQ     "
+			]
+		]
+		
 		var textsReq = new XMLHttpRequest();
 		textsReq.addEventListener("load", textsReqListener);
 		textsReq.open("GET", "texts.json");
@@ -114,10 +210,49 @@
 			
 			if(!foundCommand) {
 				switch(command) {
+					case "CLS":
+					case "CLEAR":
+						terminal.prevText = [];
+					break;
+					case "GAME-OF-LIFE":
+					case "GOL":
+					case "GAMEOFLIFE":
+						removeInput();
+						setInterval(gameOfLife, 100);
+					break;
+					case "IMG":
+							if(subcommand.length < 1) {
+								terminalText("Valid Images:");
+								for(var i = 0; i < images.length; i++) {
+									terminalText(i + " : " + images[i][0]);
+								}
+								terminalText("Enter 'IMG' + NUM SELECTION to view");
+							}
+							else if(!isNaN(parseInt(subcommand)) && subcommand < images.length) {
+								var img = images[subcommand];
+								for(var i = 1; i < img.length; i++) {
+									terminalText(img[i]);
+								}
+							}
+							else {
+								terminalText("Invalid image selection. Out of bounds or not a number.");
+							}
+					break;
 					case "INTERNETEXPLORER":
 					case "IE":
 					case "INTERNET-EXPLORER":
-						
+						parent.style="position:absolute; cursor:none;";
+						terminalText("Successfully loaded Internet-Explorer-Safe Module");
+					break;
+					case "PLAGUE":
+						removeInput();
+						setInterval(plague, 100);
+					break;
+					case "RAIN":
+						removeInput();
+						mouse.cursor = 'X';
+						document.addEventListener("mousemove",mouseMove);
+						setInterval(rain, 100);
 					break;
 					default:
 						terminalText("'" + command + "' is not recognised as an internal or external command.");
@@ -137,6 +272,88 @@
 			}
 			pages[10].text += ">" + terminal.text + "█";
 			update();
+		}
+		
+		function removeInput() {
+			document.removeEventListener("mousemove",mouseMove);
+			document.removeEventListener("mousedown",mouseDown);
+			document.removeEventListener("mouseup",mouseUp);
+			document.removeEventListener("keydown",keyDown);
+		}
+		
+		function gameOfLife() {
+			var outputArray = new Array();
+			for(var i = 0; i < outputWidth; i++) {
+				outputArray.push(new Array());
+				for(var j = 0; j < outputHeight; j++) {
+					outputArray[i][j] = o[i][j];
+				}
+			}
+			
+			for(var i = 0; i < outputWidth; i= i+1) {
+				for(var j = 0; j < outputHeight; j++) {
+					var neighbors = 0;
+					if(i > 0 && j > 0 && isLetterOrDigit(o[i-1][j-1])) neighbors++;
+					if(i > 0 && isLetterOrDigit(o[i-1][j])) neighbors++;
+					if(i > 0 && j < outputHeight-1 && isLetterOrDigit(o[i-1][j+1])) neighbors++;
+					if(j > 0 && isLetterOrDigit(o[i][j-1])) neighbors++;
+					if(j < outputHeight-1 && isLetterOrDigit(o[i][j+1])) neighbors++;
+					if(i < outputWidth-1 && j > 0 && isLetterOrDigit(o[i+1][j-1])) neighbors++;
+					if(i < outputWidth-1 && isLetterOrDigit(o[i+1][j])) neighbors++;
+					if(i < outputWidth-1 && j < outputHeight-1 && isLetterOrDigit(o[i+1][j+1])) neighbors++;
+					
+					
+					if(isLetterOrDigit(o[i][j]) && (neighbors < 2 || neighbors > 3)) {
+						outputArray[i][j] = "&nbsp;";
+					}
+					else if(!isLetterOrDigit(o[i][j]) && (neighbors == 3)) {
+						outputArray[i][j] = "X";
+					}
+					else {
+						outputArray[i][j] = o[i][j];
+					}
+				}
+			}
+			for(var i = 0; i < outputWidth; i++) {
+				for(var j = 0; j < outputHeight; j++) {
+					o[i][j] = outputArray[i][j];
+				}
+			}
+			blit();
+		}
+		
+		function rain() {
+			for(var i = 0; i < outputWidth; i++) {
+				for(var j = outputHeight-3; j >= 0; j--) {
+					if(isLetterOrDigit(o[i][j])) {
+						var offset = Math.floor(Math.random()*3);
+						o[i][j+offset] = o[i][j];
+						if(offset!=0) o[i][j] = " ";
+					}
+				}
+			}
+			blit();
+		}
+		
+		function plague() {
+			for(var i = 0; i < outputWidth; i++) {
+				for(var j = 0; j < outputHeight; j++) {
+					if(isLetterOrDigit(o[i][j])) {
+						var spread = Math.floor(Math.random()*10);
+						if(spread < 1) {
+							if(i > 0) o[i-1][j] = o[i][j];
+							if(i < outputWidth-1) o[i+1][j] = o[i][j];
+							if(j > 0) o[i][j-1] = o[i][j];
+							if(j < outputHeight-1) o[i][j+1] = o[i][j];
+						}
+					}
+				}
+			}
+			blit();
+		}
+		
+		function isLetterOrDigit(ch) {
+			return (ch.codePointAt(0) >= 65 && ch.codePointAt(0) <= 90) || (ch.codePointAt(0) >= 97 && ch.codePointAt(0) <= 122) || (ch.codePointAt(0) >= 48 && ch.codePointAt(0) <= 57);
 		}
 		
 		function start() {
@@ -327,7 +544,7 @@
 			if(invert) {
 				for(var i = startX; i <= endX; i++) {
 					for(var j = startY; j <= endY; j++) {
-						o[i][j] = ("<span style='color:" + draw.background + "; background-color:" + draw.foreground + ";'>" + o[i][j] + "</span>");
+						o[i][j] = ("<istart>" + o[i][j] + "<iend>");
 					}
 				}
 			}
@@ -421,7 +638,7 @@
 				}
 				temp += "<br/>";
 			}
-			main.innerHTML = temp;
+			main.innerHTML = temp.replace(/ /g,"&nbsp;").replace(/<istart>/g,"<span style='color:" + draw.background + "; background-color:" + draw.foreground + ";'>").replace(/<iend>/g,"</span>");
 		}
 	</script>
 </body>
