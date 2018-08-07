@@ -618,7 +618,7 @@
 		
 		function openLink(link) {
 			if(typeof link === "undefined" && pageIndex > -1) link = texts[pageIndex][2]; 
-			window.open(link,'_blank');
+			window.open(link,'_self');
 			mouseUp();
 		}
 		
