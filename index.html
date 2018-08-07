@@ -26,7 +26,7 @@
 		var pageImg = true; //display video/image on content draw
 		var texts; //json of all texts for content
 		var pages; //pages Enabled, posx, posy, width, height, text, [links hitx1, hity1, hitx2, hity2, togglepage, setcontentwindowpage, enablepage, disablepage, openlink]
-		var terminal = {lines:0, width:0, text:"", prevText:["Terminal functionality is still under development."], prevCommands:new Array(), commands:[]};
+		var terminal = {lines:0, width:0, text:"", prevText:["BS-DOS 1.9.4 (c)2010 BCS, A SUBSIDIARY OF DM-CA"], prevCommands:new Array(), commands:[]};
 		var simpleResponseCommands = [
 			["CD","No disk inserted. Please insert a disk and try again."],
 			["LS","Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding. Try 'LSD' instead."],
@@ -55,7 +55,9 @@
 			["SETTINGS","SETTINGS is depreciated. Please use 'QUICK-ACCESS' instead."],
 			["QUICK-ACCESS","QUICK-ACCESS requires specialised hardware. Try 'STORE' for general installations."],
 			["STORE","STORE is offline. For legacy software, use 'SOFTWARE-INSTALL-WISARD'."],
-			["SOFTWARE-INSTALL-WISARD","SOFTWARE-INSTALL-WISARD is no longer supported. Try 'CMD' for program installs."]
+			["SOFTWARE-INSTALL-WISARD","SOFTWARE-INSTALL-WISARD is no longer supported. Try 'CMD' for program installs."],
+			["HELP","HELP is depriciated, please use 'HALP' instead."],
+			["HALP","PLAGUERAININTERNET-EXPLORERIMGGAME-OF-LIFE"]
 		];
 		
 		var images = [
@@ -217,6 +219,7 @@
 					case "GAME-OF-LIFE":
 					case "GOL":
 					case "GAMEOFLIFE":
+					case "CONWAY":
 						removeInput();
 						setInterval(gameOfLife, 100);
 					break;
