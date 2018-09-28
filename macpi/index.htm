@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+	<head>
+		<meta charset="ANSI">
+		<title>The Raspberry Pi Macintosh SE - Project MacPI</title>
+	</head>
+	<body>
+		<h1>The Raspberry Pi Macintosh SE - Project MacPI</h1>
+		<h3>Quinn James - Fall of 2018</h3>
+		
+		<hr>
+		<h3>Introduction</h3>
+		<p>
+			This entire project started from seeing a post on ebay.com for an old IBM PS/2 computer that had been sitting abandoned under a deck in upstate New York for 10+ years. It had a story.
+			The display worked, but the logic boards were dead. I looked around Youtube for a bit, and as it turned out, the internal input for these monitors could be directly wired
+			to a VGA cable. I knew I wanted to make it functional again, make it modern.
+		</p>
+		<p>
+			There was one day left on the item that had been posted for 2 weeks. I bid the minimum. I was outbid almost instantly by $20.
+		</p>
+		<p>
+			After losing the item with the backstory, I settled for a broken Macintosh SE:
+		</p>
+		<img src="1.jpg" alt="The Macintosh SE" width=320/>
+		
+		<h3>MacPI - The Goals</h3>
+		<p>
+			<ul>1) Create a working Raspberry PI inside a Macintosh SE</ul>
+			<ul>2) Do not damage the outer casing, this should be a relatively seamless build</ul>
+			<ul>3) Retain a CRT display - optionally may add color</ul>
+			<ul>4) Any external buttons should use existing placements or be well concealed</ul>
+			<ul>5) Should have external input to use as a display</ul>
+		</p>
+		
+		<h3>MacPI - The Plan</h3>		
+		<p>
+			<ul>1) Remove existing hardware aside from CRT and power supply</ul>
+			<ul>2) Adapt Raspberry PI HDMI output to function with CRT display</ul>
+			<ul>3) Mount Raspberry PI and other adapter hardware inside case, powering via a powered USB hub</ul>
+			<ul>4) Add cooling fan</ul>
+			<ul>5) Run extenders and other cables to the back of the case, mounting in the expansion slot</ul>
+			<ul>6) ???</ul>
+			<ul>7) Profit!</ul>
+		</p>
+		
+		<hr>
+		<h3>MacPI Phase 1: Removing existing hardware, getting new hardware</h3>
+		<p>
+			I began by attempting to open the casing of the Mac. I knew that it would require a Torx-15 bit, which I had. What I didn't realize is that two of the screw holes were at the front of the casing, 
+			tucked underneath the handle. A quick trip to the local hardware store landed me a Torx-15 screwdriver with a 12-inch shaft. Apple really didn't want to mess around with CRT safety back then.
+		</p>
+		<img src="2.jpg" alt="Demonstration of screw hole position" width=320/>
+		<img src="3.jpg" alt="Torx-15 screwdriver with 12 inch shaft" width=320/>
+		<p>
+			<strong>WARNING: This part of the process is fairly dangerous.</strong>
+		</p>
+		<p>
+			At this point, before you touch anything, we have to discharge the CRT display. CRTs are basically huge, heavy-duty capacitors, and to prevent getting shocked, we need to discharge it.
+			You will need a flathead screwdriver and wire with alligator clips. Carefully attach one end of the wire to the screwdriver. The other will attach to the metal cord looped around the
+			base of the display, the ground wire.
+		</p>
+		<img src="4.jpg" alt="Attachment points for discharging CRT" width=320/>
+		<p>
+			Holding the rubber grip of the screwdriver, carefully slide the screwdriver under the red rubber cup on the side of the CRT. Push until you hit metal, at which point you may hear a small arc depending on
+			whether there is residual charge inside the display. Once you are sure it's safe, squeeze the red cup and pull the connector out of the side of the display. It is now safe to disassemble the system.
+		</p>
+		
+		<hr>
+		<h3>MacPI Phase 2: Adapt PI output to internal CRT display</h3>
+		<p>
+			Upon disassembly, it was revealed that in classic Apple fashion, the CRT input was a non-standard connector used to carry both power signals to the motherboard and data signals to the power supply, which
+			would in turn send the output to the CRT. The data wires didn't take any common standard's inputs, but a nonstandard, pretty much undocumented protocol made in-house by apple.
+		</p>
+		<p>
+			Every other swap I ran across on the internet replaced the CRT with an LCD panel for ease of connectivity, something I wasn't willing to do with this project. I ran across 
+			<a href="https://68kmla.org/forums/index.php?/topic/51191-raspberry-piclassic-crt/">this forum post</a> on 68kmla featuring a user requesting basically the same thing.
+			An option was to build a custom graphics driver using the GPIO pins on the PI, a project far outside of my ability. The more practical solution was to buy another monitor
+			on Ebay to swap into the casing of the Mac, using the original driver board to input from RCA.
+		</p>
+		<p>
+			I chose the latter.
+		</p>
+		<img src="5.jpg" alt="The gutted Macintosh next to the new CRT, disassembled" width=320/>
+		<p>
+			Now that there was a plan, I ordered the remainder of the hardware. The list, as follows:
+			<ul>-Raspberry PI 3B</ul>
+			<ul>-Panasonic 9" Mountable Monochrome Security Monitor</ul>
+			<ul>-BNC Male to RCA Female Adapter</ul>
+			<ul>-HDMI to RCA adapter</ul>
+			<ul>-HDMI switch</ul>
+			<ul>-Powered USB Hub w Power Supply</ul>
+			<ul>-PCI Slot Covers</ul>
+			<ul>-Ethernet Mountable Extension Cable</ul>
+			<ul>-HDMI Mountable Extension Cable</ul>
+			<ul>-USB Dual Mountable Extension Cable</ul>
+			<ul>-Various other cables to connect everything together</ul>
+		</p>
+		<img src="6.jpg" alt="The Raspberry PI" width=320/>
+		<img src="7.jpg" alt="Piles of necessary adapters and cables" width=320/>
+		<p>
+			I made sure to test the CRT display and PI adapters on a working monitor beforehand to make sure all was functioning properly.
+		</p>
+		<img src="8.jpg" alt="Connecting display cables for the PI" width=320/>
+		<img src="9.jpg" alt="Testing the display adapters with a functioning monitor" width=320/>
+		<p>
+			Due to changing the CRT, it was now necessary to remove the old power supply and CRT from the Macintosh to accommodate the new control board. Luckily I was able to reuse the mounting system from the
+			Panasonic monitor in Apple's screw holes. With the monitor securely fastened, I turned my attention to mounting the control board and the CRT's flyback transformer (both pictured right).
+		</p>
+		<img src="10.jpg" alt="The CRT mounted, with a loose control circuit and flyback transformer left to be mounted." width=320/>
+		<p>
+			I found that the ideal location to mount the control board would be diagonal front to back, as pictured below. This required the use of snips to cut out a small angled brace on the frame.
+		</p>
+		<img src="11.jpg" alt="Diagonally positioned control board inside the Mac" width=320/>
+		<p>
+			This allowed for the display output to run through the expansion card slot in the casing (requiring no holes and causing no cosmetic damage) as well as providing a reachable power button through the
+			old brightness knob's hole. I would mount the board to an acrylic sheet to prevent shorting and provide a place to mount the transformer. I measured the hole and cut them into a piece of cardboard
+			to use as a test fit and a template for the acrylic piece later down the road.
+		</p>
+		<img src="12.jpg" alt="Cardboard template as mock acrylic piece used for test fit" width=320/>
+		<h5>----and that's everything up until now----</h5>
+		
+		<address>
+			<br/>
+			<a href="http://quinnjam.es">Quinn James</a><br/>
+			Last Updated 2018-09-28<br/>
+			It was fun writing this in HTML 2.0, maybe I'll do it again in the future?
+		</address>
+	</body>
+</html>
