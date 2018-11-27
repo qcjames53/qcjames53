@@ -59,15 +59,17 @@ function draw(input, row, col, maxwidth) {
 			col = initCol;
 			row++;
 			
-			if(i < words.length-1) i++;
 		}
-		else if(i != 0 && i < words.length) {
+		else if(col != initCol && i < words.length) {
 			o.contents[row][col] = " ";
 			col++;
 		}
-		for(var j = 0; j < words[i].length; j++) {
-			o.contents[row][col] = words[i].charAt(j);
-			col++;
+		
+		if(words[i] != "~n") {
+			for(var j = 0; j < words[i].length; j++) {
+				o.contents[row][col] = words[i].charAt(j);
+				col++;
+			}
 		}
 	}
 	while(col - initCol <= maxwidth) {
@@ -101,15 +103,28 @@ function colors(foreground, background) {
 function drawMenu() {
 	clear();
 	
-	var menuString = "";
+	var menuString1 = "";
+	var menuString2 = "";
+	var menuString3 = "";
 	for(var i = 0; i < pages.length; i++) {
-		menuString += pages[i].title;
-		if(i < pages.length-1) menuString += " ~n ";
+		if(i % 3 == 0) {
+			menuString1 += pages[i].title;
+			if(i < pages.length-3) menuString1 += " ~n ";
+		}
+		else if(i % 3 == 1) {
+			menuString2 += pages[i].title;
+			if(i < pages.length-2) menuString2 += " ~n ";
+		}
+		else {
+			menuString3 += pages[i].title;
+			if(i < pages.length-1) menuString3 += " ~n ";
+		}
 	}
 	
-	draw(menuString,1,2,30);
-	draw(menuString,1,34,31);
-	draw(menuString,1,67,30);
+	
+	draw(menuString1,1,1,31);
+	draw(menuString2,1,34,31);
+	draw(menuString3,1,67,31);
 }
 
 function drawPage(pageIndex) {	
