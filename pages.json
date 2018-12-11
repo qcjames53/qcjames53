@@ -1,495 +1,112 @@
 [
-  {
-    "enabled":true,
-    "posX":1,
-    "posY":1,
-    "width":18,
-    "height":1,
-    "text":"QUINN JAMES ONLINE",
-    "links":[
-      [
-        0,
-        0,
-        17,
-        0,
-        null,
-        null,
-        [
-          1,
-          2,
-          3,
-          4,
-		  16
-        ],
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":21,
-    "posY":1,
-    "width":8,
-    "height":1,
-    "text":"Projects",
-    "links":[
-      [
-        0,
-        0,
-        7,
-        0,
-        [
-          5
-        ],
-        null,
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":31,
-    "posY":1,
-    "width":9,
-    "height":1,
-    "text":"Minecraft",
-    "links":[
-      [
-        0,
-        0,
-        8,
-        0,
-        [
-          6
-        ],
-        null,
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":42,
-    "posY":1,
-    "width":7,
-    "height":1,
-    "text":"Contact",
-    "links":[
-      [
-        0,
-        0,
-        6,
-        0,
-        [
-          9
-        ],
-        null,
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":51,
-    "posY":1,
-    "width":5,
-    "height":1,
-    "text":"Utils",
-    "links":[
-      [
-        0,
-        0,
-        4,
-        0,
-        [
-          10
-        ],
-        [
-          "CLOSE"
-        ],
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":2,
-    "posY":5,
-    "width":30,
-    "height":5,
-    "text":"Unity: Let's Go Bowling~n~nUnity: Rotoball~n~nVoid: A Python Raycaster",
-    "links":[
-      [
-        0,
-        0,
-        29,
-        0,
-        null,
-        [
-          2
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        2,
-        29,
-        2,
-        null,
-        [
-          1
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        4,
-        29,
-        4,
-        null,
-        [
-          0
-        ],
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":35,
-    "posY":5,
-    "width":30,
-    "height":15,
-    "text":"Map: Presentable Liberty~n~nMap: Beyond Perception 2~n~nMap: Note~n~nMap: Skypillar~n~nMap: St. Josephine's~n~nMap: 60 Minute Maps~n~nBuild: Rube Goldberg Machine~n~nBuild: Mob Combat Training",
-    "links":[
-      [
-        0,
-        0,
-        29,
-        0,
-        null,
-        [
-          17
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        2,
-        29,
-        2,
-        null,
-        [
-          16
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        4,
-        29,
-        4,
-        null,
-        [
-          15
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        6,
-        29,
-        6,
-        null,
-        [
-          14
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        8,
-        29,
-        8,
-        null,
-        [
-          13
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        10,
-        29,
-        10,
-        null,
-        [
-          12
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        12,
-        29,
-        12,
-        null,
-        [
-          11
-        ],
-        null,
-        null,
-        null
-      ],
-      [
-        0,
-        14,
-        29,
-        14,
-        null,
-        [
-          10
-        ],
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":2,
-    "posY":25,
-    "width":30,
-    "height":17,
-    "text":"reserved for future menu",
-    "links":[
+	{
+		"title": "VOID",
+		"contents": "Void is a short, yet difficult raycasting engine coded from scratch in python. The game revolves around the completion of several varying levels. ~n Requires Python 2.7 and Pygame.",
+		"img": "images/raycaster.jpg",
+		"links": [	"Python 2.7","https://www.python.org/downloads/",
+					"Pygame", "https://www.pygame.org/news",
+					"Download VOID", "dl/raycaster.zip"
+				]
+	},
+	
+	{
+		"title": "Rotoball",
+		"contents": "Rotoball is the first step in a (hopefully) long journey of Unity projects. The game emulates classic Atari Breakout but with a 360 degree twist. Plays in browser!",
+		"img": "images/rotoball.jpg",
+		"links": [	"Play Online","unity/rotoball/"
+				]
+	},
+	
+	{
+		"title": "Let's Go Bowling",
+		"contents": "Let's Go Bowling is a singleplayer bowling game with accurate masses and friction. Click, drag, and release to send the ball flying! Made in unity.",
+		"img": "images/lgb.png",
+		"links": [	"Download Windows Executable","dl/lgb.zip"
+				]
+	},
+	
+	{
+		"title": "Minecraft: Mob Combat Training",
+		"contents": "Entering the arena, you pick up a sword and bow, and prepare to fight to stay alive through this apocalyptic haunted house. ~n ~n Technical elements include a custom flushing mob farm, an ilmango mob sorter, secondary buffer sorters, piston translocation mob dispensers,and a beautiful urban environment to serve as the backdrop. ~n ~n This build was inspired by Mumbo Jumbo's Mob Combat Training. I wanted to see what it would take to make one with actual mobs. Turns out it's actually quite a lot! ~n ~n Requires Minecraft 1.10.2",
+		"img": "images/mobcombat.jpg",
+		"links": [	"Download map for 1.10.2","dl/mob_combat_training.zip"
+				]
+	},
+	
+	{
+		"title": "Minecraft: PORK, Rube Goldberg",
+		"contents": "A Rube Goldberg Machine built within Minecraft, designed to deliver a cooked pork chop to a dinner table at the press of a button. Music is Brunch Club (Extended Edition) by Tyler Twombly",
+		"img": "images/pork.jpg",
+		"links": [	"Youtube Video","https://www.youtube.com/watch?v=_aMH4KhSP44",
+					"Download map for 1.10.2", "dl/rube_goldberg_machine.zip"
+				]
+	},
+	
+	{
+		"title": "Minecraft: 60 Minute Maps",
+		"contents": "A 60 minute map is a map made in 60 minutes. Each contestant is given a random theme to build a map with, and 60 minutes of time. At the end of this time limit, they turn in whatever they have, most of the time to ridiculous results. Mapmakers CDFDMAN and Recabilly originally coined the concept in 2016. Soon after, Rsmalec began his own competition between members of his community. I was hooked. After 2 years, here's what I have. It's all in one zip file. Have fun! ~n ~n If you would rather watch the video series (I would) I have providied the playlist on the side.",
+		"img": "images/60mm.jpg",
+		"links": [	"60mm Playlist","https://www.youtube.com/watch?list=PLX3RuL_SSofWYHe2FMx9G2MfcddVqsDLz&v=kUhF9p3pz4s",
+					"Download my maps", "dl/60_minute_maps.zip"
+				]
+	},
+	
+	{
+		"title": "Minecraft: St. Josephine's",
+		"contents": "The original horror map that started it all. ~n In St. Josephine's, you take on the role of the mysterious lawyer John Daniels. After your company forecloses on an abandoned hospital, you are commissioned to retrieve various articles of paperwork that remain inside the building. Getting in is the easy part. Escaping from the dark secrets lying within this building will be the real challenge. A psychological horror map with several jumpscares, puzzles, parkour elements, cutscenes, boss battles, custom sounds, a light show, and a deep plotline to tie it all together. Requires Minecraft 1.8.10",
+		"img": "images/st-josephines.jpg",
+		"links": [	"Map Trailer","https://www.youtube.com/watch?v=cahqW_jX4y0",
+					"Download for 1.8.10", "http://adf.ly/1K9fKy"
+				]
+	},
+	
+	{
+		"title": "Minecraft: Skypillar",
+		"contents": "This is SkyBlock, taken to new heights. A 100 block tall pillar of natural Minecraft terrain that will test your resourcefulness and attention to detail as a Minecraft player. The map includes a list of challenges such as creating a nether portal, building a mob grinder, and slaying the ender dragon! Supports multiplayer. Requires Minecraft 1.10.2",
+		"img": "images/skypillar.jpg",
+		"links": [	"Download for 1.10.2","http://adf.ly/1KdTn2"
+				]
+	},
+	
+	{
+		"title": "Minecraft: Note",
+		"contents": "How do you describe note? ~n ~n Note is a map about loss, but is a story of gain. ~n Note is a map about despair, but is a story of hope.~n Note is a map about interaction, but is a story of isolation.~n Note is a map you should play for the story. ~n A lonely spawn island greets you at the gates of a very unique Minecraft server. Communication is blocked, except for notes left by players on the ground. Prepare for an emotional rollercoaster ride like nothing before. Welcome to Note. ~n ~n Note contains mature themes. This map may not be suitable for younger Minecrafters. Requires Minecraft 1.9.4",
+		"img": "images/note.jpg",
+		"links": [	"Map Trailer","https://www.youtube.com/watch?v=IWb0NG2c3sQ",
+					"Download for 1.9.4", "http://adf.ly/1alEV0"
+				]
+	},
+	
+	{
+		"title": "Minecraft: Beyond Perception 2",
+		"contents": "Co-developed with the creators of the original map, Beyond Perception comes part two in the series. The map uses a mechanic brand new to Minecraft, turning the shading off. This presents some rather interesting illusions and optical puzzles that will reform everything you know about perspective and shade. Give it a try at the link below! Requires Minecraft 1.9.2",
+		"img": "images/beyond2.jpg",
+		"links": [	"Map Trailer","https://www.youtube.com/watch?v=t5-6n2V--xI",
+					"Download for 1.9.2","http://www.minecraftforum.net/forums/mapping-and-modding/maps/2676688-beyond-perception-2-a-minecraft-visual-puzzle-map",
+					"MinecraftSpace's channel", "https://www.youtube.com/user/MinecraftSpac3",
+					"_mihro_'s channel", "https://www.youtube.com/channel/UCLUaJImOkAdETP0IIsE44wg"
+				]
+	},
+	
+	{
+		"title": "Minecraft: Presentable Liberty",
+		"contents": "You have been imprisoned without being told why. All you can hear day in day out is the faint ticking of a clock in your cell. That is, until the first of 5 fateful days begins. ~n ~n Based on the original indie game, this map is a complete port of Wertpol's Masterpiece, complete with updated graphics, 4 unique minigames, 275+ block and item models, and all taking place in the same restrictive 2x3 meter room. Requires Minecraft 1.11.2",
+		"img": "images/presentableliberty.jpg",
+		"links": [	"Map Trailer","https://www.youtube.com/watch?v=DUvtbOpdrfg",
+					"Download for 1.11.2", "http://adf.ly/1kzvqx"
+				]
+	},
+	
+	{
+		"title": "Project MacPi",
+		"contents": "Making the obsolete functional, converting a 1984 Macintosh SE to run as a Raspberry Pi Server and an external monitor.",
+		"img": "images/macpi.jpg",
+		"links": [	"Project MacPi","macpi/"
+				]
+	}
+	
+	
+	
+	
 
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":35,
-    "posY":25,
-    "width":30,
-    "height":17,
-    "text":"reserved for future menu",
-    "links":[
-
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":2,
-    "posY":45,
-    "width":144,
-    "height":1,
-    "text":"(c)2018 by Quinn James. ######## Contact me here: [QJ@QUINNJAM.ES] [@QCJAMES53] [AWESOME_1 MINECRAFT] ######## CLICK HERE to get a free Bitcoin!",
-    "links":[
-      [
-        51,
-        0,
-        64,
-        0,
-        null,
-        null,
-        null,
-        null,
-        [
-          "mailto:qj@quinnjam.es"
-        ]
-      ],
-      [
-        68,
-        0,
-        77,
-        0,
-        null,
-        null,
-        null,
-        null,
-        [
-          "https://twitter.com/Qcjames53"
-        ]
-      ],
-      [
-        81,
-        0,
-        99,
-        0,
-        null,
-        null,
-        null,
-        null,
-        [
-          "https://www.youtube.com/c/Awesome1Minecraft"
-        ]
-      ],
-      [
-        111,
-        0,
-        120,
-        0,
-        null,
-        null,
-        null,
-        null,
-        [
-          "https://hackertyper.net/"
-        ]
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":69,
-    "posY":4,
-    "width":72,
-    "height":38,
-    "text":"",
-    "links":[
-
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":69,
-    "posY":4,
-    "width":72,
-    "height":18,
-    "text":"",
-    "links":[
-
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":69,
-    "posY":24,
-    "width":51,
-    "height":18,
-    "text":"",
-    "links":[
-
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":122,
-    "posY":24,
-    "width":13,
-    "height":1,
-    "text":"PROCURE FILES",
-    "links":[
-      [
-        0,
-        0,
-        12,
-        0,
-        null,
-        null,
-        null,
-        null,
-        [
-          "PAGELINK"
-        ]
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":122,
-    "posY":27,
-    "width":13,
-    "height":1,
-    "text":"EXAMINE IMAGE",
-    "links":[
-      [
-        0,
-        0,
-        12,
-        0,
-        null,
-        [
-          true
-        ],
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":122,
-    "posY":30,
-    "width":13,
-    "height":1,
-    "text":"EXAMINE VIDEO",
-    "links":[
-      [
-        0,
-        0,
-        12,
-        0,
-        null,
-        [
-          false
-        ],
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "enabled":false,
-    "posX":59,
-    "posY":1,
-    "width":13,
-    "height":1,
-    "text":"The Whitepage",
-    "links":[
-      [
-        0,
-        0,
-        12,
-        0,
-        null,
-        null,
-        null,
-        null,
-        [
-          "whitepage.html"
-        ]
-      ]
-    ]
-  }
 ]

@@ -1,12 +1,12 @@
 var main = document.getElementById("main");
 var body = document.getElementById("body");
-var parent = document.getElementById("parent");
+var textWrapper = document.getElementById("textWrapper");
+var image = document.getElementById("img");
 
 var o = {
 	outputWidth : 100,
 	outputHeight : 45,
 	contents : new Array(),
-	clickBoxes : new Array(),
 	mouseX : 0,
 	mouseY : 0,
 	mouseOldX : 0,
@@ -20,7 +20,7 @@ var pages;
 
 var pagesReq = new XMLHttpRequest();
 pagesReq.addEventListener("load", pagesReqListener);
-pagesReq.open("GET", "new_pages.json");
+pagesReq.open("GET", "pages.json");
 pagesReq.send(null);
 
 function pagesReqListener () {
@@ -38,10 +38,13 @@ function init() {
 	document.addEventListener("mousemove",mouseMove);
 	document.addEventListener("mousedown",mouseDown);
 	document.addEventListener("mouseup",mouseUp);
+	drawMenu();
 	blit();
 }
 
-function draw(input, row, col, maxwidth) {
+function draw(input, row, col, maxwidth, link) {
+	if(typeof link === "undefined") link = "";
+	
 	col++;
 	row++;
 	maxwidth -= 2;
@@ -52,7 +55,7 @@ function draw(input, row, col, maxwidth) {
 	for(var i = 0; i < words.length; i++) {
 		if(col - initCol + words[i].length > maxwidth || words[i]=="~n") {
 			while(col - initCol <= maxwidth) {
-				o.contents[row][col] = " ";
+				o.contents[row][col] = " " + link;
 				col++;
 			}
 			
@@ -61,29 +64,29 @@ function draw(input, row, col, maxwidth) {
 			
 		}
 		else if(col != initCol && i < words.length) {
-			o.contents[row][col] = " ";
+			o.contents[row][col] = "  " + link;
 			col++;
 		}
 		
 		if(words[i] != "~n") {
 			for(var j = 0; j < words[i].length; j++) {
-				o.contents[row][col] = words[i].charAt(j);
+				o.contents[row][col] = words[i].charAt(j) + " " + link;
 				col++;
 			}
 		}
 	}
 	while(col - initCol <= maxwidth) {
-		o.contents[row][col] = " ";
+		o.contents[row][col] = "  " + link;
 		col++;
 	}
 	
 	var ir = initRow-1, ic = initCol-1, fr = row+1, fc = initCol+maxwidth+1;
-	for(var i = ir; i < fr; i++) {o.contents[i][ic] = '│'; o.contents[i][fc] = '│';}
-	for(var i = ic; i < fc; i++) {o.contents[ir][i] = '─'; o.contents[fr][i] = '─';}
-	o.contents[ir][ic] = "┌";
-	o.contents[ir][fc] = "┐";
-	o.contents[fr][ic] = "└";
-	o.contents[fr][fc] = "┘";
+	for(var i = ir; i < fr; i++) {o.contents[i][ic] = "│" + link; o.contents[i][fc] = "│" + link;}
+	for(var i = ic; i < fc; i++) {o.contents[ir][i] = "─" + link; o.contents[fr][i] = "─" + link;}
+	o.contents[ir][ic] = "┌" + link;
+	o.contents[ir][fc] = "┐" + link;
+	o.contents[fr][ic] = "└" + link;
+	o.contents[fr][fc] = "┘" + link;
 	blit();
 	return [ir,ic,fr,fc];
 }
@@ -96,35 +99,28 @@ function clear() {
 	}
 }
 
-function colors(foreground, background) {
-	body.style = `color:${foreground}; background-color:${background}`;
+function colors(foreground) {
+	body.style = `color:${foreground};`;
 }
 
 function drawMenu() {
 	clear();
 	
-	var menuString1 = "";
-	var menuString2 = "";
-	var menuString3 = "";
+	draw("QUINN JAMES ONLINE",0,2,19);
+	
+	var row = 4;
+	var col = 2;
+	
 	for(var i = 0; i < pages.length; i++) {
-		if(i % 3 == 0) {
-			menuString1 += pages[i].title;
-			if(i < pages.length-3) menuString1 += " ~n ";
-		}
-		else if(i % 3 == 1) {
-			menuString2 += pages[i].title;
-			if(i < pages.length-2) menuString2 += " ~n ";
-		}
-		else {
-			menuString3 += pages[i].title;
-			if(i < pages.length-1) menuString3 += " ~n ";
+		draw(pages[i].title, row, col, 31, i+1);
+		row += 3;
+		if(row > o.outputHeight-1) {
+			row = 4;
+			col += 33;
 		}
 	}
 	
-	
-	draw(menuString1,1,1,31);
-	draw(menuString2,1,34,31);
-	draw(menuString3,1,67,31);
+	setImage();
 }
 
 function drawPage(pageIndex) {	
@@ -134,21 +130,26 @@ function drawPage(pageIndex) {
 	
 	if(pageIndex == 0) {
 		drawMenu();
-		return;
+	}
+	else {
+		pageIndex--;
+		draw("QUINN JAMES ONLINE",0,2,19,0);
+		draw(pages[pageIndex].title,4,2,60);
+		draw(pages[pageIndex].contents,8,2,60);
+		
+		for(var i = 0; i < pages[pageIndex].links.length; i+=2) {
+			draw(pages[pageIndex].links[i],3*(i/2)+8,67,30,pages[pageIndex].links[i+1])
+		}
+		
+		setImage(pages[pageIndex].img);
 	}
 	
-	pageIndex--;
-	draw(pages[pageIndex].title,4,2,60);
-	draw(pages[pageIndex].contents,8,2,60);
-	
-	for(var i = 0; i < pages[pageIndex].links.length; i+=2) {
-		draw(pages[pageIndex].links[i],3*(i/2)+8,67,30)
-	}
+	o.mouseUnderChar = o.contents[o.mouseX][o.mouseY];
 }
 
 function mouseMove(evt) {
-	o.mouseY = Math.min(Math.max(Math.floor((evt.clientX - parent.offsetLeft) / main.clientWidth * o.outputWidth),0),o.outputWidth-1);
-	o.mouseX = Math.min(Math.max(Math.floor((evt.clientY - parent.offsetTop) / main.clientHeight * o.outputHeight),0),o.outputHeight-1);
+	o.mouseY = Math.min(Math.max(Math.floor((evt.clientX - textWrapper.offsetLeft) / main.clientWidth * o.outputWidth),0),o.outputWidth-1);
+	o.mouseX = Math.min(Math.max(Math.floor((evt.clientY - textWrapper.offsetTop) / main.clientHeight * o.outputHeight),0),o.outputHeight-1);
 	moveCursorEfficient();
 }
 
@@ -162,18 +163,36 @@ function moveCursorEfficient() {
 }
 
 function mouseDown(evt) {
-
+	if(o.mouseUnderChar.substring(2) != "") {
+		colors("gray;");
+	}
 }	
 
 function mouseUp(evt) {
+	colors("black;");
+	if(o.mouseUnderChar.substring(2) != "") parseLink(o.mouseUnderChar.substring(2));
+}
 
+function parseLink(string) {
+	if(!isNaN(string)) drawPage(parseInt(string));
+	else window.open(string,"_self");
+}
+
+function setImage(link) {
+	$("#img").fadeOut(500);
+	setTimeout(setImage2, 500, link);
+}
+
+function setImage2(link) {
+	img.src = link;
+	//$("#img").fadeTo(500, 0.4);
 }
 
 function blit() {
 	var outputString = "";
 	for(var i = 0; i < o.contents.length; i++) {
 		for(var j = 0; j < o.contents[i].length; j++) {
-			var temp = o.contents[i][j];
+			var temp = o.contents[i][j].charAt(0);
 			if(temp == " " || temp == ' ') outputString += "&nbsp;";
 			else outputString += o.contents[i][j].charAt(0);
 		}
