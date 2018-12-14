@@ -81,12 +81,12 @@ function draw(input, row, col, maxwidth, link) {
 	}
 	
 	var ir = initRow-1, ic = initCol-1, fr = row+1, fc = initCol+maxwidth+1;
-	for(var i = ir; i < fr; i++) {o.contents[i][ic] = "│" + link; o.contents[i][fc] = "│" + link;}
-	for(var i = ic; i < fc; i++) {o.contents[ir][i] = "─" + link; o.contents[fr][i] = "─" + link;}
-	o.contents[ir][ic] = "┌" + link;
-	o.contents[ir][fc] = "┐" + link;
-	o.contents[fr][ic] = "└" + link;
-	o.contents[fr][fc] = "┘" + link;
+	for(var i = ir; i < fr; i++) {o.contents[i][ic] = "│ " + link; o.contents[i][fc] = "│ " + link;}
+	for(var i = ic; i < fc; i++) {o.contents[ir][i] = "─ " + link; o.contents[fr][i] = "─ " + link;}
+	o.contents[ir][ic] = "┌ " + link;
+	o.contents[ir][fc] = "┐ " + link;
+	o.contents[fr][ic] = "└ " + link;
+	o.contents[fr][fc] = "┘ " + link;
 	blit();
 	return [ir,ic,fr,fc];
 }
