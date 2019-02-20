@@ -1,23 +1,5 @@
 [
 	{
-		"title": "VOID",
-		"contents": "Void is a short, yet difficult raycasting engine coded from scratch in python. The game revolves around the completion of several varying levels. ~n Requires Python 2.7 and Pygame.",
-		"img": "images/raycaster.jpg",
-		"links": [	"Python 2.7","https://www.python.org/downloads/",
-					"Pygame", "https://www.pygame.org/news",
-					"Download VOID", "dl/raycaster.zip"
-				]
-	},
-	
-	{
-		"title": "Rotoball",
-		"contents": "Rotoball is the first step in a (hopefully) long journey of Unity projects. The game emulates classic Atari Breakout but with a 360 degree twist. Plays in browser!",
-		"img": "images/rotoball.jpg",
-		"links": [	"Play Online","unity/rotoball/"
-				]
-	},
-	
-	{
 		"title": "Let's Go Bowling",
 		"contents": "Let's Go Bowling is a singleplayer bowling game with accurate masses and friction. Click, drag, and release to send the ball flying! Made in unity.",
 		"img": "images/lgb.png",
@@ -103,10 +85,23 @@
 		"img": "images/macpi.jpg",
 		"links": [	"Project MacPi","macpi/index.html"
 				]
+	},
+	
+	{
+		"title": "Pygame Raycaster",
+		"contents": "Void is a short, yet difficult raycasting engine coded from scratch in python. The game revolves around the completion of several varying levels. ~n Requires Python 2.7 and Pygame.",
+		"img": "images/raycaster.jpg",
+		"links": [	"Python 2.7","https://www.python.org/downloads/",
+					"Pygame", "https://www.pygame.org/news",
+					"Download VOID", "dl/raycaster.zip"
+				]
+	},
+	
+	{
+		"title": "Rotoball",
+		"contents": "Rotoball is the first step in a (hopefully) long journey of Unity projects. The game emulates classic Atari Breakout but with a 360 degree twist. Plays in browser!",
+		"img": "images/rotoball.jpg",
+		"links": [	"Play Online","unity/rotoball/"
+				]
 	}
-	
-	
-	
-	
-
 ]
