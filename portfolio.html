@@ -7,65 +7,109 @@
 			body {
 				background-color: #000500;
 				color: #cccccc;
-			}
-			
-			.catergory {
 				font-family: "Courier New", Courier, monospace;
-				font-size: 30px;
 				text-align: center;
 			}
+			a {color: #aaffaa;}
 			
-			.desc {
-				font-family: "Courier New", Courier, monospace;
-				font-size: 15px;
-				text-align: center;
+			#bg {
+				position: fixed; 
+				top: -50%; 
+				left: -50%; 
+				width: 200%; 
+				height: 200%;
+			}
+			#bg img {
+				position: absolute; 
+				top: 0; 
+				left: 0; 
+				right: 0; 
+				bottom: 0; 
+				margin: auto;
+				min-width: 50%;
+				min-height: 50%;
+				filter: blur(5px);
+				opacity: 0;
+			}
+			#fg {
+				position: relative;
 			}
 			
+			.catergory {font-size: 30px;}
+			.desc {font-size: 15px;}
 			.gallery {
 				display: flex;
 				justify-content: center;
 				flex-wrap: wrap;
 			}
-			
+			.gallery a {
+				width: 32%;
+				margin: 0.5%;
+			}
 			.gallery img {
+				width: 100%;
+			}
+			.gallery iframe {
 				width: 32%;
 				margin: 0.5%;
 			}
 		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	</head>
 	<body>
-		<p class="catergory">Minecraft with Shaders</p>
-		<p class="desc">These images were captured in Minecraft running Optifine with <a href="https://sonicether.com/seus/#Downloads">SEUSv11 Shaders</a></p>
-		<div class="gallery">
-			<img src="images/port1.png">
-			<img src="images/port2.png">
-			<img src="images/port3.png">
-			<img src="images/port4.png">
-			<img src="images/port5.png">
-			<img src="images/port6.png">
-			<img src="images/port7.png">
-			<img src="images/port8.png">
-			<img src="images/port9.png">
-			<img src="images/port10.png">
-			<img src="images/port11.png">
-			<img src="images/port12.png">
-			<img src="images/port13.png">
+		<div id="bg">
+			<img id="img" src="images/port_anim.gif" onload="$(this).fadeTo(5000, 0.3);"/>
 		</div>
-		<p class="catergory">Minecraft without Shaders<p>
-		<p class="desc">These images were captured in Vanilla Minecraft</a>
-		<div class="gallery">
-			<img src="images/port14.png">
-			<img src="images/port15.png">
-			<img src="images/port16.png">
-			<img src="images/port17.png">
-			<img src="images/port18.png">
-			<img src="images/port19.png">
-			<img src="images/port20.png">
-			<img src="images/port21.png">
-			<img src="images/port22.png">
-			<img src="images/port23.png">
-			<img src="images/port24.png">
-			
+		<div id="fg">
+			<p style="font-size: 80px; margin-top: 40vh; margin-bottom: 45vh;">Portfolio: Quinn James</p>
+			<p class="catergory">↓</p>
+			<p class="catergory">Minecraft with Shaders</p>
+			<p class="desc">These images were captured in Minecraft running Optifine with <a href="https://sonicether.com/seus/#Downloads">SEUSv11 Shaders</a></p>
+			<div class="gallery">
+				<a href="images/port1.png"><img src="images/port1.png"></a>
+				<a href="images/port2.png"><img src="images/port2.png"></a>
+				<a href="images/port3.png"><img src="images/port3.png"></a>
+				<a href="images/port4.png"><img src="images/port4.png"></a>
+				<a href="images/port5.png"><img src="images/port5.png"></a>
+				<a href="images/port6.png"><img src="images/port6.png"></a>
+				<a href="images/port7.png"><img src="images/port7.png"></a>
+				<a href="images/port8.png"><img src="images/port8.png"></a>
+				<a href="images/port9.png"><img src="images/port9.png"></a>
+				<a href="images/port10.png"><img src="images/port10.png"></a>
+				<a href="images/port11.png"><img src="images/port11.png"></a>
+				<a href="images/port12.png"><img src="images/port12.png"></a>
+				<a href="images/port13.png"><img src="images/port13.png"></a>
+			</div>
+			<p class="catergory">Minecraft without Shaders<p>
+			<p class="desc">These images were captured in Vanilla Minecraft</a>
+			<div class="gallery">
+				<a href="images/port14.png"><img src="images/port14.png"></a>
+				<a href="images/port15.png"><img src="images/port15.png"></a>
+				<a href="images/port16.png"><img src="images/port16.png"></a>
+				<a href="images/port17.png"><img src="images/port17.png"></a>
+				<a href="images/port18.png"><img src="images/port18.png"></a>
+				<a href="images/port19.png"><img src="images/port19.png"></a>
+				<a href="images/port20.png"><img src="images/port20.png"></a>
+				<a href="images/port21.png"><img src="images/port21.png"></a>
+				<a href="images/port22.png"><img src="images/port22.png"></a>
+				<a href="images/port23.png"><img src="images/port23.png"></a>
+				<a href="images/port24.png"><img src="images/port24.png"></a>
+			</div>
+			<p class="catergory">Videos and Trailers</p>
+			<p class="desc">Passion projects, trailers, and other pieces: These are my favorites.</p>
+			<div class="gallery">
+				<iframe height="315" src="https://www.youtube.com/embed/DUvtbOpdrfg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				<iframe height="315" src="https://www.youtube.com/embed/DvWonG59C4o" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				<iframe height="315" src="https://www.youtube.com/embed/sl3py7cEgw4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				<iframe height="315" src="https://www.youtube.com/embed/C0ps1WMKf_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				<iframe height="315" src="https://www.youtube.com/embed/xAGWBkskrT0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				<iframe height="315" src="https://www.youtube.com/embed/_aMH4KhSP44" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				
+			</div>
+			<hr/>
+			Contact me at <a href="mailto:qj@quinnjam.es">qj@quinnjam.es</a>. <a href="https://www.youtube.com/c/Awesome1Minecraft">[YouTube]</a>
+			<br/><br/>
+			<a href="/"><img src="images/logo.png"></a>
 		</div>
 	</body>
 </html>
