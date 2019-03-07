@@ -107,12 +107,14 @@ function drawMenu() {
 	clear();
 	
 	draw("QUINN JAMES ONLINE",0,2,19);
+	draw("Use the mouse or keyboard to navigate",0,23,38);
 	
 	var row = 4;
 	var col = 2;
 	
 	for(var i = 0; i < pages.length; i++) {
-		draw(pages[i].title, row, col, 31, i+1);
+		if(pages[i].contents.length > 0) draw(pages[i].title, row, col, 31, i+1);
+		else draw(pages[i].title, row, col, 31, pages[i].links[0]);
 		row += 3;
 		if(row > o.outputHeight-1) {
 			row = 4;
@@ -134,6 +136,7 @@ function drawPage(pageIndex) {
 	else {
 		pageIndex--;
 		draw("QUINN JAMES ONLINE",0,2,19,0);
+		draw("Return to home screen",0,23,22,0);
 		draw(pages[pageIndex].title,4,2,60);
 		draw(pages[pageIndex].contents,8,2,60);
 		
