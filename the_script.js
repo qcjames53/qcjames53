@@ -113,6 +113,7 @@ function drawMenu() {
 	
 	draw("QUINN JAMES ONLINE",0,2,19);
 	draw("Use the mouse to navigate",0,23,26);
+	draw("Use the keyboard to hack",0,51,26);
 	
 	var row = 4;
 	var col = 2;
