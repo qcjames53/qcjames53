@@ -13,7 +13,10 @@ var o = {
 	mouseOldY : 0,
 	mouseChar: '█',
 	mouseUnderChar: '-',
-	currentPage : 0
+	currentPage : 0,
+	commandIndex : 0,
+	commands : new Array(),
+	maxCommandLength : 90
 }
 
 var pages;
@@ -35,9 +38,11 @@ function init() {
 			o.contents[i][j] = '-';
 		}
 	}
+	o.commands.push("");
 	document.addEventListener("mousemove",mouseMove);
 	document.addEventListener("mousedown",mouseDown);
 	document.addEventListener("mouseup",mouseUp);
+	document.addEventListener("keydown", keyDown);
 	drawMenu();
 	blit();
 }
@@ -107,7 +112,7 @@ function drawMenu() {
 	clear();
 	
 	draw("QUINN JAMES ONLINE",0,2,19);
-	draw("Use the mouse or keyboard to navigate",0,23,38);
+	draw("Use the mouse to navigate",0,23,26);
 	
 	var row = 4;
 	var col = 2;
@@ -150,6 +155,10 @@ function drawPage(pageIndex) {
 	o.mouseUnderChar = o.contents[o.mouseX][o.mouseY];
 }
 
+function drawConsole() {
+	draw(""+o.commands[o.commandIndex],42,0,99);
+}
+
 function mouseMove(evt) {
 	o.mouseY = Math.min(Math.max(Math.floor((evt.clientX - textWrapper.offsetLeft) / main.clientWidth * o.outputWidth),0),o.outputWidth-1);
 	o.mouseX = Math.min(Math.max(Math.floor((evt.clientY - textWrapper.offsetTop) / main.clientHeight * o.outputHeight),0),o.outputHeight-1);
@@ -167,18 +176,67 @@ function moveCursorEfficient() {
 
 function mouseDown(evt) {
 	if(o.mouseUnderChar.substring(2) != "") {
-		colors("gray;");
+		colors("gray");
 	}
 }	
 
 function mouseUp(evt) {
-	colors("black;");
+	colors("black");
 	if(o.mouseUnderChar.substring(2) != "") parseLink(o.mouseUnderChar.substring(2));
+}
+
+function keyDown(evt) {
+	if(evt.keyCode == 8 && o.commands[o.commandIndex].length > 0) {
+		o.commands[o.commandIndex] = o.commands[o.commandIndex].substring(0,o.commands[o.commandIndex].length-1);
+	}
+	else if(evt.keyCode == 13 && o.commands[o.commandIndex].length > 0) {
+		parseCommand(o.commands[o.commandIndex]);
+		o.commands.push("");
+		o.commandIndex++;
+		var blip = new Audio("blip.mp3");
+		blip.play();
+	}
+	else if(((evt.keyCode >= 48 && evt.keyCode <= 90) || (evt.keyCode >= 96 && evt.keyCode <= 105)) && o.commands[o.commandIndex].length < o.maxCommandLength) {
+		o.commands[o.commandIndex] += String.fromCharCode(evt.keyCode);
+	}
+	else if(evt.keyCode == 32 && o.commands[o.commandIndex].length < o.maxCommandLength) {
+		o.commands[o.commandIndex] += " ";
+	}
+	else if((evt.keyCode == 173 || evt.keyCode == 189) && o.commands[o.commandIndex].length < o.maxCommandLength) {
+		o.commands[o.commandIndex] += "-";
+	}
+	else if(evt.keyCode == 190 && o.commands[o.commandIndex].length < o.maxCommandLength) {
+		o.commands[o.commandIndex] += ".";
+	}
+	
+	if(o.commands[o.commandIndex].length == o.maxCommandLength) {
+		var blip = new Audio("blip.mp3");
+		blip.play();
+	}
+	
+	if(o.commands[o.commandIndex].length > 0) {
+		drawConsole();
+		o.contents[43][1+o.commands[o.commandIndex].length] = o.mouseChar;
+		blit();
+	}
 }
 
 function parseLink(string) {
 	if(!isNaN(string)) drawPage(parseInt(string));
 	else window.open(string,"_self");
+}
+
+function parseCommand(cmd) {
+	clear();
+	draw("QUINN JAMES ONLINE",0,2,19,0);
+	draw("Return to home screen",0,23,22,0);
+	draw("Operation result:",5,2,95,0);
+	
+	switch (cmd) {
+		default:
+			draw("'"+cmd+"' is not recognized as a valid command",8,2,95,0);
+			break;
+	}
 }
 
 function setImage(link) {
@@ -188,7 +246,6 @@ function setImage(link) {
 
 function setImage2(link) {
 	img.src = link;
-	//$("#img").fadeTo(500, 0.4);
 }
 
 function blit() {
