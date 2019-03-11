@@ -39,6 +39,7 @@ function init() {
 		}
 	}
 	o.commands.push("");
+	document.onkeydown = preventBackspaceHandler;
 	document.addEventListener("mousemove",mouseMove);
 	document.addEventListener("mousedown",mouseDown);
 	document.addEventListener("mouseup",mouseUp);
@@ -220,6 +221,13 @@ function keyDown(evt) {
 		o.contents[43][1+o.commands[o.commandIndex].length] = o.mouseChar;
 		blit();
 	}
+}
+
+function preventBackspaceHandler(evt) {
+    evt = evt || window.event;
+    if (evt.keyCode == 8) {
+        return false;
+    }
 }
 
 function parseLink(string) {
