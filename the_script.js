@@ -297,6 +297,8 @@ function parseCommand(cmd) {
 		case "HOTDOG":
 			draw(command+" machine 🅱roke",8,2,95,0);
 			break;
+		case "GOL":
+			setInterval(gm_gameOfLife, 100);
 		case "HELLO":
 			draw("Hi.",8,2,95,0);
 			break;
@@ -378,6 +380,46 @@ function gm_rain() {
 				o.contents[row+offset][col] = o.contents[row][col];
 				if(offset!=0) o.contents[row][col] = " ";
 			}
+		}
+	}
+	blit();
+}
+
+function gm_gameOfLife() {
+	var outputArray = new Array();
+	for(var i = 0; i < o.outputHeight; i++) {
+		outputArray.push(new Array());
+		for(var j = 0; j < o.outputWidth; j++) {
+			outputArray[i][j] = o.contents[i][j];
+		}
+	}
+	
+	for(var i = 0; i < o.outputHeight; i++) {
+		for(var j = 0; j < o.outputWidth; j++) { 
+			var neighbors = 0;
+			if(i > 0 && j > 0 && isLetterOrDigit(o.contents[i-1][j-1])) neighbors++;
+			if(i > 0 && isLetterOrDigit(o.contents[i-1][j])) neighbors++;
+			if(i > 0 && j < o.outputWidth-1 && isLetterOrDigit(o.contents[i-1][j+1])) neighbors++;
+			if(j > 0 && isLetterOrDigit(o.contents[i][j-1])) neighbors++;
+			if(j < o.outputWidth-1 && isLetterOrDigit(o.contents[i][j+1])) neighbors++;
+			if(i < o.outputHeight-1 && j > 0 && isLetterOrDigit(o.contents[i+1][j-1])) neighbors++;
+			if(i < o.outputHeight-1 && isLetterOrDigit(o.contents[i+1][j])) neighbors++;
+			if(i < o.outputHeight-1 && j < o.outputWidth-1 && isLetterOrDigit(o.contents[i+1][j+1])) neighbors++;
+			
+			if(isLetterOrDigit(o.contents[i][j]) && (neighbors < 2 || neighbors > 3)) {
+				outputArray[i][j] = " ";
+			}
+			else if(!isLetterOrDigit(o.contents[i][j]) && (neighbors == 3)) {
+				outputArray[i][j] = "X";
+			}
+			else {
+				outputArray[i][j] = o.contents[i][j];
+			}
+		}
+	}
+	for(var i = 0; i < o.outputHeight; i++) {
+		for(var j = 0; j < o.outputWidth; j++) {
+			o.contents[i][j] = outputArray[i][j];
 		}
 	}
 	blit();
