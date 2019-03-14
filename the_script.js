@@ -190,6 +190,7 @@ function mouseUp(evt) {
 function keyDown(evt) {
 	if(evt.keyCode == 8 && o.commands[o.commandIndex].length > 0) {
 		o.commands[o.commandIndex] = o.commands[o.commandIndex].substring(0,o.commands[o.commandIndex].length-1);
+		drawConsole();
 	}
 	else if(evt.keyCode == 13 && o.commands[o.commandIndex].length > 0) {
 		parseCommand(o.commands[o.commandIndex]);
@@ -235,19 +236,6 @@ function parseLink(string) {
 	else window.open(string,"_self");
 }
 
-function parseCommand(cmd) {
-	clear();
-	draw("QUINN JAMES ONLINE",0,2,19,0);
-	draw("Return to home screen",0,23,22,0);
-	draw("Operation result:",5,2,95,0);
-	
-	switch (cmd) {
-		default:
-			draw("'"+cmd+"' is not recognized as a valid command",8,2,95,0);
-			break;
-	}
-}
-
 function setImage(link) {
 	$("#img").fadeOut(500);
 	setTimeout(setImage2, 500, link);
@@ -268,4 +256,129 @@ function blit() {
 		outputString += "<br/>";
 	}
 	main.innerHTML = outputString;
+}
+
+function parseCommand(cmd) {
+	var spaceIndex = cmd.indexOf(" ");
+	if(spaceIndex == -1) spaceIndex = cmd.length;
+	var command = cmd.substring(0,spaceIndex).toUpperCase();
+	var subcommand = cmd.substring(spaceIndex+1).toUpperCase();
+	
+	clear();
+	draw("QUINN JAMES ONLINE",0,2,19,0);
+	draw("Return to home screen",0,23,22,0);
+	draw("Operation result:",5,2,95,0);
+	
+	switch (command) {
+		case "APT":
+		case "APT-GET":
+		case "PACMAN":
+		case "INSTALL":
+			draw("Repository list could not be read. Please reinstall your package manager.",8,2,95,0);
+			break;
+		case "CD":
+			draw("No disk inserted. Please insert a disk and try again.",8,2,95,0);
+			break;
+		case "CMD":
+			draw("CMD is no longer supported. Try 'POWERSHELL' instead.",8,2,95,0);
+			break;
+		case "CONTROL-PANEL":
+			draw("CONTROL-PANEL is legacy. Use 'SETTINGS' instead.",8,2,95,0);
+			break;
+		case "EMACS":
+			draw("Loading...",8,2,95,0);
+			break;
+		case "FOOD":
+		case "MEME":
+		case "MCDONALDS":
+		case "WENDYS":
+		case "TACO":
+		case "BURGER":
+		case "HOTDOG":
+			draw(command+" machine 🅱roke",8,2,95,0);
+			break;
+		case "HELLO":
+			draw("Hi.",8,2,95,0);
+			break;
+		case "HELP":
+			draw("'HELP' is depreciated. Please use 'HALP' instead.",8,2,95,0);
+			break;
+		case "HI":
+			draw("Hello.",8,2,95,0);
+			break;
+		case "LINUX":
+		case "UBUNTU":
+		case "UNIX":
+		case "DEBIAN":
+		case "DISTRO":
+		case "PENGUIN":
+		case "LINUS":
+		case "SERVER":
+		case "HACK":
+		case "EAGLE":
+			draw("It's a unix system. I know this. ~n ~n [Eagle Mode]",8,2,95,"http://eaglemode.sourceforge.net/");
+			break;
+		case "LS":
+			draw("Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding. Try 'LSD' instead.",8,2,95,0);
+			break;
+		case "OPEN":
+			draw("I'm sorry Dave. I'm afraid I can't do that.",8,2,95,0);
+			break;
+		case "POWERSHELL":
+			draw("POWERSHELL is for 32 bit systems. Please run 'POWERSHELL-X64",8,2,95,0);
+			break;
+		case "POWERSHELL-X64":
+			draw("Due to security concerns, POWERSHELL-X64 can no longer modify system settings. Use 'CONTROL-PANEL' instead.",8,2,95,0);
+			break;
+		case "QUICK-ACCESS":
+			draw("QUICK-ACCESS requires specialized hardware. Try 'STORE' for general installations.",8,2,95,0);
+			break;
+		case "RAIN":
+			setInterval(gm_rain, 100);
+		case "ROBLOX":
+			draw("Oof.",8,2,95,0);
+			break;
+		case "SETTINGS":
+			draw("SETTINGS is depreciated. Please use 'QUICK-ACCESS' instead.",8,2,95,0);
+			break;
+		case "SOFTWARE-INSTALL-WISARD":
+			draw("'SOFTWARE-INSTALL-WISARD' is no longer supported. Try 'CMD' for program installs.",8,2,95,0);
+			break;
+		case "STORE":
+			draw("STORE is offline. For legacy software, use 'SOFTWARE-INSTALL-WISARD'.",8,2,95,0);
+			break;
+		case "SUDO":
+			draw("No.",8,2,95,0);
+			break;
+		case "VI":
+		case "VIM":
+			draw("Due to GNU GPL issues, vim can no longer be offered for web users.",8,2,95,0);
+			break;
+		case "XKCD":
+			parseLink("https://uni.xkcd.com/");
+			break;
+		case "":
+			draw("Welcome to NULL island. Current population: NaN.",8,2,95,0);
+			break;
+		default:
+			draw("'"+command+"' is not recognized as a valid command",8,2,95,0);
+			break;
+	}
+}
+
+function isLetterOrDigit(ch) {
+	return (ch.codePointAt(0) >= 65 && ch.codePointAt(0) <= 90) || (ch.codePointAt(0) >= 97 && ch.codePointAt(0) <= 122) || (ch.codePointAt(0) >= 48 && ch.codePointAt(0) <= 57) || ch.codePointAt(0) == o.mouseChar.codePointAt(0);
+}
+
+function gm_rain() {
+	for(var col = 0; col < o.outputWidth; col++) {
+		for(var row = o.outputHeight-3; row >= 0; row--) {
+			if(isLetterOrDigit(o.contents[row][col])) {
+				var offset = Math.floor(Math.random()*3);
+				o.contents[row+offset][col] = o.contents[row][col];
+				if(offset!=0) o.contents[row][col] = " ";
+			}
+		}
+	}
+	blit();
 }

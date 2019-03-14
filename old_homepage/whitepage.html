@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>The Whitepage</title>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<div id="everything" style="position:relative; font-family:'Lucida Console', monospace; font-size:12px; line-height:12px; width:151ch; margin:auto;"></div>
+		<script>
+			const outputWidth = 150;
+			const outputHeight = 50;
+			var everything = document.getElementById("everything");
+			var output = [];
+			
+			for(var i = 0; i < outputHeight; i++) {
+				var temp = new Array(outputWidth).fill("&nbsp;");
+				output.push(temp);
+			}
+			
+			var texts = [
+				"Welcome to the whitepage",
+				"Text 2",
+				"Refresh to see a different layout."
+			]
+			
+			for(var i = 0; i < texts.length; i++) {
+				var x = Math.floor(Math.random() * (outputWidth - texts[i].length));
+				var y = Math.floor(Math.random() * outputHeight);
+				if(i == 0) {
+					x = 0;
+					y = 0;
+				}
+				for(var j = 0; j < texts[i].length; j++) {
+					output[y][x+j] = texts[i][j];
+				}
+			}
+			
+			var outputText = "";
+			for(var i = 0; i < output.length; i++) {
+				for(var j = 0; j < output[0].length; j++) {
+					outputText += output[i][j];
+				}
+				outputText += "<br/>"
+			}
+			
+			everything.innerHTML = outputText;
+			
+		</script>
+	</body>
+</html>
