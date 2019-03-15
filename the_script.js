@@ -21,7 +21,6 @@ var o = {
 }
 
 var pages;
-
 var pagesReq = new XMLHttpRequest();
 pagesReq.addEventListener("load", pagesReqListener);
 pagesReq.open("GET", "pages.json");
@@ -30,6 +29,16 @@ pagesReq.send(null);
 function pagesReqListener () {
 	pages = JSON.parse(this.responseText);
 	init();
+}
+
+var files;
+var filesReq = new XMLHttpRequest();
+filesReq.addEventListener("load", filesReqListener);
+filesReq.open("GET", "files.json");
+filesReq.send(null);
+
+function filesReqListener () {
+	files = JSON.parse(this.responseText);
 }
 
 function init() {
@@ -207,7 +216,7 @@ function mouseUp(evt) {
 }
 
 function keyDown(evt) {
-	if(evt.keyCode == 8 && o.commands[o.commandIndex].length > 0) {
+	if(evt.keyCode == 8 && o.commands[o.commandIndex].length > 1) {
 		o.commands[o.commandIndex] = o.commands[o.commandIndex].substring(0,o.commands[o.commandIndex].length-1);
 		drawConsole();
 	}
@@ -286,7 +295,6 @@ function parseCommand(cmd) {
 	clear();
 	draw("QUINN JAMES ONLINE",0,2,19,0);
 	draw("Return to home screen",0,23,22,0);
-	draw("Operation result:",5,2,95,0);
 	
 	switch (command) {
 		case "APT":
@@ -295,8 +303,33 @@ function parseCommand(cmd) {
 		case "INSTALL":
 			o.commands.push("Repository list could not be read. Please reinstall your package manager.");
 			break;
+		case "BSIDE":
+		case "CAT":
+		case "CONCATENATE":
+			var match = -1;
+			for (var i = 0; match == -1 && i < files.length; i++) {
+				if(files[i][0] == subcommand) match = i;
+			}
+			if (match == -1) {
+				o.commands.push("Error: File '" + subcommand + "' read protected or does not exist.");
+			}
+			else {
+				o.commands.push("..................BSdos IDE (BSIDE) V3.14.1 (c)1999-2011 Pawnee University...................");
+				for(var i = 0; i < files[match].length; i++) {
+					o.commands.push(files[match][i]);
+					o.commandIndex++;
+				}
+				o.commands.push("............................End concatenation. Stopping program..............................");
+				o.commandIndex++;
+			}
+			break;
 		case "CD":
 			o.commands.push("No disk inserted. Please insert a disk and try again.");
+			break;
+		case "CLS":
+		case "CLEAR":
+			o.commands = new Array();
+			o.commandIndex = -2;
 			break;
 		case "CMD":
 			o.commands.push("CMD is no longer supported. Try 'POWERSHELL' instead.");
@@ -317,6 +350,12 @@ function parseCommand(cmd) {
 			o.commands.push(command+" machine 🅱roke");
 			break;
 		case "GOL":
+		case "GAME":
+		case "GAMEOFLIFE":
+		case "GAME-OF-LIFE":
+		case "CONWAY":
+		case "CONWAYS":
+		case "CONWAYS-GAME-OF-LIFE":
 			setInterval(gm_gameOfLife, 100);
 		case "HELLO":
 			o.commands.push("Hi.");
@@ -338,12 +377,25 @@ function parseCommand(cmd) {
 		case "HACK":
 		case "EAGLE":
 			o.commands.push("It's a unix system. I know this.");
+			draw("[Eagle mode]",0,47,13,"http://eaglemode.sourceforge.net/");
 			break;
 		case "LS":
 			o.commands.push("Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding. Try 'LSD' instead.");
 			break;
+		case "LSD":
+			o.commands.push("");
+			o.commandIndex++;
+			for(var i = 0; i < files.length; i++) {
+				o.commands.push(files[i][0]);
+				o.commandIndex++;
+			}
+			o.commands.push("");
+			break;
 		case "OPEN":
 			o.commands.push("I'm sorry Dave. I'm afraid I can't do that.");
+			break;
+		case "PLAGUE":
+			setInterval(gm_plague, 100);
 			break;
 		case "POWERSHELL":
 			o.commands.push("POWERSHELL is for 32 bit systems. Please run 'POWERSHELL-X64");
@@ -385,6 +437,8 @@ function parseCommand(cmd) {
 			o.commands.push("'"+command+"' is not recognized as a valid command");
 			break;
 	}
+	
+	drawConsole();
 }
 
 function isLetterOrDigit(ch) {
@@ -397,7 +451,7 @@ function gm_rain() {
 			if(isLetterOrDigit(o.contents[row][col])) {
 				var offset = Math.floor(Math.random()*3);
 				o.contents[row+offset][col] = o.contents[row][col];
-				if(offset!=0) o.contents[row][col] = " ";
+				if(offset!=0) o.contents[row][col] = " "; 
 			}
 		}
 	}
@@ -439,6 +493,23 @@ function gm_gameOfLife() {
 	for(var i = 0; i < o.outputHeight; i++) {
 		for(var j = 0; j < o.outputWidth; j++) {
 			o.contents[i][j] = outputArray[i][j];
+		}
+	}
+	blit();
+}
+
+function gm_plague() {
+	for(var i = 0; i < o.outputHeight; i++) {
+		for(var j = 0; j < o.outputWidth; j++) {
+			if(isLetterOrDigit(o.contents[i][j])) {
+				var spread = Math.floor(Math.random()*10);
+				if(spread < 1) {
+					if(i > 0) o.contents[i-1][j] = o.contents[i][j];
+					if(i < o.outputHeight-1) o.contents[i+1][j] = o.contents[i][j];
+					if(j > 0) o.contents[i][j-1] = o.contents[i][j];
+					if(j < o.outputWidth-1) o.contents[i][j+1] = o.contents[i][j];
+				}
+			}
 		}
 	}
 	blit();
