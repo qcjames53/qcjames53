@@ -14,9 +14,10 @@ var o = {
 	mouseChar: '█',
 	mouseUnderChar: '-',
 	currentPage : 0,
-	commandIndex : 0,
+	commandIndex : 5,
 	commands : new Array(),
-	maxCommandLength : 90
+	maxCommandLength : 90,
+	maxTerminalLines : 38
 }
 
 var pages;
@@ -38,7 +39,12 @@ function init() {
 			o.contents[i][j] = '-';
 		}
 	}
+	o.commands.push("BS-DOS 1.9.4 (c)2010 BCS, A SUBSIDIARY OF DM-CA");
+	o.commands.push("Visit dm-ca.com for updates and support.");
 	o.commands.push("");
+	o.commands.push("This software is provided \"as-is\" without any warranty.");
+	o.commands.push("");
+	o.commands.push(">");
 	document.onkeydown = preventBackspaceHandler;
 	document.addEventListener("mousemove",mouseMove);
 	document.addEventListener("mousedown",mouseDown);
@@ -158,7 +164,20 @@ function drawPage(pageIndex) {
 }
 
 function drawConsole() {
-	draw(""+o.commands[o.commandIndex],42,0,99);
+	
+	var output = new Array();
+	for (var i = 0; i < o.maxTerminalLines; i++) {
+		if(o.commandIndex - o.maxTerminalLines + i + 1 >= 0) output.push(o.commands[o.commandIndex - o.maxTerminalLines + i + 1]);
+		else output.push("");
+	}
+	
+	var outputText = "";
+	for (var i = 0; i < output.length; i++) {
+			outputText += output[i];
+			if(i < output.length - 1) outputText += " ~n ";
+	}
+	
+	draw(outputText,4,2,95);
 }
 
 function mouseMove(evt) {
@@ -193,9 +212,9 @@ function keyDown(evt) {
 		drawConsole();
 	}
 	else if(evt.keyCode == 13 && o.commands[o.commandIndex].length > 0) {
-		parseCommand(o.commands[o.commandIndex]);
-		o.commands.push("");
-		o.commandIndex++;
+		parseCommand(o.commands[o.commandIndex].substring(1));
+		o.commands.push(">");
+		o.commandIndex += 2;
 		var blip = new Audio("blip.mp3");
 		blip.play();
 	}
@@ -219,7 +238,7 @@ function keyDown(evt) {
 	
 	if(o.commands[o.commandIndex].length > 0) {
 		drawConsole();
-		o.contents[43][1+o.commands[o.commandIndex].length] = o.mouseChar;
+		o.contents[42][3+o.commands[o.commandIndex].length] = o.mouseChar;
 		blit();
 	}
 }
@@ -274,19 +293,19 @@ function parseCommand(cmd) {
 		case "APT-GET":
 		case "PACMAN":
 		case "INSTALL":
-			draw("Repository list could not be read. Please reinstall your package manager.",8,2,95,0);
+			o.commands.push("Repository list could not be read. Please reinstall your package manager.");
 			break;
 		case "CD":
-			draw("No disk inserted. Please insert a disk and try again.",8,2,95,0);
+			o.commands.push("No disk inserted. Please insert a disk and try again.");
 			break;
 		case "CMD":
-			draw("CMD is no longer supported. Try 'POWERSHELL' instead.",8,2,95,0);
+			o.commands.push("CMD is no longer supported. Try 'POWERSHELL' instead.");
 			break;
 		case "CONTROL-PANEL":
-			draw("CONTROL-PANEL is legacy. Use 'SETTINGS' instead.",8,2,95,0);
+			o.commands.push("CONTROL-PANEL is legacy. Use 'SETTINGS' instead.");
 			break;
 		case "EMACS":
-			draw("Loading...",8,2,95,0);
+			o.commands.push("Loading...");
 			break;
 		case "FOOD":
 		case "MEME":
@@ -295,18 +314,18 @@ function parseCommand(cmd) {
 		case "TACO":
 		case "BURGER":
 		case "HOTDOG":
-			draw(command+" machine 🅱roke",8,2,95,0);
+			o.commands.push(command+" machine 🅱roke");
 			break;
 		case "GOL":
 			setInterval(gm_gameOfLife, 100);
 		case "HELLO":
-			draw("Hi.",8,2,95,0);
+			o.commands.push("Hi.");
 			break;
 		case "HELP":
-			draw("'HELP' is depreciated. Please use 'HALP' instead.",8,2,95,0);
+			o.commands.push("'HELP' is depreciated. Please use 'HALP' instead.");
 			break;
 		case "HI":
-			draw("Hello.",8,2,95,0);
+			o.commands.push("Hello.");
 			break;
 		case "LINUX":
 		case "UBUNTU":
@@ -318,52 +337,52 @@ function parseCommand(cmd) {
 		case "SERVER":
 		case "HACK":
 		case "EAGLE":
-			draw("It's a unix system. I know this. ~n ~n [Eagle Mode]",8,2,95,"http://eaglemode.sourceforge.net/");
+			o.commands.push("It's a unix system. I know this.");
 			break;
 		case "LS":
-			draw("Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding. Try 'LSD' instead.",8,2,95,0);
+			o.commands.push("Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding. Try 'LSD' instead.");
 			break;
 		case "OPEN":
-			draw("I'm sorry Dave. I'm afraid I can't do that.",8,2,95,0);
+			o.commands.push("I'm sorry Dave. I'm afraid I can't do that.");
 			break;
 		case "POWERSHELL":
-			draw("POWERSHELL is for 32 bit systems. Please run 'POWERSHELL-X64",8,2,95,0);
+			o.commands.push("POWERSHELL is for 32 bit systems. Please run 'POWERSHELL-X64");
 			break;
 		case "POWERSHELL-X64":
-			draw("Due to security concerns, POWERSHELL-X64 can no longer modify system settings. Use 'CONTROL-PANEL' instead.",8,2,95,0);
+			o.commands.push("Due to security concerns, POWERSHELL-X64 can no longer modify system settings. Use 'CONTROL-PANEL' instead.");
 			break;
 		case "QUICK-ACCESS":
-			draw("QUICK-ACCESS requires specialized hardware. Try 'STORE' for general installations.",8,2,95,0);
+			o.commands.push("QUICK-ACCESS requires specialized hardware. Try 'STORE' for general installations.");
 			break;
 		case "RAIN":
 			setInterval(gm_rain, 100);
 		case "ROBLOX":
-			draw("Oof.",8,2,95,0);
+			o.commands.push("Oof.");
 			break;
 		case "SETTINGS":
-			draw("SETTINGS is depreciated. Please use 'QUICK-ACCESS' instead.",8,2,95,0);
+			o.commands.push("SETTINGS is depreciated. Please use 'QUICK-ACCESS' instead.");
 			break;
 		case "SOFTWARE-INSTALL-WISARD":
-			draw("'SOFTWARE-INSTALL-WISARD' is no longer supported. Try 'CMD' for program installs.",8,2,95,0);
+			o.commands.push("'SOFTWARE-INSTALL-WISARD' is no longer supported. Try 'CMD' for program installs.");
 			break;
 		case "STORE":
-			draw("STORE is offline. For legacy software, use 'SOFTWARE-INSTALL-WISARD'.",8,2,95,0);
+			o.commands.push("STORE is offline. For legacy software, use 'SOFTWARE-INSTALL-WISARD'.");
 			break;
 		case "SUDO":
-			draw("No.",8,2,95,0);
+			o.commands.push("No.");
 			break;
 		case "VI":
 		case "VIM":
-			draw("Due to GNU GPL issues, vim can no longer be offered for web users.",8,2,95,0);
+			o.commands.push("Due to GNU GPL issues, vim can no longer be offered for web users.");
 			break;
 		case "XKCD":
 			parseLink("https://uni.xkcd.com/");
 			break;
 		case "":
-			draw("Welcome to NULL island. Current population: NaN.",8,2,95,0);
+			o.commands.push("Welcome to NULL island. Current population: NaN.");
 			break;
 		default:
-			draw("'"+command+"' is not recognized as a valid command",8,2,95,0);
+			o.commands.push("'"+command+"' is not recognized as a valid command");
 			break;
 	}
 }
