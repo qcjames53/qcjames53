@@ -14,10 +14,10 @@ var o = {
 	mouseChar: '█',
 	mouseUnderChar: '-',
 	currentPage : 0,
-	commandIndex : 5,
 	commands : new Array(),
 	maxCommandLength : 90,
-	maxTerminalLines : 38
+	maxTerminalLines : 38,
+	drawTerminalOnReturn : true
 }
 
 var pages;
@@ -51,7 +51,8 @@ function init() {
 	o.commands.push("BS-DOS 1.9.4 (c)2010 BCS, A SUBSIDIARY OF DM-CA");
 	o.commands.push("Visit dm-ca.com for updates and support.");
 	o.commands.push("");
-	o.commands.push("This software is provided \"as-is\" without any warranty.");
+	o.commands.push("This software is provided \"as-is\" without any warranty. Any medical claims have not been");
+	o.commands.push("endorsed by the FDA and this product is not intended to treat, cure, or prevent any disease.");
 	o.commands.push("");
 	o.commands.push(">");
 	document.onkeydown = preventBackspaceHandler;
@@ -120,8 +121,8 @@ function clear() {
 	}
 }
 
-function colors(foreground) {
-	body.style = `color:${foreground};`;
+function colors(foreground, background) {
+	body.style = `color:${foreground}; background-color:${background}`;
 }
 
 function drawMenu() {
@@ -176,7 +177,7 @@ function drawConsole() {
 	
 	var output = new Array();
 	for (var i = 0; i < o.maxTerminalLines; i++) {
-		if(o.commandIndex - o.maxTerminalLines + i + 1 >= 0) output.push(o.commands[o.commandIndex - o.maxTerminalLines + i + 1]);
+		if(o.commands.length-1 - o.maxTerminalLines + i + 1 >= 0) output.push(o.commands[o.commands.length-1 - o.maxTerminalLines + i + 1]);
 		else output.push("");
 	}
 	
@@ -206,50 +207,51 @@ function moveCursorEfficient() {
 
 function mouseDown(evt) {
 	if(o.mouseUnderChar.substring(2) != "") {
-		colors("gray");
+		colors("green","black");
 	}
 }	
 
 function mouseUp(evt) {
-	colors("black");
+	colors("lime","black");
 	if(o.mouseUnderChar.substring(2) != "") parseLink(o.mouseUnderChar.substring(2));
 }
 
 function keyDown(evt) {
-	if(evt.keyCode == 8 && o.commands[o.commandIndex].length > 1) {
-		o.commands[o.commandIndex] = o.commands[o.commandIndex].substring(0,o.commands[o.commandIndex].length-1);
+	if(evt.keyCode == 8 && o.commands[o.commands.length-1].length > 1) {
+		o.commands[o.commands.length-1] = o.commands[o.commands.length-1].substring(0,o.commands[o.commands.length-1].length-1);
 		drawConsole();
 	}
-	else if(evt.keyCode == 13 && o.commands[o.commandIndex].length > 0) {
-		parseCommand(o.commands[o.commandIndex].substring(1));
+	else if(evt.keyCode == 13 && o.commands[o.commands.length-1].length > 0) {
+		parseCommand(o.commands[o.commands.length-1].substring(1));
 		o.commands.push(">");
-		o.commandIndex += 2;
 		var blip = new Audio("blip.mp3");
 		blip.play();
 	}
-	else if(((evt.keyCode >= 48 && evt.keyCode <= 90) || (evt.keyCode >= 96 && evt.keyCode <= 105)) && o.commands[o.commandIndex].length < o.maxCommandLength) {
-		o.commands[o.commandIndex] += String.fromCharCode(evt.keyCode);
+	else if(((evt.keyCode >= 48 && evt.keyCode <= 90) || (evt.keyCode >= 96 && evt.keyCode <= 105)) && o.commands[o.commands.length-1].length < o.maxCommandLength) {
+		o.commands[o.commands.length-1] += String.fromCharCode(evt.keyCode);
 	}
-	else if(evt.keyCode == 32 && o.commands[o.commandIndex].length < o.maxCommandLength) {
-		o.commands[o.commandIndex] += " ";
+	else if(evt.keyCode == 32 && o.commands[o.commands.length-1].length < o.maxCommandLength) {
+		o.commands[o.commands.length-1] += " ";
 	}
-	else if((evt.keyCode == 173 || evt.keyCode == 189) && o.commands[o.commandIndex].length < o.maxCommandLength) {
-		o.commands[o.commandIndex] += "-";
+	else if((evt.keyCode == 173 || evt.keyCode == 189) && o.commands[o.commands.length-1].length < o.maxCommandLength) {
+		o.commands[o.commands.length-1] += "-";
 	}
-	else if(evt.keyCode == 190 && o.commands[o.commandIndex].length < o.maxCommandLength) {
-		o.commands[o.commandIndex] += ".";
+	else if(evt.keyCode == 190 && o.commands[o.commands.length-1].length < o.maxCommandLength) {
+		o.commands[o.commands.length-1] += ".";
 	}
 	
-	if(o.commands[o.commandIndex].length == o.maxCommandLength) {
+	if(o.commands[o.commands.length-1].length == o.maxCommandLength) {
 		var blip = new Audio("blip.mp3");
 		blip.play();
 	}
 	
-	if(o.commands[o.commandIndex].length > 0) {
+	if(o.drawTerminalOnReturn) {
 		drawConsole();
-		o.contents[42][3+o.commands[o.commandIndex].length] = o.mouseChar;
+		o.contents[42][3+o.commands[o.commands.length-1].length] = o.mouseChar;
 		blit();
 	}
+	
+	o.drawTerminalOnReturn = true;
 }
 
 function preventBackspaceHandler(evt) {
@@ -260,8 +262,16 @@ function preventBackspaceHandler(evt) {
 }
 
 function parseLink(string) {
-	if(!isNaN(string)) drawPage(parseInt(string));
-	else window.open(string,"_self");
+	if(!isNaN(string)) {
+		if (parseInt(string) >= 0 && parseInt(string) <= pages.length) {
+			drawPage(parseInt(string));
+			return "Loading local page " + parseInt(string);
+		}
+		o.drawTerminalOnReturn = true;
+		return "[ERROR] Local page " + parseInt(string) + " does not exist"
+	}
+	window.open(string,"_self");
+	return "Opening external site...";
 }
 
 function setImage(link) {
@@ -301,7 +311,8 @@ function parseCommand(cmd) {
 		case "APT-GET":
 		case "PACMAN":
 		case "INSTALL":
-			o.commands.push("Repository list could not be read. Please reinstall your package manager.");
+			o.commands.push("Reading packages...");
+			o.commands.push("[ERROR] Repository list corrupted. Please reinstall your package manager.");
 			break;
 		case "BSIDE":
 		case "CAT":
@@ -310,17 +321,14 @@ function parseCommand(cmd) {
 			for (var i = 0; match == -1 && i < files.length; i++) {
 				if(files[i][0] == subcommand) match = i;
 			}
-			if (match == -1) {
-				o.commands.push("Error: File '" + subcommand + "' read protected or does not exist.");
-			}
+			if (subcommand == "") o.commands.push("BSdos IDE (BSIDE) V3.14.1 (c)1999-2011 Pawnee University. Append filename as flag to open.");
+			else if (match == -1) o.commands.push("Error: File '" + subcommand + "' read protected or does not exist.");
 			else {
 				o.commands.push("..................BSdos IDE (BSIDE) V3.14.1 (c)1999-2011 Pawnee University...................");
 				for(var i = 0; i < files[match].length; i++) {
 					o.commands.push(files[match][i]);
-					o.commandIndex++;
 				}
 				o.commands.push("............................End concatenation. Stopping program..............................");
-				o.commandIndex++;
 			}
 			break;
 		case "CD":
@@ -329,7 +337,6 @@ function parseCommand(cmd) {
 		case "CLS":
 		case "CLEAR":
 			o.commands = new Array();
-			o.commandIndex = -2;
 			break;
 		case "CMD":
 			o.commands.push("CMD is no longer supported. Try 'POWERSHELL' instead.");
@@ -357,6 +364,7 @@ function parseCommand(cmd) {
 		case "CONWAYS":
 		case "CONWAYS-GAME-OF-LIFE":
 			setInterval(gm_gameOfLife, 100);
+			break;
 		case "HELLO":
 			o.commands.push("Hi.");
 			break;
@@ -384,15 +392,21 @@ function parseCommand(cmd) {
 			break;
 		case "LSD":
 			o.commands.push("");
-			o.commandIndex++;
 			for(var i = 0; i < files.length; i++) {
 				o.commands.push(files[i][0]);
-				o.commandIndex++;
 			}
 			o.commands.push("");
 			break;
 		case "OPEN":
 			o.commands.push("I'm sorry Dave. I'm afraid I can't do that.");
+			break;
+		case "PAGE":
+		case "LOAD":
+		case "FILE":
+		case "LINK":
+			o.drawTerminalOnReturn = false;
+			o.commands.push("Loading link to '" + subcommand + "'");
+			o.commands.push(parseLink(subcommand));
 			break;
 		case "PLAGUE":
 			setInterval(gm_plague, 100);
@@ -437,8 +451,6 @@ function parseCommand(cmd) {
 			o.commands.push("'"+command+"' is not recognized as a valid command");
 			break;
 	}
-	
-	drawConsole();
 }
 
 function isLetterOrDigit(ch) {
