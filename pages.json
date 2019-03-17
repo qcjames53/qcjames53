@@ -80,6 +80,13 @@
 	},
 	
 	{
+		"title": "Resume: Quinn James",
+		"contents": "",
+		"links": [ "resume.pdf"
+				]
+	},
+	
+	{
 		"title": "Portfolio: Quinn James",
 		"contents": "",
 		"links": [	"portfolio.html"

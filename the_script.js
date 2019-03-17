@@ -52,7 +52,7 @@ function init() {
 	o.commands.push("Visit dm-ca.com for updates and support.");
 	o.commands.push("");
 	o.commands.push("This software is provided \"as-is\" without any warranty. Any medical claims have not been");
-	o.commands.push("endorsed by the FDA and this product is not intended to treat, cure, or prevent any disease.");
+	o.commands.push("endorsed by the FDA. This product is not intended to treat, cure, or prevent any disease.");
 	o.commands.push("");
 	o.commands.push(">");
 	document.onkeydown = preventBackspaceHandler;
@@ -60,6 +60,7 @@ function init() {
 	document.addEventListener("mousedown",mouseDown);
 	document.addEventListener("mouseup",mouseUp);
 	document.addEventListener("keydown", keyDown);
+	colors("white","black");
 	drawMenu();
 	blit();
 }
@@ -139,7 +140,7 @@ function drawMenu() {
 		if(pages[i].contents.length > 0) draw(pages[i].title, row, col, 31, i+1);
 		else draw(pages[i].title, row, col, 31, pages[i].links[0]);
 		row += 3;
-		if(row > o.outputHeight-1) {
+		if(row > o.outputHeight-3) {
 			row = 4;
 			col += 33;
 		}
@@ -207,12 +208,12 @@ function moveCursorEfficient() {
 
 function mouseDown(evt) {
 	if(o.mouseUnderChar.substring(2) != "") {
-		colors("green","black");
+		colors("gray","black");
 	}
 }	
 
 function mouseUp(evt) {
-	colors("lime","black");
+	colors("white","black");
 	if(o.mouseUnderChar.substring(2) != "") parseLink(o.mouseUnderChar.substring(2));
 }
 
@@ -264,7 +265,7 @@ function preventBackspaceHandler(evt) {
 function parseLink(string) {
 	if(!isNaN(string)) {
 		if (parseInt(string) >= 0 && parseInt(string) <= pages.length) {
-			drawPage(parseInt(string));
+			location.hash = string;
 			return "Loading local page " + parseInt(string);
 		}
 		o.drawTerminalOnReturn = true;
@@ -272,6 +273,15 @@ function parseLink(string) {
 	}
 	window.open(string,"_self");
 	return "Opening external site...";
+}
+
+window.onhashchange = function() {
+	if(location.hash.length > 0) {
+		drawPage(parseInt(location.hash.replace('#',''),10));
+	}
+	else {
+		drawPage(0);
+	}
 }
 
 function setImage(link) {
@@ -388,7 +398,8 @@ function parseCommand(cmd) {
 			draw("[Eagle mode]",0,47,13,"http://eaglemode.sourceforge.net/");
 			break;
 		case "LS":
-			o.commands.push("Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding. Try 'LSD' instead.");
+			o.commands.push("Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding.");
+			o.commands.push(" Try 'LSD' instead.");
 			break;
 		case "LSD":
 			o.commands.push("");
