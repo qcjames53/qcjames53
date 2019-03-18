@@ -20,6 +20,22 @@ var o = {
 	drawTerminalOnReturn : true
 }
 
+var snake = {
+	tail : new Array(),
+	tailLength : 10,
+	headX : 0,
+	headY : 0,
+	velocityX : 0,
+	velocityY : 1,
+	appleX : 20,
+	appleY : 20
+}
+
+var gm_gameOfLifeRep;
+var gm_rainRep;
+var gm_plagueRep;
+var gm_snakeRep;
+
 var pages;
 var pagesReq = new XMLHttpRequest();
 pagesReq.addEventListener("load", pagesReqListener);
@@ -156,9 +172,11 @@ function drawPage(pageIndex) {
 	
 	if(pageIndex == 0) {
 		drawMenu();
+		document.title = "Quinn James Online";
 	}
 	else {
 		pageIndex--;
+		document.title = pages[pageIndex].title;
 		draw("QUINN JAMES ONLINE",0,2,19,0);
 		draw("Return to home screen",0,23,22,0);
 		draw(pages[pageIndex].title,4,2,60);
@@ -218,6 +236,32 @@ function mouseUp(evt) {
 }
 
 function keyDown(evt) {
+	if(!(typeof(gm_snakeRep) === "undefined")) {
+		switch(evt.keyCode) {
+			case 37:
+			case 65:
+				snake.velocityX = 0;
+				snake.velocityY = -1;
+				break;
+			case 38:
+			case 87:
+				snake.velocityX = -1;
+				snake.velocityY = 0;
+				break;
+			case 39:
+			case 68:
+				snake.velocityX = 0;
+				snake.velocityY = 1;
+				break;
+			case 40:
+			case 83:
+				snake.velocityX = 1;
+				snake.velocityY = 0;
+				break;
+		}
+		return;
+	}
+	
 	if(evt.keyCode == 8 && o.commands[o.commands.length-1].length > 1) {
 		o.commands[o.commands.length-1] = o.commands[o.commands.length-1].substring(0,o.commands[o.commands.length-1].length-1);
 		drawConsole();
@@ -322,7 +366,7 @@ function parseCommand(cmd) {
 		case "PACMAN":
 		case "INSTALL":
 			o.commands.push("Reading packages...");
-			o.commands.push("[ERROR] Repository list corrupted. Please reinstall your package manager.");
+			o.commands.push("[ERROR] Repository list corrupted. Please reinstall package manager to rebuild.");
 			break;
 		case "BSIDE":
 		case "CAT":
@@ -373,13 +417,14 @@ function parseCommand(cmd) {
 		case "CONWAY":
 		case "CONWAYS":
 		case "CONWAYS-GAME-OF-LIFE":
-			setInterval(gm_gameOfLife, 100);
+			gm_gameOfLifeRep = setInterval(gm_gameOfLife, 100);
 			break;
 		case "HELLO":
 			o.commands.push("Hi.");
 			break;
 		case "HELP":
-			o.commands.push("'HELP' is depreciated. Please use 'HALP' instead.");
+			o.commands.push("'"+command+"' is not recognized as a valid command");
+			o.commands.push("Similar command: 'HALP'");
 			break;
 		case "HI":
 			o.commands.push("Hello.");
@@ -399,7 +444,7 @@ function parseCommand(cmd) {
 			break;
 		case "LS":
 			o.commands.push("Error at /usr/share/Adobe/doc/example/amdroid_vm/root/sbin/ls.jar: Device is not responding.");
-			o.commands.push(" Try 'LSD' instead.");
+			o.commands.push("Similar command: 'LSD'");
 			break;
 		case "LSD":
 			o.commands.push("");
@@ -420,7 +465,7 @@ function parseCommand(cmd) {
 			o.commands.push(parseLink(subcommand));
 			break;
 		case "PLAGUE":
-			setInterval(gm_plague, 100);
+			gm_plagueRep = setInterval(gm_plague, 100);
 			break;
 		case "POWERSHELL":
 			o.commands.push("POWERSHELL is for 32 bit systems. Please run 'POWERSHELL-X64");
@@ -432,12 +477,20 @@ function parseCommand(cmd) {
 			o.commands.push("QUICK-ACCESS requires specialized hardware. Try 'STORE' for general installations.");
 			break;
 		case "RAIN":
-			setInterval(gm_rain, 100);
+			gm_rainRep = setInterval(gm_rain, 100);
 		case "ROBLOX":
 			o.commands.push("Oof.");
 			break;
 		case "SETTINGS":
 			o.commands.push("SETTINGS is depreciated. Please use 'QUICK-ACCESS' instead.");
+			break;
+		case "SNAKE":
+			o.commands.push("'"+command+"' is not recognized as a valid command");
+			o.commands.push("Similar command: 'SNEK'");
+			break;
+		case "SNEK":
+			o.commands.push("Zapusk snek...");
+			gm_snakeRep = setInterval(gm_snake, 50);
 			break;
 		case "SOFTWARE-INSTALL-WISARD":
 			o.commands.push("'SOFTWARE-INSTALL-WISARD' is no longer supported. Try 'CMD' for program installs.");
@@ -536,4 +589,60 @@ function gm_plague() {
 		}
 	}
 	blit();
+}
+
+function gm_snake() {
+	snake.headX += snake.velocityX;
+	snake.headY += snake.velocityY;
+	
+	//move snake
+	snake.tail.push([snake.headX,snake.headY]);
+	while(snake.tail.length > snake.tailLength) {
+		snake.tail.shift();
+	}
+	
+	//lose condition
+	if(o.contents[snake.headX][snake.headY] == "X" || snake.headX < 0 || snake.headY < 0 || snake.headX >= o.outputHeight || snake.headY >= o.outputWidth) {
+		clearInterval(gm_snakeRep);
+		setTimeout(gm_snakeClear,10);
+	}
+	
+	//apple condition
+	else if(isLetterOrDigit(o.contents[snake.headX][snake.headY])) {
+		snake.tailLength += 5;
+		
+		//new apple
+		snake.appleX = Math.floor(Math.random() * o.outputHeight);
+		snake.appleY = Math.floor(Math.random() * o.outputWidth);
+		
+		var blip = new Audio("blip.mp3");
+		blip.play();
+	}
+	
+	//draw
+	clear();
+	var p = "ABCDEFGHIJKLMNOPQRSTUVWYZ" + o.mouseChar;
+	var appleChar = p.charAt(Math.floor(Math.random() * p.length));
+	o.contents[snake.appleX][snake.appleY] = appleChar;
+	for(var i = 0; i < snake.tail.length; i++) {
+		o.contents[snake.tail[i][0]][snake.tail[i][1]] = "X";
+	}
+	blit();
+}
+
+function gm_snakeClear() {
+	snake.tail = new Array();
+	snake.tailLength = 10;
+	snake.headX = 0;
+	snake.headY = 0;
+	snake.velocityX = 0;
+	snake.velocityY = 1;
+	snake.appleX = 20;
+	snake.appleY = 20;
+	o.commands.push("IGRA OKONCENA!");
+	o.commands.push(">");
+	gm_snakeRep = undefined;	
+	clear();
+	drawPage(0);
+	drawConsole();
 }
