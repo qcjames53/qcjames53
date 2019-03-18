@@ -12,6 +12,7 @@ var o = {
 	mouseOldX : 0,
 	mouseOldY : 0,
 	mouseChar: '█',
+	backgroundChar: '-',
 	mouseUnderChar: '-',
 	currentPage : 0,
 	commands : new Array(),
@@ -28,7 +29,9 @@ var snake = {
 	velocityX : 0,
 	velocityY : 1,
 	appleX : 20,
-	appleY : 20
+	appleY : 20,
+	playing: false,
+	velocityLock: false
 }
 
 var gm_gameOfLifeRep;
@@ -38,6 +41,7 @@ var gm_snakeRep;
 
 var pages;
 var pagesReq = new XMLHttpRequest();
+pagesReq.responseType = "text";
 pagesReq.addEventListener("load", pagesReqListener);
 pagesReq.open("GET", "pages.json");
 pagesReq.send(null);
@@ -49,6 +53,7 @@ function pagesReqListener () {
 
 var files;
 var filesReq = new XMLHttpRequest();
+filesReq.responseType = "text";
 filesReq.addEventListener("load", filesReqListener);
 filesReq.open("GET", "files.json");
 filesReq.send(null);
@@ -61,14 +66,15 @@ function init() {
 	for(var i = 0; i < o.outputHeight; i++) {
 		o.contents.push(new Array(o.outputWidth));
 		for(var j = 0; j < o.outputWidth; j++) {
-			o.contents[i][j] = '-';
+			o.contents[i][j] = o.backgroundChar;
 		}
 	}
 	o.commands.push("BS-DOS 1.9.4 (c)2010 BCS, A SUBSIDIARY OF DM-CA");
 	o.commands.push("Visit dm-ca.com for updates and support.");
 	o.commands.push("");
 	o.commands.push("This software is provided \"as-is\" without any warranty. Any medical claims have not been");
-	o.commands.push("endorsed by the FDA. This product is not intended to treat, cure, or prevent any disease.");
+	o.commands.push("endorsed by the FDA. This software is not intended to treat, cure, or prevent any disease.");
+	o.commands.push("This is not for you.");
 	o.commands.push("");
 	o.commands.push(">");
 	document.onkeydown = preventBackspaceHandler;
@@ -133,7 +139,7 @@ function draw(input, row, col, maxwidth, link) {
 function clear() {
 	for(var i = 0; i < o.contents.length; i++) {
 		for(var j = 0; j < o.contents[i].length; j++) {
-			o.contents[i][j] = '-';
+			o.contents[i][j] = o.backgroundChar;
 		}
 	}
 }
@@ -236,29 +242,25 @@ function mouseUp(evt) {
 }
 
 function keyDown(evt) {
-	if(!(typeof(gm_snakeRep) === "undefined")) {
-		switch(evt.keyCode) {
-			case 37:
-			case 65:
-				snake.velocityX = 0;
-				snake.velocityY = -1;
-				break;
-			case 38:
-			case 87:
-				snake.velocityX = -1;
-				snake.velocityY = 0;
-				break;
-			case 39:
-			case 68:
-				snake.velocityX = 0;
-				snake.velocityY = 1;
-				break;
-			case 40:
-			case 83:
-				snake.velocityX = 1;
-				snake.velocityY = 0;
-				break;
+	if(snake.playing) {
+		if (snake.velocityLock) return;
+		if (snake.velocityY != 1 && (evt.keyCode == 37 || evt.keyCode == 65)) {
+			snake.velocityX = 0;
+			snake.velocityY = -1;
 		}
+		else if (snake.velocityX != 1 && (evt.keyCode == 38 || evt.keyCode == 87)) {
+			snake.velocityX = -1;
+			snake.velocityY = 0;
+		}
+		else if (snake.velocityY != -1 && (evt.keyCode == 39 || evt.keyCode == 68)) {
+			snake.velocityX = 0;
+			snake.velocityY = 1;
+		}
+		else if (snake.velocityX != -1 && (evt.keyCode == 40 || evt.keyCode == 83)) {
+			snake.velocityX = 1;
+			snake.velocityY = 0;
+		}
+		snake.velocityLock = true;
 		return;
 	}
 	
@@ -448,8 +450,13 @@ function parseCommand(cmd) {
 			break;
 		case "LSD":
 			o.commands.push("");
+			var temp = new Array();
 			for(var i = 0; i < files.length; i++) {
-				o.commands.push(files[i][0]);
+				temp.push(files[i][0]);
+			}
+			temp.sort();
+			for (var i = 0; i < temp.length; i++) {
+				o.commands.push(temp[i]);
 			}
 			o.commands.push("");
 			break;
@@ -489,7 +496,8 @@ function parseCommand(cmd) {
 			o.commands.push("Similar command: 'SNEK'");
 			break;
 		case "SNEK":
-			o.commands.push("Zapusk snek...");
+			o.commands.push("ZAPUSK SNEK...");
+			snake.playing = true;
 			gm_snakeRep = setInterval(gm_snake, 50);
 			break;
 		case "SOFTWARE-INSTALL-WISARD":
@@ -592,19 +600,17 @@ function gm_plague() {
 }
 
 function gm_snake() {
+	if (!snake.playing) return;
+	
 	snake.headX += snake.velocityX;
 	snake.headY += snake.velocityY;
 	
-	//move snake
-	snake.tail.push([snake.headX,snake.headY]);
-	while(snake.tail.length > snake.tailLength) {
-		snake.tail.shift();
-	}
-	
 	//lose condition
-	if(o.contents[snake.headX][snake.headY] == "X" || snake.headX < 0 || snake.headY < 0 || snake.headX >= o.outputHeight || snake.headY >= o.outputWidth) {
+	if(snake.headX < 0 || snake.headY < 0 || snake.headX >= o.outputHeight || snake.headY >= o.outputWidth || o.contents[snake.headX][snake.headY] == o.mouseChar) {
 		clearInterval(gm_snakeRep);
 		setTimeout(gm_snakeClear,10);
+		snake.playing = false;
+		return;
 	}
 	
 	//apple condition
@@ -619,18 +625,26 @@ function gm_snake() {
 		blip.play();
 	}
 	
+	//move snake
+	snake.tail.push([snake.headX,snake.headY]);
+	snake.velocityLock = false;
+	while(snake.tail.length > snake.tailLength) {
+		snake.tail.shift();
+	}
+	
 	//draw
 	clear();
-	var p = "ABCDEFGHIJKLMNOPQRSTUVWYZ" + o.mouseChar;
+	var p = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	var appleChar = p.charAt(Math.floor(Math.random() * p.length));
 	o.contents[snake.appleX][snake.appleY] = appleChar;
 	for(var i = 0; i < snake.tail.length; i++) {
-		o.contents[snake.tail[i][0]][snake.tail[i][1]] = "X";
+		o.contents[snake.tail[i][0]][snake.tail[i][1]] = o.mouseChar;
 	}
 	blit();
 }
 
 function gm_snakeClear() {
+	clearInterval(gm_snakeRep);
 	snake.tail = new Array();
 	snake.tailLength = 10;
 	snake.headX = 0;
@@ -641,7 +655,6 @@ function gm_snakeClear() {
 	snake.appleY = 20;
 	o.commands.push("IGRA OKONCENA!");
 	o.commands.push(">");
-	gm_snakeRep = undefined;	
 	clear();
 	drawPage(0);
 	drawConsole();
