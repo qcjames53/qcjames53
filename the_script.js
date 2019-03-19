@@ -154,6 +154,7 @@ function drawMenu() {
 	draw("QUINN JAMES ONLINE",0,2,19);
 	draw("Use the mouse to navigate",0,23,26);
 	draw("Use the keyboard to hack",0,51,26);
+	draw("__ _____ ~n _ / ___ \\ ~n _/ /\\_/\\ \\ ~n / /_/ \\_\\ \\ ~n \\ \\ \\_/ / / ~n _\\ \\/_\\/\\_\\ ~n _ \\____\\/_/",35,86,12);
 	
 	var row = 4;
 	var col = 2;

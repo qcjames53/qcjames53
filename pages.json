@@ -1,5 +1,14 @@
 [
 	{
+		"title": "Leaders in Technology",
+		"contents": "Leaders in Technology (Innovation Lab) was a program where I assisted real-world enterprise IT employees with free labor. In return, I was able to gain valuable workplace experience inside of high school. ~n ~n Typical daily tasks included Windows domain management, coding in a variety of languages, running cables, computer and software installation, 3D printing, photo/video editing, and much more. ~n ~n Many of my large projects came directly out of this class, including THIS WEBSITE! View more on the right.",
+		"img": "images/lit.jpg",
+		"links": [  "Portfolio", "portfolio.html",
+					"Programming language", "https://github.com/modernTypewritter/language",
+					"Project MacPi", "macpi/index.html"
+				]
+	},
+	{
 		"title": "Let's Go Bowling",
 		"contents": "Let's Go Bowling is a singleplayer bowling game with accurate masses and friction. Click, drag, and release to send the ball flying! Made in unity.",
 		"img": "images/lgb.png",
