@@ -21,7 +21,9 @@ var o = {
 	drawTerminalOnReturn : true
 }
 
+//variables used in snake
 var snake = {
+	playing: false,
 	tail : new Array(),
 	tailLength : 10,
 	headX : 0,
@@ -30,14 +32,33 @@ var snake = {
 	velocityY : 1,
 	appleX : 20,
 	appleY : 20,
-	playing: false,
 	velocityLock: false
+}
+
+//variables used in raycaster
+var r = {
+	playing: false,
+	map: new Array(),
+	miniMap: new Array(),
+	px: 20,
+	py: 20,
+	dirX: -1,
+	dirY: 0,
+	planeX: 0,
+	planeY: 0.66,
+	dw: false,
+	da: false,
+	ds: false,
+	dd: false,
+	movementSpeed: 0.1,
+	rotationSpeed: 0.06
 }
 
 var gm_gameOfLifeRep;
 var gm_rainRep;
 var gm_plagueRep;
 var gm_snakeRep;
+var gm_rayRep;
 
 var pages;
 var pagesReq = new XMLHttpRequest();
@@ -82,6 +103,7 @@ function init() {
 	document.addEventListener("mousedown",mouseDown);
 	document.addEventListener("mouseup",mouseUp);
 	document.addEventListener("keydown", keyDown);
+	document.addEventListener("keyup", keyUp);
 	colors("white","black");
 	drawMenu();
 	blit();
@@ -243,6 +265,7 @@ function mouseUp(evt) {
 }
 
 function keyDown(evt) {
+	//capturing keystrokes for games
 	if(snake.playing) {
 		if (snake.velocityLock) return;
 		if (snake.velocityY != 1 && (evt.keyCode == 37 || evt.keyCode == 65)) {
@@ -265,6 +288,23 @@ function keyDown(evt) {
 		return;
 	}
 	
+	if(r.playing) {
+		if((evt.keyCode == 37 || evt.keyCode == 65)) {
+			r.da = true;
+		}
+		else if ((evt.keyCode == 38 || evt.keyCode == 87)) {
+			r.dw = true;
+		}
+		else if ((evt.keyCode == 39 || evt.keyCode == 68)) {
+			r.dd=true;
+		}
+		else if ((evt.keyCode == 40 || evt.keyCode == 83)) {
+			r.ds = true;
+		}
+		return;
+	}
+	
+	//terminal keystroke capture
 	if(evt.keyCode == 8 && o.commands[o.commands.length-1].length > 1) {
 		o.commands[o.commands.length-1] = o.commands[o.commands.length-1].substring(0,o.commands[o.commands.length-1].length-1);
 		drawConsole();
@@ -300,6 +340,24 @@ function keyDown(evt) {
 	}
 	
 	o.drawTerminalOnReturn = true;
+}
+
+function keyUp(evt) {
+	if(r.playing) {
+		if((evt.keyCode == 37 || evt.keyCode == 65)) {
+			r.da = false;
+		}
+		else if ((evt.keyCode == 38 || evt.keyCode == 87)) {
+			r.dw = false;
+		}
+		else if ((evt.keyCode == 39 || evt.keyCode == 68)) {
+			r.dd = false;
+		}
+		else if ((evt.keyCode == 40 || evt.keyCode == 83)) {
+			r.ds = false;
+		}
+		return;
+	}
 }
 
 function preventBackspaceHandler(evt) {
@@ -486,6 +544,12 @@ function parseCommand(cmd) {
 			break;
 		case "RAIN":
 			gm_rainRep = setInterval(gm_rain, 100);
+			break;
+		case "RAYCASTER":
+		case "RC":
+		case "RAY":
+			gm_rayRep = setInterval(gm_ray_rayCast,30);
+			break;
 		case "ROBLOX":
 			o.commands.push("Oof.");
 			break;
@@ -652,11 +716,168 @@ function gm_snakeClear() {
 	snake.headY = 0;
 	snake.velocityX = 0;
 	snake.velocityY = 1;
-	snake.appleX = 20;
-	snake.appleY = 20;
+	snake.appleX = Math.floor(Math.random() * o.outputHeight);
+	snake.appleY = Math.floor(Math.random() * o.outputWidth);
 	o.commands.push("IGRA OKONCENA!");
 	o.commands.push(">");
 	clear();
 	drawPage(0);
 	drawConsole();
+}
+
+function gm_ray_loadMap() {
+	r.miniMap = new Array();
+	for(var row = 0; row < o.outputHeight; row++) {
+		r.miniMap.push(new Array());
+		for(var col = 0; col < o.outputWidth; col++) {
+			r.miniMap[row][col] = o.contents[row][col];
+		}
+	}
+	
+	r.map = new Array();
+	for(var row = 0; row < o.outputHeight; row++) {
+		r.map.push(new Array());
+		for(var col = 0; col < o.outputWidth; col++) {
+			if(isLetterOrDigit(o.contents[row][col])) r.map[row][col] = o.contents[row][col];
+			else r.map[row][col] = " ";
+		}
+	}
+}
+
+function gm_ray_rayCast() {
+	// This script uses code from lodev.org's raycasting engine tutorial. Thanks for the help!
+	// https://lodev.org/cgtutor/raycasting.html
+	
+	if(!r.playing) {
+		gm_ray_loadMap();
+		r.playing = true;
+	}
+	
+	//movement code
+	if(r.dw) {
+		r.px = r.px + r.dirX * r.movementSpeed;
+		r.py = r.py + r.dirY * r.movementSpeed;
+	}
+	if(r.ds) {
+		r.px = r.px - r.dirX * r.movementSpeed;
+		r.py = r.py - r.dirY * r.movementSpeed;
+	}
+	if(r.da) {
+		var oldDirX = r.dirX;
+		r.dirX = r.dirX * Math.cos(r.rotationSpeed) - r.dirY * Math.sin(r.rotationSpeed);
+		r.dirY = oldDirX * Math.sin(r.rotationSpeed) + r.dirY * Math.cos(r.rotationSpeed);
+		var oldPlaneX = r.planeX;
+		r.planeX = r.planeX * Math.cos(r.rotationSpeed) - r.planeY * Math.sin(r.rotationSpeed);
+		r.planeY = oldPlaneX * Math.sin(r.rotationSpeed) + r.planeY * Math.cos(r.rotationSpeed);
+	}
+	if(r.dd) {
+		var oldDirX = r.dirX;
+		r.dirX = r.dirX * Math.cos(-r.rotationSpeed) - r.dirY * Math.sin(-r.rotationSpeed);
+		r.dirY = oldDirX * Math.sin(-r.rotationSpeed) + r.dirY * Math.cos(-r.rotationSpeed);
+		var oldPlaneX = r.planeX;
+		r.planeX = r.planeX * Math.cos(-r.rotationSpeed) - r.planeY * Math.sin(-r.rotationSpeed);
+		r.planeY = oldPlaneX * Math.sin(-r.rotationSpeed) + r.planeY * Math.cos(-r.rotationSpeed);
+	}
+	
+	//clears the screen / draws raycasting background
+	for(var row = 0; row < o.outputHeight; row++) {
+		for(var col = 0; col < o.outputWidth; col++) {
+			o.contents[row][col] = " ";
+		}
+	}
+	
+	//iterate for each column of the display
+	for(var i = 0; i < o.outputWidth; i++) {
+		//raycasting camera setup code
+		var screenXPercent = (2 * i) / o.outputWidth - 1;
+		var currentRayX = r.px;
+		var currentRayY = r.py;
+		var directionRayX = r.dirX + r.planeX * screenXPercent;
+		var directionRayY = r.dirY + r.planeY * screenXPercent;
+		if (directionRayX == 0) directionRayX = 0.0001;
+		if (directionRayY == 0) directionRayY = 0.0001;
+		
+		var mapX = Math.floor(currentRayX);
+		var mapY = Math.floor(currentRayY);
+		//find the distance between x and y deltas on the grid.
+		var deltaDistX = Math.abs(1/directionRayX);
+        var deltaDistY = Math.abs(1/directionRayY);
+		
+		//a variable to keep track of when a wall is hit, what direction
+		var hit = false;
+		var hitSide = 0;
+		var hitChar = " ";
+		
+		//calculate steps and sidedistance
+		var stepX = -1;
+		var sideDistX = (currentRayX - mapX) * deltaDistX;
+		var stepY = -1;
+		var sideDistY = (currentRayY - mapY) * deltaDistY;
+		
+		if (directionRayX > 0) {
+			stepX = 1;
+			sideDistX = (mapX + 1.0 - currentRayX) * deltaDistX;
+		}
+		if (directionRayY > 0) {
+			stepY = 1;
+			sideDistY = (mapY + 1.0 - currentRayY) * deltaDistY;
+		}
+
+		//raycast over grid using the generated deltas
+		while (!hit) {
+			if (sideDistX < sideDistY) {
+				sideDistX = sideDistX + deltaDistX;
+				mapX = mapX + stepX;
+				hitSide = 0;
+			}
+			else {
+				sideDistY = sideDistY + deltaDistY;
+				mapY = mapY + stepY;
+				hitSide = 1;
+			}
+
+			//failsafe for rays leaving map boundaries
+			if(mapX < 0 || mapY < 0 || mapX >= r.map.length || mapY >= r.map[0].length) {
+				hit = true;
+			}
+			else if (isLetterOrDigit(r.map[mapX][mapY])) {
+				hit = true;
+				hitChar = r.map[mapX][mapY];
+			}
+		}
+		
+		//calculate wall height 0-100+ % of screen
+		var wallHeight = 0;
+		if (hitSide == 0) wallHeight = (mapX - currentRayX + (1 - stepX) / 2) / directionRayX;
+		else wallHeight = (mapY - currentRayY + (1 - stepY) / 2) / directionRayY;
+		
+		var renderedWallHeight = Math.floor(o.outputHeight / wallHeight);
+		
+		//draw to output array
+		var midpointHeight = Math.floor(o.outputHeight / 2);
+		var startRow = Math.max(midpointHeight - Math.floor(renderedWallHeight/2),0);
+		var stopRow = Math.min(midpointHeight + Math.floor(renderedWallHeight/2),o.outputHeight-1);
+		for (var j = startRow; j <= stopRow; j++) {
+			o.contents[j][i] = hitChar;
+		}	
+	}
+	
+	for (var i = 0; i < 9; i++) {
+		for (var j = 0; j < 17; j++) {
+			if (r.px - 5 + i > 0 && r.px - 4 + i < r.map.length && r.py - 9 + j > 0 && r.py - 8 + j < r.map[0].length) 
+				o.contents[i][j] = r.miniMap[Math.ceil(r.px - 5 + i)][Math.ceil(r.py - 9 + j)];
+			else o.contents[i][j] = " ";
+		}
+	}
+	for (var i = 0; i < 17; i++) {
+		o.contents[9][i] = "─";
+	}
+	for (var i = 0; i < 9; i++) {
+		o.contents[i][17] = "│";
+	}
+	o.contents[9][17] = "┘";
+	o.contents[4][8] = o.mouseChar;
+	
+	//draw
+	blit();
 }
