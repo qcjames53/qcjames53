@@ -480,6 +480,23 @@ function parseCommand(cmd) {
 		case "CONWAYS-GAME-OF-LIFE":
 			gm_gameOfLifeRep = setInterval(gm_gameOfLife, 100);
 			break;
+		case "HALP":
+			o.commands.push("APT [package name] - Package installer.");
+			o.commands.push("BSIDE [file name] - Trial IDE. Concatenation only.");
+			o.commands.push("CD [directory] - Change directory to the specified location.");
+			o.commands.push("CLS - Clears screen.");
+			o.commands.push("GAME-OF-LIFE - Conway's game of life. Alt: GOL");
+			o.commands.push("HALP - Displays list of usable commands for current user.");
+			o.commands.push("LINUX - It's a unix system. I know this. A ZUI.");
+			o.commands.push("LSD - Lists files in the current system directory.");
+			o.commands.push("OPEN [filename] - Opens a file.");
+			o.commands.push("PAGE [number] | PAGE [url] - Loads a given webpage by index or location.");
+			o.commands.push("PLAGUE - No desc.");
+			o.commands.push("RAIN - No desc.");
+			o.commands.push("RAYCASTER - No desc. Alt: RAY");
+			o.commands.push("SNEK - Net opisaniya.");
+			o.commands.push("XKCD - Loads alternate unix frontend.");
+			break;
 		case "HELLO":
 			o.commands.push("Hi.");
 			break;
