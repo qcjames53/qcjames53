@@ -131,14 +131,5 @@
 			"Pygame", "https://www.pygame.org/news",
 			"Download VOID", "dl/raycaster.zip"
 		]
-	},
-	
-	{
-		"title": "Rotoball",
-		"contents": "Rotoball is the first step in a (hopefully) long journey of Unity projects. The game emulates classic Atari Breakout but with a 360 degree twist. Plays in browser!",
-		"img": "images/rotoball.jpg",
-		"links": [	
-			"Play Online","unity/rotoball/"
-		]
 	}
 ]
