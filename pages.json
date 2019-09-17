@@ -115,14 +115,6 @@
 	},
 	
 	{
-		"title": "Resume: Quinn James",
-		"contents": "",
-		"links": [ 
-			"resume.pdf"
-		]
-	},
-	
-	{
 		"title": "Portfolio: Quinn James",
 		"contents": "",
 		"links": [	
@@ -132,7 +124,7 @@
 	
 	{
 		"title": "Pygame Raycaster",
-		"contents": "Void is a short, yet difficult raycasting engine coded from scratch in python. The game revolves around the completion of several varying levels. ~n Requires Python 2.7 and Pygame.",
+		"contents": "Void is a short, yet difficult raycasting engine coded from scratch in python. The game revolves around the completion of several varying levels. ~n Requires Python 2.7 and Pygame. ~n ~n The same codebase was ported to JavaScript on this website. Type 'raycaster' and hit enter to try it out.",
 		"img": "images/raycaster.jpg",
 		"links": [	
 			"Python 2.7","https://www.python.org/downloads/",
