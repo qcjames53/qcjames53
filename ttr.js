@@ -1,3 +1,20 @@
+//    ████████╗████████╗██████╗ 
+//    ╚══██╔══╝╚══██╔══╝██╔══██╗
+//       ██║      ██║   ██████╔╝
+//       ██║      ██║   ██╔══██╗
+//       ██║      ██║   ██║  ██║
+//       ╚═╝      ╚═╝   ╚═╝  ╚═╝   CHARACTER ENGINE
+//    version 4.0                          
+//    by Quinn James
+//
+//    This project is libre, and licenced under the terms of the
+//    DO WHAT THE FUCK YOU WANT TO PUBLIC LICENCE, version 3.1,
+//    as published by dtf on July 2019. See the COPYING file or
+//    https://ph.dtf.wtf/w/wtfpl/#version-3-1 for more details.
+
+// CONTENTS
+var contents = ["homepage_contents.json"]; //TODO: integrate into asset loading
+
 // HTML access variables
 var main = document.getElementById("main");
 var body = document.getElementById("body");
@@ -12,37 +29,45 @@ var textSpeedModifier = 1.0;
 var lineTimer;
 
 /**
- * Class which composes the character-based output. Displays one character of a 
- * certain color. Optional link allows for functions and hyperlinks to be run 
+ * Class which composes the character-based output. Displays one character of a
+ * certain color. Optional link allows for functions and hyperlinks to be run
  * when clicked / activated.
  */
 class Textel {
    /**
     * Constructor for the Textel class.
-    * @param {*} char Single character displayed to user.
-    * @param {*} link String/function variable for parser to interpret when 
+    * @param {char} char Single character displayed to user.
+    * @param {string} link String/function variable for parser to interpret when 
     *    Textel is clicked.
-    * @param {*} color Output color string (HTML formatted) of character. Keep 
-    *    undefined for best performance and to allow for page color overrides.
+    * @param {string} color Output color string (HTML formatted) of character. 
+    * Keep undefined for best performance and to allow for page color overrides.
     */
    constructor(char, link, color) {
       this.linkSet = true;
       this.colorSet = true;
       // depends on short circuiting to avoid error, be careful)
       if(typeof link === 'undefined' || link == null) this.linkSet = false;
-      if(typeof color === 'undefined'|| link == null) this.colorSet = false;
+      if(typeof color === 'undefined'|| color == null) this.colorSet = false;
       this.char = char;
       this.link = link;
       this.color = color;
    }
 }
 
-
+/**
+ * Object that stores on-screen lines for scrolling line-by-line text display.
+ */
 var lines = {
    strings : new Array(maxLines).fill(""),
-   links : new Array(maxLines).fill(window.undefined),
-   colors : new Array(maxLines).fill(window.undefined),
+   links : new Array(maxLines).fill(null),
+   colors : new Array(maxLines).fill(null),
 
+   /**
+    * Pushes a given string into memory. Removes oldest item from storage array.
+    * @param {string} line String to push into storage.
+    * @param {string} link Optional: link for given string.
+    * @param {string} color Optional: color for given string.
+    */
    push : function(line, link, color) {
       this.strings.push(line);
       this.strings.shift();
@@ -101,12 +126,13 @@ var display = {
 
    /**
     * Draws a box using ASCII line characters.
-    * @param {*} row Upper left row coordinate.
-    * @param {*} col Upper left column coordinate.
-    * @param {*} height Height of box.
-    * @param {*} width Width of box.
-    * @param {*} link Optional: link for edge line characters, good for buttons.
-    * @param {*} color Optional: color of line characters.
+    * @param {number} row Upper left row coordinate.
+    * @param {number} col Upper left column coordinate.
+    * @param {number} height Height of box.
+    * @param {number} width Width of box.
+    * @param {string} link Optional: link for edge line characters, good for 
+    *    buttons.
+    * @param {string} color Optional: color of line characters.
     */
    drawBox : function(row, col, height, width, link, color) {
       for (var i = row + 1; i < row + height; i++) {
@@ -125,11 +151,11 @@ var display = {
 
    /**
     * Draws text string at given coordinates.
-    * @param {*} row First character for coordinate.
-    * @param {*} col First character column coordinate.
-    * @param {*} text String to display.
-    * @param {*} link Optional: link for all characters.
-    * @param {*} color Optional: color of characters.
+    * @param {number} row First character for coordinate.
+    * @param {number} col First character column coordinate.
+    * @param {string} text String to display.
+    * @param {string} link Optional: link for all characters.
+    * @param {string} color Optional: color of characters.
     */
    drawText : function(row, col, text, link, color) {
       for (var i = 0; i < text.length && (col + i) < this.outputWidth; i++) {
@@ -139,13 +165,13 @@ var display = {
 
    /**
     * Fills an area with a given character at given coodinates.
-    * @param {*} row Upper left row coordinate.
-    * @param {*} col Upper left column coordinate.
-    * @param {*} height Height to fill with character.
-    * @param {*} width Width to fill with character.
-    * @param {*} char Fill character.
-    * @param {*} link Optional: Link for filled area.
-    * @param {*} color Optional: Color for filled area.
+    * @param {number} row Upper left row coordinate.
+    * @param {number} col Upper left column coordinate.
+    * @param {number} height Height to fill with character.
+    * @param {number} width Width to fill with character.
+    * @param {char} char Fill character.
+    * @param {string} link Optional: Link for filled area.
+    * @param {string} color Optional: Color for filled area.
     */
    drawFill : function(row, col, height, width, char, link, color) {
       for (var i = 0; i < height; i++) {
@@ -157,16 +183,16 @@ var display = {
 
    /**
     * Changes color of the display.
-    * @param {*} foreground Changes color of all characters with undefined or 
-    *    null color values.
-    * @param {*} background Changes color of the page background color.
+    * @param {string} foreground Changes color of all characters with undefined 
+    * or null color values.
+    * @param {string} background Changes color of the page background color.
     */
    masterColors : function(foreground, background) {
       body.style = `color:${foreground}; background-color:${background}`;
    },
 
    /**
-    * Returns true if the current edevice supports touch input.
+    * Returns true if the current device supports touch input.
     */
    isTouchDevice : function() {
       return !!('ontouchstart' in window || navigator.maxTouchPoints);
@@ -174,46 +200,64 @@ var display = {
 }
 
 /**
- * Opens a window (box with text inside and title on top) defined by the given 
+ * Opens a window (box with text inside and title on top) defined by the given
  * parameters.
- * @param {*} row Upper left of window row coordinate.
- * @param {*} col Upper left of window column coordinate.
- * @param {*} height Total height of window (includes box characters).
- * @param {*} width Total width of window (includes box characters).
- * @param {*} title Optional: Title of window (set to empty string for no title)
- * @param {*} frame Current frame of animation, call as 0 for full animation.
- * @param {*} endFunction Optional: Function to run once window open animation 
- *    has finished.
- * @param {*} innerText Optional: Text to display inside of the window.
- * @param {*} innerLink Optional: Link for window contents and border.
- * @param {*} innerColor Optional: Color for window contents and border.
- * 
- * TODO reorder parameters and refactor
+ * @param {number} frame Current frame of animation, call as 0 for full
+ * animation.
+ * @param {number} row Upper left of window row coordinate.
+ * @param {number} col Upper left of window column coordinate.
+ * @param {number} height Total height of window (includes box characters).
+ * @param {number} width Total width of window (includes box characters).
+ * @param {string} innerText Optional: Text to display inside of the window.
+ * @param {string} innerLink Optional: Link for window contents and border.
+ * @param {string} innerColor Optional: Color for window contents and border.
+ * @param {string} title Optional: Title of window (set to empty string for no
+ * title)
+ * @param {Function} endFunction Optional: Function to run once window open
+ * animation has finished.
+ * @param {*} endFunctionParam1 Optional: parameter for endFunction().
  */
 function openWindowAnimation(frame, row, col, height, width, innerText, innerLink, innerColor, title, endFunction, endFunctionParam1) {
+   frameLink = null;
+   titleLink = null;
+   if (typeof title !== 'undefined' && title != null) {
+      titleLink = innerLink;
+   }
+   else {
+      frameLink = innerLink;
+   }
    if (frame <= Math.floor(width/2)) {
-      display.drawBox(row + Math.floor(height / 2), col + Math.floor(width / 2) - frame, 1, Math.min(2 * frame, width - 1), innerLink, innerColor);
-      setTimeout(openWindowAnimation, 10, row, col, height, width, title, frame + 1, endFunction, innerText, innerLink, innerColor);
+      display.drawBox(row + Math.floor(height / 2), col + Math.floor(width / 2) - frame, 1, Math.min(2 * frame, width - 1), frameLink, innerColor);
+      setTimeout(openWindowAnimation, 10, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endFunction, endFunctionParam1);
    }
    else if (frame - Math.floor(width/2) <= Math.floor(height/2)) {
       var effectiveFrame = frame - Math.floor(width/2);
-      display.drawBox(row + Math.floor(height/2) - effectiveFrame, col, Math.min(effectiveFrame * 2, height - 1), width - 1, innerLink, innerColor);
+      display.drawBox(row + Math.floor(height/2) - effectiveFrame, col, Math.min(effectiveFrame * 2, height - 1), width - 1, frameLink, innerColor);
       var clearUpper = row + Math.floor(height/2) - effectiveFrame + 1;
       display.drawFill(clearUpper, col+1, 1, width-2, " ");
 
       var clearLower = row + Math.floor(height/2) + effectiveFrame - 1;
       if (clearLower != row + height - 1) display.drawFill(clearLower, col+1, 1, width-2, " ");
-      setTimeout(openWindowAnimation, 25, row, col, height, width, title, frame + 1, endFunction, innerText, innerLink, innerColor);
+      setTimeout(openWindowAnimation, 25, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endFunction, endFunctionParam1);
    }
    else if (frame - Math.floor(width/2) - Math.floor(height/2) < 7) {
       var effectiveFrame = frame - Math.floor(width/2) - Math.floor(height/2);
-      if (effectiveFrame % 2 == 0) display.drawText(row, col + Math.floor(width/2) - Math.floor(title.length / 2), title, "../index.html");
-      else display.drawFill(row, col + Math.floor(width/2) - Math.floor(title.length / 2), 1, title.length, '─');
-      setTimeout(openWindowAnimation, 50, row, col, height, width, title, frame + 1, endFunction, innerText, innerLink, innerColor);
+      if (typeof title !== 'undefined' && title != null) {
+         if (effectiveFrame % 2 == 0) {
+            display.drawText(row, col + Math.floor(width/2) - Math.floor(title.length / 2), title, titleLink, innerColor);
+         }
+         else {
+            display.drawFill(row, col + Math.floor(width/2) - Math.floor(title.length / 2), 1, title.length, '─');
+         }
+         
+      }
+      setTimeout(openWindowAnimation, 50, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endFunction, endFunctionParam1);
    } else {
-      if (typeof innerText !== 'undefined') display.drawText(row+1, col+1, innerText, innerLink, innerColor);
-      if (typeof endFunction !== 'undefined') {
-         if (typeof endFunctionParam1 !== 'undefined') {
+      if (typeof innerText !== 'undefined' && innerText != null) {
+         display.drawText(row+1, col+1, innerText, frameLink, innerColor);
+      }
+      if (typeof endFunction !== 'undefined' && endFunction != null) {
+         if (typeof endFunctionParam1 !== 'undefined' && endFunctionParam1 != null) {
             endFunction(endFunctionParam1);
          }
          else {
@@ -226,22 +270,21 @@ function openWindowAnimation(frame, row, col, height, width, innerText, innerLin
 }
 
 function loadAssets(frame) {
-   if (typeof frame === 'undefined') frame = 0;
    if (frame == 0) {
       layoutReq = new XMLHttpRequest();
       layoutReq.responseType = "text";
       layoutReq.addEventListener("load", layoutReqListener);
-      layoutReq.open("GET", "script.json");
+      layoutReq.open("GET", "homepage_contents.json");
       layoutReq.send(null);
 
-      display.drawText(1,display.outputWidth-9,"█",window.undefined,"gray");
-      display.drawText(1,display.outputWidth-8,"█",window.undefined,"red");
-      display.drawText(1,display.outputWidth-7,"█",window.undefined,"orange");
-      display.drawText(1,display.outputWidth-6,"█",window.undefined,"yellow");
-      display.drawText(1,display.outputWidth-5,"█",window.undefined,"green");
-      display.drawText(1,display.outputWidth-4,"█",window.undefined,"blue");
-      display.drawText(1,display.outputWidth-3,"█",window.undefined,"purple");
-      display.drawText(1,display.outputWidth-2,"█",window.undefined,"white");
+      display.drawText(1,display.outputWidth-9,"█",null,"gray");
+      display.drawText(1,display.outputWidth-8,"█",null,"red");
+      display.drawText(1,display.outputWidth-7,"█",null,"orange");
+      display.drawText(1,display.outputWidth-6,"█",null,"yellow");
+      display.drawText(1,display.outputWidth-5,"█",null,"green");
+      display.drawText(1,display.outputWidth-4,"█",null,"blue");
+      display.drawText(1,display.outputWidth-3,"█",null,"purple");
+      display.drawText(1,display.outputWidth-2,"█",null,"white");
    }
    if (frame >= 8 && typeof layout !== 'undefined') {
       document.onkeydown = preventBackspaceHandler;
@@ -249,7 +292,7 @@ function loadAssets(frame) {
       document.addEventListener("mousedown",mouseDown);
       document.addEventListener("mouseup",mouseUp);
       if (display.isTouchDevice()) {
-         openWindowAnimation(display.outputHeight-4,1,3,52,"",0,window.undefined,"Touch device detected. Click to enable mouse input",-1,"gray")
+         openWindowAnimation(0, display.outputHeight-4, 1, 3, 52, "Touch device detected. Click to enable mouse input", -1, "gray");
       }
       else {
          display.displayMouse = true;
@@ -293,10 +336,10 @@ function displayLines(){
 function parseSection(section, currentLineIndex) {
    if (typeof currentLineIndex === 'undefined') currentLineIndex = 0;
    type = layout[section][currentLineIndex][0];
-   text = layout[section][currentLineIndex][1];
-   link = layout[section][currentLineIndex][2];
-   color = layout[section][currentLineIndex][3];
-   delay = layout[section][currentLineIndex][4];
+   delay = layout[section][currentLineIndex][1];
+   text = layout[section][currentLineIndex][2];
+   link = layout[section][currentLineIndex][3];
+   color = layout[section][currentLineIndex][4];
    if (link == null) link = window.undefined;
    if (color == null) color = window.undefined;
 
@@ -329,7 +372,7 @@ function parseSection(section, currentLineIndex) {
    else if (type == 2) {
       row = layout[section][currentLineIndex][5];
       col = layout[section][currentLineIndex][6];
-      openWindowAnimation(row, col, 3, text.length+2, "", 0, window.undefined, text, link, color);
+      openWindowAnimation(0, row, col, 3, text.length+2, text, link, color);
    }
    else if (type == 3) {
       parseLink(link);
@@ -360,52 +403,13 @@ function mouseUp(evt) {
    parseLink();
 }
 
+// TODO: migrate links and functions to arrays with parameters.
 function parseLink(link) {
-   if (typeof link === 'undefined') link = display.contents[display.mouseX][display.mouseY].link;
-   if(isNaN(link)) {
-		window.open(link,"_self");
-	}
-   else if (link < 0) {
-      if (link == -1) display.displayMouse = true;
-      else if (link == -2) display.displayDebug = true;
-      else if (-7 <= link && link <= -3) {
-         display.drawText(5,14,"0.50",-3,"gray");
-         display.drawText(5,20,"0.75",-4,"gray");
-         display.drawText(5,26,"1.00",-5,"gray");
-         display.drawText(5,32,"1.50",-6,"gray");
-         display.drawText(5,38,"2.00",-7,"gray");
-         if (link == -3) {
-            textSpeedModifier = 0.5;
-            display.drawText(5,14,"0.50",-3,"lime");
-         }
-         else if (link == -4) {
-            textSpeedModifier = 0.75;
-            display.drawText(5,20,"0.75",-4,"lime");
-         }
-         else if (link == -5) {
-            textSpeedModifier = 1;
-            display.drawText(5,26,"1.00",-5,"lime");
-         }
-         else if (link == -6) {
-            textSpeedModifier = 1.5;
-            display.drawText(5,32,"1.50",-6,"lime");
-         }
-         else if (link == -7) {
-            textSpeedModifier = 2;
-            display.drawText(5,38,"2.00",-7,"lime");
-         }
-         display.drawFill(7,1,display.outputHeight-8,display.outputWidth-2," ");
-         clearTimeout(lineTimer);
-         parseSection(0,8);
-      }
-      else if (link == -8) {
-         clearTimeout(lineTimer);
-      }
-   }
-   else {
-      parseSection(link);
+   if (link === "reset") {
+      clearTimeout(lineTimer);
+      parseSection(0, 0);
    }
 }
 
 display.init();
-openWindowAnimation(0,0,display.outputHeight, display.outputWidth, "Transpired the Ruins", 0, loadAssets);
+openWindowAnimation(0, 0, 0, display.outputHeight, display.outputWidth, null, "reset", null, "Quinn James Online", loadAssets, 0);
