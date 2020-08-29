@@ -12,6 +12,9 @@
 //    as published by dtf on July 2019. See the COPYING file or
 //    https://ph.dtf.wtf/w/wtfpl/#version-3-1 for more details.
 
+// DEV TOGGLES
+const enableDebug = false;
+
 // CONTENTS
 var contents = ["homepage_contents.json"]; //TODO: integrate into asset loading
 
@@ -27,6 +30,8 @@ var layoutReq;
 var maxLines = 43;
 var textSpeedModifier = 1.0;
 var lineTimer;
+var previousSection = null;
+var previousLineIndex = null;
 
 /**
  * Class which composes the character-based output. Displays one character of a
@@ -36,34 +41,59 @@ var lineTimer;
 class Textel {
    /**
     * Constructor for the Textel class.
-    * @param {char} char Single character displayed to user.
-    * @param {string} link String/function variable for parser to interpret when 
-    *    Textel is clicked.
-    * @param {string} color Output color string (HTML formatted) of character. 
+    * @param {string} char Single character displayed to user.
+    * @param {object} link String/function variable for parser to interpret when
+    * Textel is clicked.
+    * @param {string} color Output color string (HTML formatted) of character.
     * Keep undefined for best performance and to allow for page color overrides.
     */
    constructor(char, link, color) {
       this.linkSet = true;
       this.colorSet = true;
-      // depends on short circuiting to avoid error, be careful)
+      // depends on short circuiting to avoid error, be careful.
       if(typeof link === 'undefined' || link == null) this.linkSet = false;
       if(typeof color === 'undefined'|| color == null) this.colorSet = false;
       this.char = char;
-      this.link = link;
+      this.link = [].concat(link);
       this.color = color;
    }
 }
 
 /**
- * Object that stores on-screen lines for scrolling line-by-line text display.
+ * Object that stores an unlimited amount of lines. Displayed from top down,
+ * showing maximum number of newest lines.
  */
-var lines = {
+var topfeedLines = {
+   strings : new Array(),
+   links : new Array(),
+   colors : new Array(),
+
+   /**
+    * Pushes a given line into memory.
+    */
+   push : function(line, link, color) {
+      this.strings.push(line);
+      this.links.push(link);
+      this.colors.push(color);
+   },
+
+   reset : function() {
+      this.strings = new Array();
+      this.links = new Array();
+      this.colors = new Array();
+   }
+};
+
+/**
+ * Object that stores a screen-width number of lines. Displayed from bottom up.
+ */
+var bottomfeedLines = {
    strings : new Array(maxLines).fill(""),
    links : new Array(maxLines).fill(null),
    colors : new Array(maxLines).fill(null),
 
    /**
-    * Pushes a given string into memory. Removes oldest item from storage array.
+    * Pushes a given line into memory. Removes oldest item from storage array.
     * @param {string} line String to push into storage.
     * @param {string} link Optional: link for given string.
     * @param {string} color Optional: color for given string.
@@ -75,8 +105,14 @@ var lines = {
       this.links.shift();
       this.colors.push(color);
       this.colors.shift();
+   },
+
+   reset : function() {
+      this.strings = new Array(maxLines).fill("");
+      this.links = new Array(maxLines).fill(null);
+      this.colors = new Array(maxLines).fill(null);
    }
-}
+};
 
 var display = {
    outputWidth : 100,
@@ -176,7 +212,30 @@ var display = {
    drawFill : function(row, col, height, width, char, link, color) {
       for (var i = 0; i < height; i++) {
          for (var j = 0; j < width; j++) {
-            this.contents[row + i][col + j] = new Textel(char, link, color)
+            this.contents[row + i][col + j] = new Textel(char, link, color);
+         }
+      }
+   },
+
+   /**
+    * Easy function for filling screen contents with spaces.
+    */
+   clear : function() {
+      for (var i = 0; i < this.outputHeight; i++) {
+         for (var j = 0; j < this.outputWidth; j++) {
+            this.contents[i][j] = new Textel(" ", null, null);
+         }
+      }
+   },
+
+   /**
+    * Easy function for filling screen contents with spaces. Leaves edge
+    * characters alone to retain TTR border.
+    */
+   clearTTR : function() {
+      for (var i = 1; i < this.outputHeight-1; i++) {
+         for (var j = 1; j < this.outputWidth-1; j++) {
+            this.contents[i][j] = new Textel(" ", null, null);
          }
       }
    },
@@ -197,6 +256,42 @@ var display = {
    isTouchDevice : function() {
       return !!('ontouchstart' in window || navigator.maxTouchPoints);
    }
+};
+
+/**
+ * Updates mouse coordinates if mouse has been moved.
+ */
+function mouseMove(evt) {
+   display.mouseY = Math.min(Math.max(Math.floor((evt.clientX - textWrapper.offsetLeft) / main.clientWidth * display.outputWidth),0),display.outputWidth-1);
+   display.mouseX = Math.min(Math.max(Math.floor((evt.clientY - textWrapper.offsetTop) / main.clientHeight * display.outputHeight),0),display.outputHeight-1);
+   display.blit();
+}
+
+/**
+ * Updates window colors if mouse is over button when clicked.
+ */
+function mouseDown(evt) {
+   if (display.contents[display.mouseX][display.mouseY].linkSet) {
+      display.masterColors("gray", "black");
+   }
+}
+
+/**
+ * Parses link of current mouse location when mouse is released.
+ */
+function mouseUp(evt) {
+   display.masterColors("white", "black");
+   parseLink();
+}
+
+/**
+ * Prevents the user from going back a page when backspace is pressed.
+ */
+function preventBackspaceHandler(evt) {
+    evt = evt || window.event;
+    if (evt.keyCode == 8) {
+        return false;
+    }
 }
 
 /**
@@ -215,9 +310,8 @@ var display = {
  * title)
  * @param {Function} endFunction Optional: Function to run once window open
  * animation has finished.
- * @param {*} endFunctionParam1 Optional: parameter for endFunction().
  */
-function openWindowAnimation(frame, row, col, height, width, innerText, innerLink, innerColor, title, endFunction, endFunctionParam1) {
+function openWindowAnimation(frame, row, col, height, width, innerText, innerLink, innerColor, title, endLink) {
    frameLink = null;
    titleLink = null;
    if (typeof title !== 'undefined' && title != null) {
@@ -228,7 +322,7 @@ function openWindowAnimation(frame, row, col, height, width, innerText, innerLin
    }
    if (frame <= Math.floor(width/2)) {
       display.drawBox(row + Math.floor(height / 2), col + Math.floor(width / 2) - frame, 1, Math.min(2 * frame, width - 1), frameLink, innerColor);
-      setTimeout(openWindowAnimation, 10, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endFunction, endFunctionParam1);
+      lineTimer = setTimeout(openWindowAnimation, 10, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endLink);
    }
    else if (frame - Math.floor(width/2) <= Math.floor(height/2)) {
       var effectiveFrame = frame - Math.floor(width/2);
@@ -238,9 +332,9 @@ function openWindowAnimation(frame, row, col, height, width, innerText, innerLin
 
       var clearLower = row + Math.floor(height/2) + effectiveFrame - 1;
       if (clearLower != row + height - 1) display.drawFill(clearLower, col+1, 1, width-2, " ");
-      setTimeout(openWindowAnimation, 25, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endFunction, endFunctionParam1);
+      lineTimer = setTimeout(openWindowAnimation, 25, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endLink);
    }
-   else if (frame - Math.floor(width/2) - Math.floor(height/2) < 7) {
+   else if (typeof title !== 'undefined' && title != null && (frame - Math.floor(width/2) - Math.floor(height/2) < 7)) {
       var effectiveFrame = frame - Math.floor(width/2) - Math.floor(height/2);
       if (typeof title !== 'undefined' && title != null) {
          if (effectiveFrame % 2 == 0) {
@@ -251,21 +345,15 @@ function openWindowAnimation(frame, row, col, height, width, innerText, innerLin
          }
          
       }
-      setTimeout(openWindowAnimation, 50, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endFunction, endFunctionParam1);
+      lineTimer = setTimeout(openWindowAnimation, 50, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endLink);
    } else {
       if (typeof innerText !== 'undefined' && innerText != null) {
          display.drawText(row+1, col+1, innerText, frameLink, innerColor);
       }
-      if (typeof endFunction !== 'undefined' && endFunction != null) {
-         if (typeof endFunctionParam1 !== 'undefined' && endFunctionParam1 != null) {
-            endFunction(endFunctionParam1);
-         }
-         else {
-            endFunction();
-         }
+      if (typeof endLink !== 'undefined' && endLink != null) {
+         parseLink(endLink);
       }
    }
-
    display.blit();
 }
 
@@ -292,14 +380,12 @@ function loadAssets(frame) {
       document.addEventListener("mousedown",mouseDown);
       document.addEventListener("mouseup",mouseUp);
       if (display.isTouchDevice()) {
-         openWindowAnimation(0, display.outputHeight-4, 1, 3, 52, "Touch device detected. Click to enable mouse input", -1, "gray");
+         console.log("%c Display supports touch. Mouse cursor has been hidden.", "color:green;");
       }
       else {
          display.displayMouse = true;
       }
-      display.drawFill(1, 1, display.outputHeight-2, display.outputWidth-2," ");
-      display.contents[display.outputHeight-2][display.outputWidth-2].link = -2;
-      display.contents[display.outputHeight-2][display.outputWidth-2].linkSet = true;
+      display.clearTTR();
       parseSection(0);
    }
    else if (frame % 4 == 0) {
@@ -325,91 +411,171 @@ function layoutReqListener () {
 	layout = JSON.parse(this.responseText);
 }
 
-function displayLines(){
-   display.drawFill(1, 1, display.outputHeight-2, display.outputWidth-2," ");
-   for(var i = 0; i < maxLines; i++) {
-      display.drawText(i + 1, 1, lines.strings[i], lines.links[i], lines.colors[i]);
+/**
+ * Displays saved topfeedLines contents. Clears screen beforehand.
+ */
+function displayTopFeedLines() {
+   display.clearTTR;
+   let endindex = topfeedLines.strings.length;
+   let startindex = Math.max(endindex - maxLines,0);
+   for(let i = startindex; i < endindex; i++) {
+      display.drawText(i + 1, 3, topfeedLines.strings[i], topfeedLines.links[i], topfeedLines.colors[i]);
    }
    display.blit();
 }
 
+/**
+ * Displays saved topfeedLines contents a distance below the top of the screen.
+ * Does not clear screen.
+ */
+function displayBufferedTopFeedLines(buffer) {
+   display.clearTTR;
+   let endindex = topfeedLines.strings.length;
+   let startindex = Math.max(endindex - maxLines + buffer,0);
+   for(let i = startindex; i < endindex; i++) {
+      display.drawText(i + 1 + buffer, 3, topfeedLines.strings[i], topfeedLines.links[i], topfeedLines.colors[i]);
+   }
+   display.blit();
+}
+
+/**
+ * Displays saved bottomfeedLines contents. Clears screen beforehand.
+ */
+function displayBottomFeedLines() {
+   display.clearTTR();
+   for(var i = 0; i < bottomfeedLines.strings.length; i++) {
+      display.drawText(i + 1, 3, bottomfeedLines.strings[i], bottomfeedLines.links[i], bottomfeedLines.colors[i]);
+   }
+   display.blit();
+}
+
+/**
+ * Calls appropriate draw functions from current contents json file.
+ * @param {number} section Section of JSON to read from.
+ * @param {number} currentLineIndex Optional: Line index inside of section.
+ */
 function parseSection(section, currentLineIndex) {
-   if (typeof currentLineIndex === 'undefined') currentLineIndex = 0;
+   if (typeof currentLineIndex === 'undefined' || currentLineIndex == null) {
+      currentLineIndex = 0;
+   }
    type = layout[section][currentLineIndex][0];
    delay = layout[section][currentLineIndex][1];
    text = layout[section][currentLineIndex][2];
    link = layout[section][currentLineIndex][3];
    color = layout[section][currentLineIndex][4];
-   if (link == null) link = window.undefined;
-   if (color == null) color = window.undefined;
 
-   if (display.displayDebug) {
+   // If section has changed, reset line storage and clear screen.
+   if (section != previousSection) {
+      display.clearTTR();
+      topfeedLines.reset();
+      bottomfeedLines.reset();
+   }
+
+   // Draw section, line index, and delay to top left if debug mode is enabled.
+   if (enableDebug) {
       display.drawText(0,1,"──────────────────")
       display.drawText(0,1,section + "," + currentLineIndex + "," + Math.floor(delay * (1/textSpeedModifier)));
    }
-   if (type == 0) {
-      if(text.length > display.outputWidth-2) {
-         newText = "";
-         var i = display.outputWidth - 2;
-         while (text.charAt(i) != ' ' && i >= 0) i--;
-         if (i != 0) {
-            newText = "    " + text.substring(i+1);
-            text = text.substring(0,i);
-            var newLine = [0, newText, link, color, delay];
-            layout[section].splice(currentLineIndex+1,0,newLine);
-            delay = 0;
-         }
-      }
-      lines.push(text, link, color);
-      displayLines();
+
+   // ["topfeed", delay, text, link, color]
+   if (type === "topfeed") {
+      topfeedLines.push(text, link, color);
+      displayTopFeedLines();
    }
-   else if (type == 1) {
-      row = layout[section][currentLineIndex][5];
-      col = layout[section][currentLineIndex][6];
+   // ["bufferedTopfeed", delay, text, link, color, buffer]
+   else if (type === "bufferedTopfeed") {
+      let buffer = layout[section][currentLineIndex][5];
+      topfeedLines.push(text, link, color);
+      displayBufferedTopFeedLines(buffer);
+   }
+   // ["bottomfeed", delay, text, link, color]
+   else if (type === "bottomfeed") {
+      bottomfeedLines.push(text, link, color);
+      displayBottomFeedLines();
+   }
+   // ["freetext", delay, text, link, color, row, col]
+   else if (type === "freetext") {
+      let row = layout[section][currentLineIndex][5];
+      let col = layout[section][currentLineIndex][6];
       display.drawText(row, col, text, link, color);
       display.blit();
    }
-   else if (type == 2) {
-      row = layout[section][currentLineIndex][5];
-      col = layout[section][currentLineIndex][6];
-      openWindowAnimation(0, row, col, 3, text.length+2, text, link, color);
+   // ["freebox", ...]
+   else if (type === "freebox") {
+      // unimplemented
    }
-   else if (type == 3) {
+   // ["window", delay, text, link, color, row, col, height, width, title,
+   // endFunction]
+   else if (type === "window") {
+      let row = layout[section][currentLineIndex][5];
+      let col = layout[section][currentLineIndex][6];
+      let height = layout[section][currentLineIndex][7];
+      let width = layout[section][currentLineIndex][8];
+      let title = layout[section][currentLineIndex][9];
+      let endFunction = layout[section][currentLineIndex][10];
+      openWindowAnimation(0,row,col,height,width,text,link,color,title,endFunction);
+   }
+   // ["parselink", delay, null, link, null]
+   else if (type === "parselink") {
       parseLink(link);
    }
 
-   if (delay != null) lineTimer = setTimeout(parseSection, Math.floor(delay * (1/textSpeedModifier)), section, currentLineIndex + 1);
+   // Schedules next line placement under lineTimer unless instant or null.
+   // Immediately runs if instant. Ends execution if null.
+   previousSection = section;
+   previousLineIndex = currentLineIndex;
+   if (delay == 0) {
+      parseSection(section, currentLineIndex + 1);
+   }
+   else if (delay != null) {
+      lineTimer = setTimeout(parseSection, Math.floor(delay * (1/textSpeedModifier)), section, currentLineIndex + 1);
+   }
 }
 
-function mouseMove(evt) {
-   display.mouseY = Math.min(Math.max(Math.floor((evt.clientX - textWrapper.offsetLeft) / main.clientWidth * display.outputWidth),0),display.outputWidth-1);
-   display.mouseX = Math.min(Math.max(Math.floor((evt.clientY - textWrapper.offsetTop) / main.clientHeight * display.outputHeight),0),display.outputHeight-1);
-   display.blit();
-}
-
-function preventBackspaceHandler(evt) {
-    evt = evt || window.event;
-    if (evt.keyCode == 8) {
-        return false;
-    }
-}
-
-function mouseDown(evt) {
-   if (display.contents[display.mouseX][display.mouseY].linkSet) display.masterColors("gray", "black");
-}
-
-function mouseUp(evt) {
-   display.masterColors("white", "black");
-   parseLink();
-}
-
-// TODO: migrate links and functions to arrays with parameters.
 function parseLink(link) {
-   if (link === "reset") {
+   // if link is undefined, use link at current mouse position
+   let linkSet = true;
+   if (typeof link === 'undefined') {
+      link = display.contents[display.mouseX][display.mouseY].link;
+      linkSet = display.contents[display.mouseX][display.mouseY].linkSet;
+   }
+
+   if (!linkSet) return; // stop execution if no link is detected.
+   
+   let type = link[0];
+   // ["reset"] 
+   // triggers page reboot without a refresh
+   if (type === "reset") {
       clearTimeout(lineTimer);
-      parseSection(0, 0);
+      display.clear();
+      topfeedLines.reset();
+      bottomfeedLines.reset();
+      openWindowAnimation(0, 0, 0, display.outputHeight, display.outputWidth, null, ["reset"], null, "Quinn James Online", ["function",loadAssets,0]);
+   }
+   // ["continue"]
+   // Continues parsing the section at the next line index (be careful).
+   else if (type === "continue") {
+      parseSection(previousSection, previousLineIndex+1);
+   }
+   // ["bookmark", section, line index]
+   // Displays a given section at a given line index.
+   else if (type === "bookmark") {
+      clearTimeout(lineTimer);
+      display.clearTTR();
+      parseSection(link[1], link[2]);
+   }
+   // ["function", function, arg1, arg2, arg3, ...]
+   // Runs a function with an arbitrary number of arguments.
+   else if (type === "function") {
+      let args = link.slice(2);
+      link[1].apply(null, args);
+   }
+   // ["hyperlink", location]
+   // Opens an external webpage
+   else if (type === "hyperlink") {
+      window.open(link[1],"_self");
    }
 }
 
 display.init();
-openWindowAnimation(0, 0, 0, display.outputHeight, display.outputWidth, null, "reset", null, "Quinn James Online", loadAssets, 0);
+parseLink(["reset"]);
