@@ -14,20 +14,29 @@
 				background-color: black;
 				font-family: cascadiaCode, "Lucida Console", Monaco, monospace;
 				text-align: center;
+				margin:0;
 			}
 			a {
 				text-decoration: none;
 				color: white;
 			}
+			img {
+				display:block; 
+				margin:auto; 
+				margin-top:50px; 
+				margin-bottom:50px; 
+				width:512px;
+				height:auto;
+			}
 		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	</head>
 
-	<body style="margin:0; background-color: #000;">
+	<body>
 		<br/>
 		<a href="https://xkcd.com/24/">Godel, Escher, Munroe</a><br/>
 		<a href="index.html">By Quinn James</a><br/><br/>
 		January, 2019
-		<img style="display:block; margin:auto; margin-top:50px; margin-bottom:50px; width:512px; height:auto;" src="images/godel_escher_munroe.jpg" onload="$(this).hide().fadeIn(3000)"/>
+		<img src="resources/godel_escher_munroe.jpg" onload="$(this).hide().fadeIn(3000)"/>
 	</body>
 </html>
