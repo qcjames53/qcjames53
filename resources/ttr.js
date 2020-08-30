@@ -16,7 +16,7 @@
 const enableDebug = false;
 
 // CONTENTS
-var contents = ["homepage_contents.json"]; //TODO: integrate into asset loading
+var contents = ["resources/homepage_contents.json"]; //TODO: integrate into asset loading
 
 // HTML access variables
 var main = document.getElementById("main");
@@ -28,7 +28,6 @@ var image = document.getElementById("img");
 var layout;
 var layoutReq;
 var maxLines = 43;
-var textSpeedModifier = 1.0;
 var lineTimer;
 var previousSection = null;
 var previousLineIndex = null;
@@ -133,9 +132,9 @@ var display = {
     */
    init : function() {
       this.contents = new Array();
-      for(var i = 0; i < this.outputHeight; i++) {
+      for(let i = 0; i < this.outputHeight; i++) {
    		this.contents.push(new Array(this.outputWidth));
-   		for(var j = 0; j < this.outputWidth; j++) {
+   		for(let j = 0; j < this.outputWidth; j++) {
    			this.contents[i][j] = new Textel(' ');
    		}
    	}
@@ -147,12 +146,12 @@ var display = {
     * this function is called.
     */
    blit : function() {
-      var outputString = "";
+      let outputString = "";
       mouseUnderTextel = this.contents[this.mouseX][this.mouseY];
       if (this.displayMouse) this.contents[this.mouseX][this.mouseY] = new Textel(this.mouseChar);
-      for(var i = 0; i < this.contents.length; i++) {
-         for(var j = 0; j < this.contents[i].length; j++) {
-            var char = this.contents[i][j].char;
+      for(let i = 0; i < this.contents.length; i++) {
+         for(let j = 0; j < this.contents[i].length; j++) {
+            let char = this.contents[i][j].char;
             if(char == " " || char == ' ') outputString += "&nbsp;";
             else if (this.contents[i][j].colorSet) outputString += "<span style='color:" + this.contents[i][j].color + "'>" + char + "</span>";
             else outputString += char;
@@ -174,11 +173,11 @@ var display = {
     * @param {string} color Optional: color of line characters.
     */
    drawBox : function(row, col, height, width, link, color) {
-      for (var i = row + 1; i < row + height; i++) {
+      for (let i = row + 1; i < row + height; i++) {
          this.contents[i][col] = new Textel('│', link, color);
          this.contents[i][col + width] = new Textel('│', link, color);
       }
-      for (var i = col + 1; i < col + width; i++) {
+      for (let i = col + 1; i < col + width; i++) {
          this.contents[row][i] = new Textel('─', link, color);
          this.contents[row+height][i] = new Textel('─', link, color);
       }
@@ -197,7 +196,7 @@ var display = {
     * @param {string} color Optional: color of characters.
     */
    drawText : function(row, col, text, link, color) {
-      for (var i = 0; i < text.length && (col + i) < this.outputWidth; i++) {
+      for (let i = 0; i < text.length && (col + i) < this.outputWidth; i++) {
          this.contents[row][col + i] = new Textel(text.charAt(i), link, color);
       }
    },
@@ -213,8 +212,8 @@ var display = {
     * @param {string} color Optional: Color for filled area.
     */
    drawFill : function(row, col, height, width, char, link, color) {
-      for (var i = 0; i < height; i++) {
-         for (var j = 0; j < width; j++) {
+      for (let i = 0; i < height; i++) {
+         for (let j = 0; j < width; j++) {
             this.contents[row + i][col + j] = new Textel(char, link, color);
          }
       }
@@ -224,8 +223,8 @@ var display = {
     * Easy function for filling screen contents with spaces.
     */
    clear : function() {
-      for (var i = 0; i < this.outputHeight; i++) {
-         for (var j = 0; j < this.outputWidth; j++) {
+      for (let i = 0; i < this.outputHeight; i++) {
+         for (let j = 0; j < this.outputWidth; j++) {
             this.contents[i][j] = new Textel(" ", null, null);
          }
       }
@@ -236,8 +235,8 @@ var display = {
     * characters alone to retain TTR border.
     */
    clearTTR : function() {
-      for (var i = 1; i < this.outputHeight-1; i++) {
-         for (var j = 1; j < this.outputWidth-1; j++) {
+      for (let i = 1; i < this.outputHeight-1; i++) {
+         for (let j = 1; j < this.outputWidth-1; j++) {
             this.contents[i][j] = new Textel(" ", null, null);
          }
       }
@@ -333,17 +332,17 @@ function openWindowAnimation(frame, row, col, height, width, innerText, innerLin
       lineTimer = setTimeout(openWindowAnimation, 10, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endLink);
    }
    else if (frame - Math.floor(width/2) <= Math.floor(height/2)) {
-      var effectiveFrame = frame - Math.floor(width/2);
+      let effectiveFrame = frame - Math.floor(width/2);
       display.drawBox(row + Math.floor(height/2) - effectiveFrame, col, Math.min(effectiveFrame * 2, height - 1), width - 1, frameLink, innerColor);
-      var clearUpper = row + Math.floor(height/2) - effectiveFrame + 1;
+      let clearUpper = row + Math.floor(height/2) - effectiveFrame + 1;
       display.drawFill(clearUpper, col+1, 1, width-2, " ");
 
-      var clearLower = row + Math.floor(height/2) + effectiveFrame - 1;
+      let clearLower = row + Math.floor(height/2) + effectiveFrame - 1;
       if (clearLower != row + height - 1) display.drawFill(clearLower, col+1, 1, width-2, " ");
       lineTimer = setTimeout(openWindowAnimation, 25, frame+1, row, col, height, width, innerText, innerLink, innerColor, title, endLink);
    }
    else if (typeof title !== 'undefined' && title != null && (frame - Math.floor(width/2) - Math.floor(height/2) < 7)) {
-      var effectiveFrame = frame - Math.floor(width/2) - Math.floor(height/2);
+      let effectiveFrame = frame - Math.floor(width/2) - Math.floor(height/2);
       if (typeof title !== 'undefined' && title != null) {
          if (effectiveFrame % 2 == 0) {
             display.drawText(row, col + Math.floor(width/2) - Math.floor(title.length / 2), title, titleLink, innerColor);
@@ -370,7 +369,7 @@ function loadAssets(frame) {
       layoutReq = new XMLHttpRequest();
       layoutReq.responseType = "text";
       layoutReq.addEventListener("load", layoutReqListener);
-      layoutReq.open("GET", "homepage_contents.json");
+      layoutReq.open("GET", contents[0]);
       layoutReq.send(null);
       displayColorGrid(2, display.outputHeight-2,2,display.outputWidth-2,2,5);
    }
@@ -449,7 +448,7 @@ function displayBufferedTopFeedLines(buffer) {
  */
 function displayBottomFeedLines() {
    display.clearTTR();
-   for(var i = 0; i < bottomfeedLines.strings.length; i++) {
+   for(let i = 0; i < bottomfeedLines.strings.length; i++) {
       display.drawText(i + 1, 3, bottomfeedLines.strings[i], bottomfeedLines.links[i], bottomfeedLines.colors[i]);
    }
    display.blit();
@@ -490,7 +489,7 @@ function parseSection(section, currentLineIndex) {
    // Draw section, line index, and delay to top left if debug mode is enabled.
    if (enableDebug) {
       display.drawText(0,1,"──────────────────")
-      display.drawText(0,1,section + "," + currentLineIndex + "," + Math.floor(delay * (1/textSpeedModifier)));
+      display.drawText(0,1,section + "," + currentLineIndex + "," + delay);
    }
 
    // ["topfeed", delay, text, link, color]
@@ -548,7 +547,7 @@ function parseSection(section, currentLineIndex) {
       parseSection(section, currentLineIndex + 1);
    }
    else if (delay != null) {
-      lineTimer = setTimeout(parseSection, Math.floor(delay * (1/textSpeedModifier)), section, currentLineIndex + 1);
+      lineTimer = setTimeout(parseSection, delay, section, currentLineIndex + 1);
    }
 }
 
