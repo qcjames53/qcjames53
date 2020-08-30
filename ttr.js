@@ -33,6 +33,9 @@ var lineTimer;
 var previousSection = null;
 var previousLineIndex = null;
 
+// AUDIO
+var intro_sound = new Audio("resources/intro_sound.mp3");
+
 /**
  * Class which composes the character-based output. Displays one character of a
  * certain color. Optional link allows for functions and hyperlinks to be run
@@ -267,6 +270,11 @@ function mouseMove(evt) {
    display.blit();
 }
 
+function introMouseDown(evt) {
+   document.removeEventListener("mousedown",introMouseDown);
+   parseLink(["reset"]);
+}
+
 /**
  * Updates window colors if mouse is over button when clicked.
  */
@@ -364,18 +372,10 @@ function loadAssets(frame) {
       layoutReq.addEventListener("load", layoutReqListener);
       layoutReq.open("GET", "homepage_contents.json");
       layoutReq.send(null);
-
-      display.drawText(1,display.outputWidth-9,"█",null,"gray");
-      display.drawText(1,display.outputWidth-8,"█",null,"red");
-      display.drawText(1,display.outputWidth-7,"█",null,"orange");
-      display.drawText(1,display.outputWidth-6,"█",null,"yellow");
-      display.drawText(1,display.outputWidth-5,"█",null,"green");
-      display.drawText(1,display.outputWidth-4,"█",null,"blue");
-      display.drawText(1,display.outputWidth-3,"█",null,"purple");
-      display.drawText(1,display.outputWidth-2,"█",null,"white");
+      displayColorGrid(2, display.outputHeight-2,2,display.outputWidth-2,2,5);
    }
-   if (frame >= 8 && typeof layout !== 'undefined') {
-      document.onkeydown = preventBackspaceHandler;
+   if (typeof layout !== 'undefined') {
+      document.addEventListener("mousedown",introMouseDown);
       document.addEventListener("mousemove",mouseMove);
       document.addEventListener("mousedown",mouseDown);
       document.addEventListener("mouseup",mouseUp);
@@ -385,24 +385,31 @@ function loadAssets(frame) {
       else {
          display.displayMouse = true;
       }
-      display.clearTTR();
-      parseSection(0);
+      clearTimeout(lineTimer);
+      display.drawText(1,0,"                ", null, null);
+      display.drawBox(Math.floor(display.outputHeight/2)-1,Math.floor(display.outputWidth/2-7)-1,2,15,null,null);
+      display.drawText(Math.floor(display.outputHeight/2),Math.floor(display.outputWidth/2-7),"Click to begin",null,null);
+      display.blit();
    }
    else if (frame % 4 == 0) {
-      display.drawText(1,1,"Loading assets |");
+      display.drawText(1,0,"Loading assets |", null, "gray");
       setTimeout(loadAssets, 50, frame + 1);
    }
    else if (frame % 4 == 1) {
-      display.drawText(1,1,"Loading assets /")
+      display.drawText(1,0,"Loading assets /", null, "gray");
       setTimeout(loadAssets, 50, frame + 1);
    }
    else if (frame % 4 == 2) {
-      display.drawText(1,1,"Loading assets ─")
+      display.drawText(1,0,"Loading assets ─", null, "gray");
       setTimeout(loadAssets, 50, frame + 1);
    }
    else if (frame % 4 == 3) {
-      display.drawText(1,1,"Loading assets \\")
+      display.drawText(1,0,"Loading assets \\", null, "gray");
       setTimeout(loadAssets, 50, frame + 1);
+   }
+
+   if (frame == 20) {
+      display.drawText(2,0,"Assets still unloaded. Try refreshing. [quinnjam.es] runs best on latest Firefox version.",null, "gray");
    }
    display.blit();
 }
@@ -415,7 +422,7 @@ function layoutReqListener () {
  * Displays saved topfeedLines contents. Clears screen beforehand.
  */
 function displayTopFeedLines() {
-   display.clearTTR;
+   display.clearTTR();
    let endindex = topfeedLines.strings.length;
    let startindex = Math.max(endindex - maxLines,0);
    for(let i = startindex; i < endindex; i++) {
@@ -429,7 +436,6 @@ function displayTopFeedLines() {
  * Does not clear screen.
  */
 function displayBufferedTopFeedLines(buffer) {
-   display.clearTTR;
    let endindex = topfeedLines.strings.length;
    let startindex = Math.max(endindex - maxLines + buffer,0);
    for(let i = startindex; i < endindex; i++) {
@@ -447,6 +453,16 @@ function displayBottomFeedLines() {
       display.drawText(i + 1, 3, bottomfeedLines.strings[i], bottomfeedLines.links[i], bottomfeedLines.colors[i]);
    }
    display.blit();
+}
+
+function displayColorGrid(sRow, eRow, sCol, eCol, rowSpacing, colSpacing) {
+   for(let row = sRow; row <= eRow; row += rowSpacing) {
+      let lit = Math.floor(50 * (1-Math.sqrt((row-sRow)/(eRow-sRow))));
+      for(let col = sCol; col <= eCol; col += colSpacing) {
+         let hue = Math.floor(((col-sCol) / (eCol - sCol)) * 360);
+         display.drawText(row,col,"█",null,"hsl(" + hue + ",100%," + lit + "%)");
+      }
+   }  
 }
 
 /**
@@ -519,6 +535,10 @@ function parseSection(section, currentLineIndex) {
    else if (type === "parselink") {
       parseLink(link);
    }
+   // ["colorgrid", delay]
+   else if (type === "colorgrid") {
+      displayColorGrid(2, display.outputHeight-2,2,display.outputWidth-2,2,5);
+   }
 
    // Schedules next line placement under lineTimer unless instant or null.
    // Immediately runs if instant. Ends execution if null.
@@ -550,7 +570,10 @@ function parseLink(link) {
       display.clear();
       topfeedLines.reset();
       bottomfeedLines.reset();
-      openWindowAnimation(0, 0, 0, display.outputHeight, display.outputWidth, null, ["reset"], null, "Quinn James Online", ["function",loadAssets,0]);
+      intro_sound.play();
+      display.masterColors("white","white");
+      setTimeout(display.masterColors, 150, "white", "black");
+      openWindowAnimation(0, 0, 0, display.outputHeight, display.outputWidth, null, ["reset"], null, "Quinn James Online", ["bookmark",0,0]);
    }
    // ["continue"]
    // Continues parsing the section at the next line index (be careful).
@@ -577,5 +600,6 @@ function parseLink(link) {
    }
 }
 
+document.onkeydown = preventBackspaceHandler;
 display.init();
-parseLink(["reset"]);
+loadAssets(0);
