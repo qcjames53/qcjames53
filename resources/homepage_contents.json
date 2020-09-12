@@ -28,19 +28,24 @@
       [null, "fill", 20, 18, 15, 2, "G", null, "green"]
    ],
    [
-      ["doNotDisplay", 100],
-      ["window", 50, "Page Template", null, null, null, 1, 2, 3, 15, null],
-      ["freetext", 50, "2020-08-28", null, null, "gray", 2, 18],
-      ["freetext", 50, "[Return to Homepage]", ["bookmark", 0, 0], ["drawHoverText", "[Return to Homepage]", "white", 2, 77], "gray", 2, 77],
-      ["bufferedTopfeed", 50, "Line 1", null, null, null, 4],
-      ["bufferedTopfeed", 50, "Line 2", null, null, null, 4],
-      ["bufferedTopfeed", 50, "Line 3", null, null, null, 4],
-      ["bufferedTopfeed", 50, "Line 4", null, null, null, 4],
-      ["bufferedTopfeed", 50, "Line 5", null, null, null, 4],
-      ["bufferedTopfeed", 50, "Line 6", null, null, null, 4],
-      ["bufferedTopfeed", 50, "Line 7", null, null, null, 4],
-      ["bufferedTopfeed", 50, "Line 8", null, null, null, 4],
-      ["bufferedTopfeed", 50, "Line 9", null, null, null, 4],
-      ["bufferedTopfeed", null, "Line 10", null, null, null, 4]
-    ]
+      [0, "box", 2, 3, 13, 30, " ", null, null],
+      [0, "text", 3, 4, ["[Coding Projects]", null, null], null],
+      [0, "text", 5, 4, [" TTR Website Engine", null, null], [">TTR Website Engine", null, "lime"]],
+      [0, "text", 6, 4, [" AnnotationTool 3D Engine", null, null], [">AnnotationTool 3D Engine", null, "lime"]],
+      [0, "text", 7, 4, [" Pygame Raytracing Engine", null, null], [">Pygame Raytracing Engine", null, "lime"]],
+      [0, "box", 2, 34, 13, 32, " ", null, null],
+      [0, "text", 3, 35, ["[Minecraft Projects]", null, null], null],
+      [0, "text", 5, 35, [" Mob Combat Training", null, null], [">Mob Combat Training", null, "lime"]],
+      [0, "text", 6, 35, [" PORK: Rube Goldberg Machine", null, null], [">PORK: Rube Goldberg Machine", null, "lime"]],
+      [0, "text", 7, 35, [" My 60 Minute Maps", null, null], [">My 60 Minute Maps", null, "lime"]],
+      [0, "text", 8, 35, [" St. Josephine's", null, null], [">St. Josephine's", null, "lime"]],
+      [0, "text", 9, 35, [" Skypillar", null, null], [">Skypillar", null, "lime"]],
+      [0, "text", 10, 35, [" Note", null, null], [">Note", null, "lime"]],
+      [0, "text", 11, 35, [" Beyond Perception 2", null, null], [">Beyond Perception 2", null, "lime"]],
+      [0, "text", 12, 35, [" Presentable Liberty", null, null], [">Presentable Liberty", null, "lime"]],
+      [0, "box", 2, 67, 13, 30, " ", null, null],
+      [0, "text", 3, 68, ["[Miscellaneous]", null, null], null],
+      [0, "text", 5, 68, [" MacPi Macintosh SE", null, null], [">MacPi Macintosh SE", null, "lime"]],
+      [null, "text", 6, 68, [" Open Terminal", null, null], [">Open Terminal", null, "lime"]]
+   ]
 ]

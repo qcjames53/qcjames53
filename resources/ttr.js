@@ -13,9 +13,9 @@
 //    https://ph.dtf.wtf/w/wtfpl/#version-3-1 for more details.
 
 // DEV TOGGLES
-const enableDebug = true;
-const skipClickToStart = true; // 'true' may cause intro sound playback issues
-const loadToTestPage = true;
+const enableDebug = false;
+const skipClickToStart = true; // 'true' will not play intro sound
+const loadToTestPage = false;
 
 // CONTENTS
 var contents = ["resources/homepage_contents.json"]; //TODO: integrate into asset loading
@@ -224,7 +224,7 @@ var display = {
  * Updates mouse coordinates if mouse has been moved.
  */
 function mouseMove(evt) {
-   display.mouseY = Math.min(Math.max(Math.floor((evt.clientX - textWrapper.offsetLeft) / main.clientWidth * display.outputWidth),0),display.outputWidth-1);
+   display.mouseY = Math.min(Math.max(Math.floor((evt.clientX - textWrapper.offsetLeft + 2) / main.clientWidth * display.outputWidth),0),display.outputWidth-1);
    display.mouseX = Math.min(Math.max(Math.floor((evt.clientY - textWrapper.offsetTop) / main.clientHeight * display.outputHeight),0),display.outputHeight-1);
    enabledHoverIndex = display.contents[display.mouseX][display.mouseY].hoverIndex
    display.blit();
