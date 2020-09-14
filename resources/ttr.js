@@ -13,12 +13,17 @@
 //    https://ph.dtf.wtf/w/wtfpl/#version-3-1 for more details.
 
 // DEV TOGGLES
-const enableDebug = false;
+const enableDebug = false; // Ability to view Textel contents (middle click).
 const skipClickToStart = true; // 'true' will not play intro sound
-const loadToTestPage = false;
+const loadToTestPage = false; // 'true' loads main.json to sec 0, false to sec 1
+const pageBorderTitle = "Quinn James Online";
+const enableCustomDrawFromArray = false;
+const enableCustomParseLink = false;
 
 // CONTENTS
-var contents = ["resources/homepage_contents.json"]; //TODO: integrate into asset loading
+var contentsURL = "resources/main.json";
+var contents;
+var contentsReq;
 
 // HTML access variables
 var main = document.getElementById("main");
@@ -27,9 +32,6 @@ var textWrapper = document.getElementById("textWrapper");
 var image = document.getElementById("img");
 
 // JSON display variables
-var layout;
-var layoutReq;
-var maxLines = 43;
 var lineTimer;
 var previousSection = null;
 var previousLineIndex = null;
@@ -40,6 +42,26 @@ var enabledHoverIndex = null;
 
 // AUDIO
 var intro_sound = new Audio("resources/intro_sound.mp3");
+
+/**
+ * Function for custom draw-time functionality. See drawFromArray() function for
+ * existing functionality. Note that 'enableCustomDrawFromArray' must be set to
+ * true to use.
+ * @param input List of arbitrary types taken from current json file, stripped *
+ * of index 0, delay.
+ */
+function customDrawFromArray(input) {
+   // add custom functionality here
+}
+
+/**
+ * Function for custom link functionality. See parseLink() function for existing
+ * links. Note that 'enableCustomParseLink' must be set to true to use.
+ * @param input List which follows format [linkType, arg1, arg2, arg3, ...]
+ */
+function customParseLink(input) {
+   // add custom functionality here
+}
 
 /**
  * Class which composes the character-based output. Displays one character of a
@@ -55,6 +77,10 @@ class Textel {
    }
 }
 
+/**
+ * Display is the canvas object. Contains stored Textel contents, functions for 
+ * drawing, and output functions for changing the user-visible HTML.
+ */
 var display = {
    outputWidth : 100,
    outputHeight : 45,
@@ -143,7 +169,10 @@ var display = {
    },
 
    /**
-    * Draws text string at given coordinates.
+    * Draws text string at given coordinates. standardContents and 
+    * hoverContents should follow the format:
+    *       [text, link, color]
+    * Set hovercontents to 'null' if no hover is desired.
     */
    drawText : function(row, col, standardContents, hoverContents) {
       let textStd = standardContents[0];
@@ -217,6 +246,22 @@ var display = {
     */
    isTouchDevice : function() {
       return !!('ontouchstart' in window || navigator.maxTouchPoints);
+   },
+
+   /**
+    * Animates a background image change.
+    * @param link URL of image.
+    */
+   setImage : function(link) {
+      $("#img").fadeOut(500);
+      setTimeout(this.setImage2, 500, link);
+   },
+
+   /**
+    * Helper function for setImage() 
+    */
+   setImage2 : function(link) {
+      image.src = link;
    }
 };
 
@@ -289,7 +334,7 @@ function preventBackspaceHandler(evt) {
 }
 
 /**
- * Calls appropriate draw functions from current contents json file.
+ * Calls appropriate draw functions from current contents in json file.
  * @param {number} section Section of JSON to read from.
  * @param {number} currentLineIndex Optional: Line index inside of section.
  */
@@ -298,7 +343,7 @@ function parseSection(section, currentLineIndex) {
       currentLineIndex = 0;
    }
 
-   let delay = layout[section][currentLineIndex][0];
+   let delay = contents[section][currentLineIndex][0];
 
    // If section has changed, reset line storage and clear screen.
    if (section != previousSection) {
@@ -311,7 +356,7 @@ function parseSection(section, currentLineIndex) {
       display.drawText(0,1,[section + "," + currentLineIndex + "," + delay,null,null],null);
    }
 
-   drawFromArray(layout[section][currentLineIndex].slice(1));
+   drawFromArray(contents[section][currentLineIndex].slice(1));
 
    // Schedules next line placement under lineTimer unless instant or null.
    // Immediately runs if instant. Ends execution if null.
@@ -325,6 +370,20 @@ function parseSection(section, currentLineIndex) {
    }
 }
 
+/**
+ * Draws to display using given array. Permitted input formats are as follows:
+ *       ["box", row, col, height, width, fillChar, link, color]
+ *       ["text", row, col, standardContents, hoverContents]
+ *          stdCon/hovCon are lists and follow the format: [text, link, color]
+ *       ["fill", row, col, height, width, fillChar, link, color]
+ *       ["colorgrid"]
+ *       ["boxAnimation", row, col, height, width, fillChar, stdTitle, 
+ *          hoverTitle, endLink]
+ *       ["backgroundImage", URL]
+ * Note that additional drawFromArray functionality should be implemented in 
+ * the function 'customDrawFromArray', which requires 
+ * 'enableCustomDrawFromArray' to be set to true globally.
+ */
 function drawFromArray(input) {
    let type = input[0];
    // ["box", row, col, height, width, fillChar, link, color]
@@ -351,9 +410,22 @@ function drawFromArray(input) {
    else if (type === "boxAnimation") {
       openBoxAnimation(0, input[1], input[2], input[3], input[4], input[5], input[6], input[7], input[8]);
    }
+   else if (type === "backgroundImage") {
+      display.setImage(input[1]);
+   }
+   else if (enableCustomDrawFromArray) {
+      customDrawFromArray(input);
+   }
    display.blit();
 }
 
+/**
+ * Opens a box using a trendy animation. stdTitle and hoverTitle provide a
+ * convenient way to include a label for the box in a one-command solution,
+ * while endLink can execute an arbitrary link once the animation is complete.
+ * Using ["continue"] as an endLink can be convenient if the animation is
+ * mid-JSON execution.
+ */
 function openBoxAnimation(frame, row, col, height, width, fillChar, stdTitle, hoverTitle, endLink) {
    if (frame <= Math.floor(width/2)) {
       display.drawBox(row + Math.floor(height / 2), col + Math.floor(width / 2) - frame, 2, Math.min(2 * frame, width - 1), null, null);
@@ -397,6 +469,9 @@ function openBoxAnimation(frame, row, col, height, width, fillChar, stdTitle, ho
    display.blit();
 }
 
+/**
+ * Displays a grid of rainbow color box characters set by various parameters.
+ */
 function displayColorGrid(sRow, eRow, sCol, eCol, rowSpacing, colSpacing) {
    for(let row = sRow; row <= eRow; row += rowSpacing) {
       let lit = Math.floor(50 * (1-Math.sqrt((row-sRow)/(eRow-sRow))));
@@ -407,6 +482,21 @@ function displayColorGrid(sRow, eRow, sCol, eCol, rowSpacing, colSpacing) {
    }  
 }
 
+/**
+ * Parses a link (list of items) in the format:
+ *       [linkType, arg1, arg2, arg3, ...]
+ * Accepted link formats are:
+ *       ["reset"] - Resets page and intro animation.
+ *       ["continue"] - Continues parseLink at next line index. Useful to run   
+ *                      after box animations.
+ *       ["bookmark", section, lineIndex] - parseLink at certain location.
+ *       ["function", arg1, arg2, arg3] - Runs a JS function with arguments.
+ *       ["hyperlink", link] - Opens a URL
+ *       ["test"] - Used for testing links. Alerts user that "link works"
+ * Note that additional parseLink functionality should be implemented in the 
+ * function 'customParseLink', which requires 'enableCustomParseLink' to be set 
+ * to true globally.
+ */
 function parseLink(link) {
    let type = link[0];
    // ["reset"] 
@@ -418,8 +508,8 @@ function parseLink(link) {
       display.masterColors("white","white");
       setTimeout(display.masterColors, 150, "white", "black");
       let functionEndLink = ["bookmark", (loadToTestPage ? 0 : 1), 0];
-      let stdTitle = ["─Quinn James Online─", ["reset"], null];
-      let hvrTitle = ["[Quinn James Online]", ["reset"], "lime"];
+      let stdTitle = ["─" + pageBorderTitle + "─", ["reset"], null];
+      let hvrTitle = ["[" + pageBorderTitle + "]", ["reset"], "lime"];
       openBoxAnimation(0, 0, 0, display.outputHeight, display.outputWidth, ' ', stdTitle, hvrTitle, functionEndLink);
    }
    // ["continue"]
@@ -451,18 +541,25 @@ function parseLink(link) {
    else if (type === "test") {
       alert("Link works!");
    }
+   else if (enableCustomParseLink) {
+      customParseLink(link);
+   }
 }
 
+/**
+ * Loads initial json file when page is launched. Controls homepage animations.
+ * @param {number} frame Used recursively. Set to 0.
+ */
 function loadAssets(frame) {
    if (frame == 0) {
-      layoutReq = new XMLHttpRequest();
-      layoutReq.responseType = "text";
-      layoutReq.addEventListener("load", layoutReqListener);
-      layoutReq.open("GET", contents[0]);
-      layoutReq.send(null);
+      contentsReq = new XMLHttpRequest();
+      contentsReq.responseType = "text";
+      contentsReq.addEventListener("load", contentsReqListener);
+      contentsReq.open("GET", contentsURL);
+      contentsReq.send(null);
       displayColorGrid(2, display.outputHeight-2,2,display.outputWidth-2,2,5);
    }
-   if (typeof layout !== 'undefined') {
+   if (typeof contents !== 'undefined') {
       document.addEventListener("mousemove",mouseMove);
       document.addEventListener("mousedown",mouseDown);
       document.addEventListener("mouseup",mouseUp);
@@ -507,8 +604,32 @@ function loadAssets(frame) {
    display.blit();
 }
 
-function layoutReqListener () {
-	layout = JSON.parse(this.responseText);
+/**
+ * XML Request listener for initial JSON load.
+ */
+function contentsReqListener() {
+	contents = JSON.parse(this.responseText);
+}
+
+/**
+ * Changes current JSON file.
+ * @param {String} newFileURL URL of new JSON file. 
+ */
+function changeJSON(newFileURL) {
+   contentsReq = new XMLHttpRequest();
+   contentsReq.responseType = "text";
+   contentsReq.addEventListener("load", changeJSONReqListener);
+   contentsReq.open("GET", newFileURL);
+   contentsReq.send(null);
+   contentsURL = newFileURL;
+}
+
+/**
+ * XML Request listener for JSON change.
+ */
+function changeJSONReqListener() {
+   contents = JSON.parse(this.responseText);
+   parseLink(["bookmark",0,0]);
 }
 
 // Page-load initialization
