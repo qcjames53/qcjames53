@@ -18,7 +18,7 @@ const skipClickToStart = true; // 'true' will not play intro sound
 const loadToTestPage = false; // 'true' loads main.json to sec 0, false to sec 1
 const pageBorderTitle = "Quinn James Online";
 const enableCustomDrawFromArray = false;
-const enableCustomParseLink = false;
+const enableCustomParseLink = true;
 
 // CONTENTS
 var contentsURL = "resources/main.json";
@@ -60,7 +60,11 @@ function customDrawFromArray(input) {
  * @param input List which follows format [linkType, arg1, arg2, arg3, ...]
  */
 function customParseLink(input) {
-   // add custom functionality here
+   if (input[0] === "enableTerminal") {
+      if (!terminal.isEnabled) {
+         terminal.enable(0);
+      }
+   }
 }
 
 /**
@@ -348,6 +352,7 @@ function parseSection(section, currentLineIndex) {
    // If section has changed, reset line storage and clear screen.
    if (section != previousSection) {
       display.clearTTR();
+      terminal.isEnabled = false;
    }
 
    // Draw section, line index, and delay to top left if debug mode is enabled.
@@ -505,6 +510,7 @@ function parseLink(link) {
       if (!skipClickToStart) intro_sound.play();
       clearTimeout(lineTimer);
       display.clear();
+      display.setImage("");
       display.masterColors("white","white");
       setTimeout(display.masterColors, 150, "white", "black");
       let functionEndLink = ["bookmark", (loadToTestPage ? 0 : 1), 0];
