@@ -14,7 +14,7 @@
 
 // DEV TOGGLES
 const enableDebug = false; // Ability to view Textel contents (middle click).
-const skipClickToStart = true; // 'true' will not play intro sound
+const skipClickToStart = false; // 'true' will not play intro sound
 const loadToTestPage = false; // 'true' loads main.json to sec 0, false to sec 1
 const pageBorderTitle = "Quinn James Online";
 const enableCustomDrawFromArray = false;
