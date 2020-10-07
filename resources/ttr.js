@@ -515,7 +515,7 @@ function parseLink(link) {
       setTimeout(display.masterColors, 150, "white", "black");
       let functionEndLink = ["bookmark", (loadToTestPage ? 0 : 1), 0];
       let stdTitle = ["─" + pageBorderTitle + "─", ["reset"], null];
-      let hvrTitle = ["[" + pageBorderTitle + "]", ["reset"], "lime"];
+      let hvrTitle = ["[" + pageBorderTitle + "]", ["reset"], "#66bb6a"];
       openBoxAnimation(0, 0, 0, display.outputHeight, display.outputWidth, ' ', stdTitle, hvrTitle, functionEndLink);
    }
    // ["continue"]
