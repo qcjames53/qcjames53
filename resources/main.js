@@ -32,6 +32,7 @@ var contentsReq;
  class Textel {
     constructor(standardContents, hoverContents, hoverIndex) {
        if (typeof hoverIndex === 'undefined') hoverIndex = null;
+       
        this.standardContents = standardContents;
        this.hoverContents = hoverContents;
        this.hoverIndex = hoverIndex;

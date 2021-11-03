@@ -1,0 +1,118 @@
+drawing_utils:
+    display
+
+    draw_box()
+    draw_text()
+    draw_fill()
+    draw_*()
+
+display:
+    size
+    hover_groups <- which hover groups are active
+    contents <- 2d array of size size containing Textels
+    cursor
+    hover_group
+
+    init(size_x, size_y)
+    blit()
+    set_textel(x, y,)
+    hover(x, y)
+    click(x, y)
+
+textel:
+    character
+    color
+    hover character
+    hover color
+    hover group
+    click link
+
+    constructor(character, color, hover_char, hover_color, hover_group, click_function, click_function_args)
+    blit(output_string, hover_group)
+    click()
+    get_hover_group()
+
+cursor:
+    x, y position
+    character
+    color
+    pagemanager
+    display
+
+    blit(output_string)
+    on_down()
+    on_up()
+    on_move()
+
+page_manager:
+    page_json dict from page_index -> json
+    load_manager
+    page_indices_to_url
+
+    open_page(page_link) <- loads and opens page or external link
+    load_json(page_link, json)
+    draw()
+
+menu_manager:
+    current_tab
+    menu_json
+    load_manager
+
+    open_tab(tab_no)
+    draw()
+
+
+load_manager:
+    loading_resources = []
+    display
+    drawing_utils
+
+    load_resource(url, return_function)
+    completed_resource(index)
+
+loading_resource:
+    resource_index
+    load_manager
+
+    loading_request_response()
+        call return_function
+        call completed_resource on delay
+
+
+bind mouse events to mouse
+
+
+
+-- Examples --
+On mouse move:
+    Call cursor.on_move()
+        Call display.hover()
+            Set the hover 
+        Call display.blit()
+
+On mouse click page link external:
+    Call cursor.on_up()
+        Call display.click(x, y)
+            Call textel.click()
+                Call page_manager.open_page(url)
+                    Open external page
+
+On mouse click page link internal:
+    Call cursor.on_up()
+        Call display.click(x, y)
+            Call textel.click()
+                Call page_manager.open_page(index)
+                    Call load_manager.load_resource()
+                        Call draw_text in drawing_utils
+                        Create loading_resource, add to internal list
+    Once resource loads, call page_manager.load_json
+        Call draw()
+        Call diplay.blit()
+
+On mouse click menu link internal:
+    Call curor.on_up()
+        Call display.click(x, y)
+            Call textel.click()
+                Call menu_manager.open_tab(tab_no)
+                    Close the menu
+                    Call page_manager.open_page(index)
