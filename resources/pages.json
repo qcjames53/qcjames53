@@ -1,0 +1,31 @@
+[
+    {
+        "tab_title":"Tab 1",
+        "pages":[
+            {"title":"Test 1", "url_i":"/pages/12"},
+            {"title":"Test 2", "url_e":"https://youtube.com"},
+            {"title":"Test 3", "url_i":"/pages/12"},
+            {"title":"Test 4", "url_i":"/pages/12"}
+        ]
+    },
+
+    {
+        "tab_title":"Tabuloid 2",
+        "pages":[
+            {"title":"Test 1", "url_i":"/pages/12"},
+            {"title":"Test 2", "url_e":"https://youtube.com"},
+            {"title":"Test 3", "url_i":"/pages/12"},
+            {"title":"Test 4", "url_i":"/pages/12"}
+        ]
+    },
+
+    {
+        "tab_title":"A really long tab title 3",
+        "pages":[
+            {"title":"Test 1", "url_i":"/pages/12"},
+            {"title":"Test 2", "url_e":"https://youtube.com"},
+            {"title":"Test 3", "url_i":"/pages/12"},
+            {"title":"Test 4", "url_i":"/pages/12"}
+        ]
+    }
+]

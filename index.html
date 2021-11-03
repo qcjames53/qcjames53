@@ -1,3 +1,10 @@
+<!--
+Copyright (c) 2021 Quinn James
+
+Please see the COPYING file for license and copyright information.
+https://quinnjam.es/COPYING
+-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,59 +12,35 @@
 	<meta charset="UTF-8">
 	<style>
 		@font-face {
-			font-family: cascadiaCode;
-			src: url(resources/CascadiaCode.woff2);
+			font-family: cascadiaMono;
+			src: url(resources/CascadiaMono.woff2);
 		}
 
 		body {
 			background-image: url('resources/background.png');
 			color: white;
 			background-color: black;
-		}
-
-
-		#bg {
-			position: fixed;
-			top: -50%;
-			left: -50%;
-			width: 200%;
-			height: 200%;
-		}
-		#bg img {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			margin: auto;
-			min-width: 50%;
-			min-height: 50%;
-			filter: blur(5px);
+			overflow: hidden;
+			margin: 0px;
 		}
 
 		#textWrapper {
 			position:relative;
-			cursor:none;
-			font-family: cascadiaCode, "Lucida Console", Monaco, monospace ;
+			font-family: cascadiaMono, "Lucida Console", Monaco, monospace ;
 			font-size:12px;
 			line-height:12px;
-			width:100ch;
-			margin:auto;
+			width:100%;
+			margin:0px;
 		}
 	</style>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script data-host="https://microanalytics.io" data-dnt="false" src="https://microanalytics.io/js/script.js" id="ZwSg9rf6GA" async defer></script>
 </head>
 <body id="body">
-	<div id="bg">
-		<img id="img" src="" onload="$(this).fadeTo(500, 0.4);"/>
-	</div>
 
 	<div id="textWrapper">
 		<div id="main"></div>
 	</div>
 
-	<script src="resources/ttr.js"></script>
-	<script src="resources/terminal.js"></script>
+	<body onresize="onWindowResize()"></body>
+	<script src="resources/main.js"></script>
 </body>
 </html>

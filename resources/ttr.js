@@ -638,6 +638,10 @@ function changeJSONReqListener() {
    parseLink(["bookmark",0,0]);
 }
 
+function onWindowResize() {
+   display.init()
+}
+
 // Page-load initialization
 document.onkeydown = preventBackspaceHandler;
 display.init();
