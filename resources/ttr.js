@@ -7,10 +7,25 @@
 //    version 5.0                          
 //    by Quinn James 
 //
-//    This project is libre, and licenced under the terms of the
-//    DO WHAT THE FUCK YOU WANT TO PUBLIC LICENCE, version 3.1,
-//    as published by dtf on July 2019. See the COPYING file or
-//    https://ph.dtf.wtf/w/wtfpl/#version-3-1 for more details.
+// Copyright © 2022 Quinn James
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the “Software”), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 // Constants
 const GRIDWIDTH = 80;
@@ -18,6 +33,9 @@ const TEXTWIDTH = 78;
 const DEFAULT_CHAR = ' ';
 const SVD_ANIMATION_FRAMES = 50;
 const IMAGE_HEIGHT = 23;
+const IMAGE_WIDTH = 80;
+const HEADER_WIDTH = 162;
+const HEADER_HEIGHT = 10;
 const UL = '┌';
 const UR = '┐';
 const LL = '└';
@@ -30,10 +48,16 @@ const HF = '▒';
 const DLT = '╞';
 const DRT = '╡';
 const DHO = '═';
+const HEADER_LOGO = "&nbsp;#######&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########&nbsp;&nbsp;######&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#######&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########<br/>##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;##&nbsp;###&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;###&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;###&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;##&nbsp;##<br/>##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;&nbsp;##&nbsp;####&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;####&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;&nbsp;##&nbsp;##<br/>##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;###&nbsp;##&nbsp;######&nbsp;&nbsp;&nbsp;&nbsp;######&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;##&nbsp;##&nbsp;######<br/>##&nbsp;&nbsp;##&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;##&nbsp;&nbsp;####&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;#########&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;##<br/>##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;##<br/>&nbsp;#####&nbsp;##&nbsp;&nbsp;#######&nbsp;&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;######&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########&nbsp;&nbsp;######&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#######&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########<br/>";
+const HEADER_LINKS = "<br/><a href=\"https://quinnjam.es\">Homepage</a><br/><br/>";
+const FOOTER_COPYRIGHT = "Copyright © 2022 <a href=\"https://quinnjam.es\">Quinn James</a> | ";
+const FOOTER_MODIFY_PREF = "This webpage was last modified on ";
 
 // HTML access variables
 let main = document.getElementById("ttr");
 let images = document.getElementById("ttr-images");
+let header = document.getElementById("ttr-header");
+let footer = document.getElementById("ttr-footer");
 
 // Utility function to resize a matrix and fill empty space with 0s
 function resize_matrix(matrix, rows, cols) {
@@ -228,6 +252,13 @@ class ImageHandler {
       for(let entry of this.images) {
          if(entry != null) {
             output += "<img src=\"" + entry[0] + "\" alt=\"" + entry[1] + "\"/>";
+
+            // If this image has a caption, display it with left padding
+            if(entry[1] != null) {
+               let padding_text = Array(IMAGE_WIDTH + 1).join(' ');
+               let caption_left_pad = String(padding_text + entry[1]).slice(-IMAGE_WIDTH);
+               output += "<br/>" + caption_left_pad.replaceAll(" ", "&nbsp;");
+            }
          }
          output += "<br/>";
       }
@@ -247,6 +278,12 @@ class ImageHandler {
       // Add the image and return the next open row
       this.images.push([link, alt]);
       this.first_open_row = row + IMAGE_HEIGHT;
+
+      // If the image has a caption, add one line
+      if(alt != null) {
+         this.first_open_row++;
+      }
+
       return this.first_open_row;
    }
 
@@ -334,8 +371,10 @@ class TextSection {
 
          // if it is an image, get address and add to section
          if(word_text.slice(0,1) == "[") {
-            let alt = word_text.match(/\[[^\]]+\]/g)[0];
-            alt = alt.slice(1, alt.length - 1);
+            let alt = word_text.match(/\[[^\]]+\]/g);
+            if(alt != null) {
+               alt = alt[0].slice(1, alt[0].length - 1);
+            }
             this.image_alts.push(alt);
             let url = word_text.match(/\([^)]+\)/g)[0];
             url = url.slice(1, url.length - 1);
@@ -406,9 +445,10 @@ class TextSection {
 
 // Handles page-wide operations like animations
 class Page {
-   constructor(main, images) {
+   constructor(main, images, header) {
       // Build the image handler
       this.image_handler = new ImageHandler(images);
+      this.header = header;
       
       // Build the grid and load the text sections from main
       this.grid = new Grid(main);
@@ -444,6 +484,11 @@ class Page {
       this.V = numeric.transpose(this.V);
       this.V = resize_matrix(this.V, GRIDWIDTH, GRIDWIDTH);
 
+      // Quickly blit and unblit images to request resource load from browser
+      this.image_handler.blit();
+      this.image_handler.clear();
+      this.image_handler.blit();
+
       // run svd animation on page load
       let start_i = Math.max(1, this.S.length - SVD_ANIMATION_FRAMES);
       this.animate_svd(this, start_i, 75, start_i);
@@ -464,11 +509,15 @@ class Page {
          // For image sections, print at either the next open image row or the
          // next text row, lowest row takes precedent.
          else {
-            print_row = Math.max(this.image_handler.get_first_open_row(), print_row);
+            print_row = Math.max(this.image_handler.get_first_open_row() + 1, print_row);
             section.print_images(print_row);
             print_row = section.print_to_grid(print_row) + 1;
          }
       }
+
+      // Print the header and footer
+      header.innerHTML = HEADER_LOGO + HEADER_LINKS;
+      footer.innerHTML = FOOTER_COPYRIGHT + FOOTER_MODIFY_PREF + new Date(document.lastModified).toDateString();
    }
 
    animate_svd(self, i, max_delay, start_i) {
@@ -497,25 +546,23 @@ class Page {
 
       // Display the progress
       let progress_text = "Projecting singular values (" + i + "/" + self.S.length + "): "
-      self.grid.draw_box(1, 1, 3, GRIDWIDTH - 2);
-      self.grid.draw_text(progress_text, 2, 2)
-      let bar_width = GRIDWIDTH - 5 - progress_text.length;
-      let bar_progress = Math.round((i - start_i) / (self.S.length - start_i) * bar_width);
-      for(let i = 0; i < bar_progress; i++) {
-         self.grid.set_char(new GridChar('╍', null), 2, progress_text.length + 2 + i);
-      }
-      for(let i = bar_progress; i < bar_width; i++) {
-         self.grid.set_char(new GridChar(' ', null), 2, progress_text.length + 2 + i);
-      }
+      let progress_perc = (i - start_i) / (self.S.length - start_i);
+
+      let bar_width = HEADER_WIDTH - 2 - progress_text.length;
+      let bar_progress = Math.round(progress_perc * bar_width);
+      let bar_text = new Array(bar_progress + 1).join('#');
+      let newline_text = new Array(HEADER_HEIGHT + 1).join("<br/>")
+      let header_text = "&nbsp;" + progress_text + bar_text + newline_text;
+      self.header.innerHTML = header_text
    
       // Blit the grid
       self.grid.blit();
       
       // Calculate delay
-      let delay = Math.round((i - start_i) / (self.S.length - start_i) * max_delay);
+      let delay = Math.round(progress_perc * max_delay);
 
       setTimeout(self.animate_svd, delay, self, i+1, max_delay, start_i); 
    }
 }
 
-let page = new Page(main, images);
+let page = new Page(main, images, header);
