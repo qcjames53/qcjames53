@@ -16,6 +16,18 @@
 const GRIDWIDTH = 80;
 const TEXTWIDTH = 78;
 const DEFAULT_CHAR = ' ';
+const SVD_ANIMATION_FRAMES = 50;
+const UL = '┌';
+const UR = '┐';
+const LL = '└';
+const LR = '┘';
+const HO = '─';
+const VE = '│';
+const FF = '█';
+const HF = '▒';
+const DLT = '╞';
+const DRT = '╡';
+const DHO = '═';
 
 // HTML access variables
 let main = document.getElementById("ttr");
@@ -126,6 +138,38 @@ class Grid {
       this.grid[row][col] = char;
    }
 
+   // Draws a box at row, col of hig, wid
+   draw_box(row, col, hig, wid) {
+      this.set_char(new GridChar(UL, null), row, col);
+      this.set_char(new GridChar(UR, null), row, col + wid - 1);
+      this.set_char(new GridChar(LL, null), row + hig - 1, col);
+      this.set_char(new GridChar(LR, null), row + hig - 1, col + wid - 1);
+      for(let c = col + 1; c < col + wid - 1; c++) {
+         this.set_char(new GridChar(HO, null), row, c);
+         this.set_char(new GridChar(HO, null), row + hig - 1, c);
+      }
+      for(let r = row + 1; r < row + hig - 1; r++) {
+         this.set_char(new GridChar(VE, null), r, col);
+         this.set_char(new GridChar(VE, null), r, col + wid - 1);
+      }
+   }
+
+   // Draws a string of text at given coordinates. No wrapping
+   draw_text(text, row, col) {
+      for(let c = 0; c < text.length && c + col < GRIDWIDTH; c++) {
+         this.set_char(new GridChar(text[c], null), row, col + c)
+      }
+   }
+
+   // Clears the grid with the default character
+   clear() {
+      for(let row = 0; row < this.grid.length; row++) {
+         for(let col = 0; col < GRIDWIDTH; col++) {
+            this.set_char(new GridChar(DEFAULT_CHAR, null), row, col);
+         }
+      }
+   }
+
    // Copy grid to screen
    blit() {
       let prev_link = null;
@@ -152,7 +196,12 @@ class Grid {
             }
 
             // output the char at this location
-            output += this.grid[row][col].char;
+            let temp_char = this.grid[row][col].char;
+            if(temp_char == " ") {
+               output += "&nbsp;";
+            } else {
+               output += this.grid[row][col].char;
+            }
          }
          output += "<br/>"
       }
@@ -215,7 +264,7 @@ class TextSection {
 
       // parse the div word-by-word. Handle links.
       // regex matches markdown links and space-seperated words
-      let div_elems = div.innerHTML.match(/(\([^)]+\)\[[^\]]+\])|([^ ]+)/g);
+      let div_elems = div.innerText.match(/(\([^)]+\)\[[^\]]+\])|([^ ]+)/g);
 
       for(let word_text of div_elems) {
          // if is an a markdown link, get address and text
@@ -285,7 +334,7 @@ class Page {
       this.V = resize_matrix(this.V, GRIDWIDTH, GRIDWIDTH);
 
       // run svd animation on page load
-      this.animate_svd(this, 1, 10);
+      this.animate_svd(this, Math.max(0, this.S.length - SVD_ANIMATION_FRAMES), 75);
    }
 
    // Prints all of the text sections to the grid
@@ -296,9 +345,10 @@ class Page {
       }
    }
 
-   animate_svd(self, i, delay) {
+   animate_svd(self, i, max_delay) {
       // Check for exit, base case run full print to grid
       if(i > self.S.length) {
+         self.grid.clear();
          self.print_to_grid();
          self.grid.blit();
          return;
@@ -318,11 +368,26 @@ class Page {
    
       // Load the result
       self.grid.set_grid_from_char_code(result);
+
+      // Display the progress
+      self.grid.draw_box(1, 1, 3, GRIDWIDTH - 2);
+      self.grid.draw_text("Projecting singular values: ", 2, 2)
+      let bar_width = GRIDWIDTH - 32;
+      let bar_progress = Math.round((i - self.S.length + SVD_ANIMATION_FRAMES) / SVD_ANIMATION_FRAMES * bar_width);
+      for(let i = 0; i < bar_progress; i++) {
+         self.grid.set_char(new GridChar('╍', null), 2, 30 + i);
+      }
+      for(let i = bar_progress; i < bar_width; i++) {
+         self.grid.set_char(new GridChar(' ', null), 2, 30 + i);
+      }
    
       // Blit the grid
       self.grid.blit();
-   
-      setTimeout(self.animate_svd, delay, self, i+1, delay); 
+      
+      // Calculate delay
+      let delay = (i - self.S.length + SVD_ANIMATION_FRAMES) / SVD_ANIMATION_FRAMES * max_delay;
+
+      setTimeout(self.animate_svd, delay, self, i+1, max_delay); 
    }
 }
 
