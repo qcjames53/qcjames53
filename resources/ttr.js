@@ -434,7 +434,8 @@ class Page {
       this.V = resize_matrix(this.V, GRIDWIDTH, GRIDWIDTH);
 
       // run svd animation on page load
-      this.animate_svd(this, Math.max(1, this.S.length - SVD_ANIMATION_FRAMES), 75);
+      let start_i = Math.max(1, this.S.length - SVD_ANIMATION_FRAMES);
+      this.animate_svd(this, start_i, 75, start_i);
    }
 
    // Prints all of the text sections to the grid
@@ -450,7 +451,7 @@ class Page {
       }
    }
 
-   animate_svd(self, i, max_delay) {
+   animate_svd(self, i, max_delay, start_i) {
       // Check for exit, base case run full print to grid
       if(i > self.S.length) {
          self.print_to_grid();
@@ -475,24 +476,25 @@ class Page {
       self.grid.set_grid_from_char_code(result);
 
       // Display the progress
+      let progress_text = "Projecting singular values (" + i + "/" + self.S.length + "): "
       self.grid.draw_box(1, 1, 3, GRIDWIDTH - 2);
-      self.grid.draw_text("Projecting singular values: ", 2, 2)
-      let bar_width = GRIDWIDTH - 32;
-      let bar_progress = Math.round((i - self.S.length + SVD_ANIMATION_FRAMES) / SVD_ANIMATION_FRAMES * bar_width);
+      self.grid.draw_text(progress_text, 2, 2)
+      let bar_width = GRIDWIDTH - 5 - progress_text.length;
+      let bar_progress = Math.round((i - start_i) / (self.S.length - start_i) * bar_width);
       for(let i = 0; i < bar_progress; i++) {
-         self.grid.set_char(new GridChar('╍', null), 2, 30 + i);
+         self.grid.set_char(new GridChar('╍', null), 2, progress_text.length + 2 + i);
       }
       for(let i = bar_progress; i < bar_width; i++) {
-         self.grid.set_char(new GridChar(' ', null), 2, 30 + i);
+         self.grid.set_char(new GridChar(' ', null), 2, progress_text.length + 2 + i);
       }
    
       // Blit the grid
       self.grid.blit();
       
       // Calculate delay
-      let delay = (i - self.S.length + SVD_ANIMATION_FRAMES) / SVD_ANIMATION_FRAMES * max_delay;
+      let delay = Math.round((i - start_i) / (self.S.length - start_i) * max_delay);
 
-      setTimeout(self.animate_svd, delay, self, i+1, max_delay); 
+      setTimeout(self.animate_svd, delay, self, i+1, max_delay, start_i); 
    }
 }
 
