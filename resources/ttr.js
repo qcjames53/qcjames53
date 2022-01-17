@@ -17,6 +17,7 @@ const GRIDWIDTH = 80;
 const TEXTWIDTH = 78;
 const DEFAULT_CHAR = ' ';
 const SVD_ANIMATION_FRAMES = 50;
+const IMAGE_HEIGHT = 23;
 const UL = '┌';
 const UR = '┐';
 const LL = '└';
@@ -31,6 +32,7 @@ const DHO = '═';
 
 // HTML access variables
 let main = document.getElementById("ttr");
+let images = document.getElementById("ttr-images");
 
 // Utility function to resize a matrix and fill empty space with 0s
 function resize_matrix(matrix, rows, cols) {
@@ -211,6 +213,50 @@ class Grid {
    }
 }
 
+// A class which handles image placement on screen right
+class ImageHandler {
+   constructor(html_elem) {
+      this.html_elem = html_elem;
+      this.images = []; // 2d array holding [link, alt]
+      this.first_open_row = 0;
+   }
+
+   // Put the stored contents of the image handler on screen
+   blit() {
+      let output = "";
+      for(let entry of this.images) {
+         if(entry != null) {
+            output += "<img src=\"" + entry[0] + "\" alt=\"" + entry[1] + "\"/>";
+         }
+         output += "<br/>";
+      }
+      this.html_elem.innerHTML = output;
+   }
+
+   // Adds an image to the image handler
+   // Returns the row after the image stops
+   add_image(link, alt, row_requested) {      
+      // Add newlines until the image is in line with (or beyond) the requested row.
+      let row = this.first_open_row;
+      while(row < row_requested) {
+         this.images.push(null);
+         row++;
+      }
+      
+      // Add the image and return the next open row
+      this.images.push([link, alt]);
+      this.first_open_row = row + IMAGE_HEIGHT;
+      return this.first_open_row;
+   }
+
+   // Clears and resets the image handler
+   clear() {
+      this.images = [];
+      this.first_open_row = 0;
+   }
+
+}
+
 // One character on the grid
 class GridChar {
    constructor(char, link) {
@@ -259,12 +305,16 @@ class SectionWord {
 
 // Text section object
 class TextSection {
-   constructor(grid, div) {
+   constructor(grid, image_handler, div) {
+      this.grid = grid;
+      this.image_handler = image_handler;
       this.words = [];
+      this.images = [];
+      this.image_alts = [];
 
       // parse the div word-by-word. Handle links.
-      // regex matches markdown links and space-seperated words
-      let div_elems = div.innerText.match(/(\([^)]+\)\[[^\]]+\])|([^ ]+)/g);
+      // regex matches markdown links, markdown images, space-seperated words
+      let div_elems = div.innerText.match(/(\([^)]+\)\[[^\]]+\])|((\[[^\]]+\]\([^)]+\)))|([^ ]+)/g);
 
       for(let word_text of div_elems) {
          // if is an a markdown link, get address and text
@@ -276,9 +326,21 @@ class TextSection {
             word_text = word_text.slice(1, word_text.length - 1);
          }
 
+         // if it is an image, get address and add to section
+         if(word_text.slice(0,1) == "[") {
+            let alt = word_text.match(/\[[^\]]+\]/g)[0];
+            alt = alt.slice(1, alt.length - 1);
+            this.image_alts.push(alt);
+            let url = word_text.match(/\([^)]+\)/g)[0];
+            url = url.slice(1, url.length - 1);
+            this.images.push(url);
+         }
+
          // create and push the word
-         let temp_word = new SectionWord(grid, word_text, link);
-         this.words.push(temp_word);
+         else {
+            let temp_word = new SectionWord(grid, word_text, link);
+            this.words.push(temp_word);
+         }
       }
    }
 
@@ -303,21 +365,54 @@ class TextSection {
       }
       return row + 1;
    }
+
+   print_images(row) {
+      // Do nothing if there are no images
+      if(this.images.length == 0) {
+         return row;
+      }
+
+      let start_row = row;
+
+      // Add the images to the image handler
+      for(let i = 0; i < this.images.length; i++) {
+         let link = this.images[i];
+         let alt = this.image_alts[i];
+         row = this.image_handler.add_image(link, alt, row);
+      }
+
+      // Draw the image bracket
+      let col = GRIDWIDTH - 1;
+      this.grid.set_char(new GridChar(UL, null), start_row, col);
+      this.grid.set_char(new GridChar(LL, null), row - 1, col);
+      for(let i = start_row + 1; i < row - 1; i++) {
+         this.grid.set_char(new GridChar(VE, null), i, col);
+      }
+
+      return row;
+   }
 }
 
 // Handles page-wide operations like animations
 class Page {
-   constructor(main) {
+   constructor(main, images) {
+      // Build the image handler
+      this.image_handler = new ImageHandler(images);
+      
       // Build the grid and load the text sections from main
       this.grid = new Grid(main);
       this.text_sections = [];
       for(let child of main.children) {
-         let temp_text_section = new TextSection(this.grid, child);
+         let temp_text_section = new TextSection(this.grid, this.image_handler, child);
          this.text_sections.push(temp_text_section);
       }
 
       // Print the text sections to the grid
       this.print_to_grid();
+
+      // DEBUG - blit rendered screen
+      // this.grid.blit();
+      // this.image_handler.blit();
 
       // Get the singular values of this grid
       let sv = this.grid.get_singular_values();
@@ -325,6 +420,11 @@ class Page {
       this.S = sv.S;
       this.V = sv.V;
       this.n = this.grid.get_rows();
+
+      // Remove trailing 0s from S
+      while(this.S[this.S.length - 1] == 0) {
+         this.S.pop();
+      }
 
       // resize U to size n x n
       this.U = resize_matrix(this.U, this.n, this.n);
@@ -334,23 +434,28 @@ class Page {
       this.V = resize_matrix(this.V, GRIDWIDTH, GRIDWIDTH);
 
       // run svd animation on page load
-      this.animate_svd(this, Math.max(0, this.S.length - SVD_ANIMATION_FRAMES), 75);
+      this.animate_svd(this, Math.max(1, this.S.length - SVD_ANIMATION_FRAMES), 75);
    }
 
    // Prints all of the text sections to the grid
    print_to_grid() {
+      this.grid.clear();
+      this.image_handler.clear();
+
       let print_row = 0;
       for(let section of this.text_sections) {
-         print_row = section.print_to_grid(print_row) + 1;
+         let image_row = section.print_images(print_row);
+         let grid_row = section.print_to_grid(print_row);
+         print_row = Math.max(image_row, grid_row) + 1;
       }
    }
 
    animate_svd(self, i, max_delay) {
       // Check for exit, base case run full print to grid
       if(i > self.S.length) {
-         self.grid.clear();
          self.print_to_grid();
          self.grid.blit();
+         self.image_handler.blit();
          return;
       }
       
@@ -391,4 +496,4 @@ class Page {
    }
 }
 
-let page = new Page(main);
+let page = new Page(main, images);
