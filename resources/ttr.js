@@ -24,6 +24,7 @@ const LL = '└';
 const LR = '┘';
 const HO = '─';
 const VE = '│';
+const UT = '┬';
 const FF = '█';
 const HF = '▒';
 const DLT = '╞';
@@ -249,6 +250,11 @@ class ImageHandler {
       return this.first_open_row;
    }
 
+   // Returns the next open image row
+   get_first_open_row() {
+      return this.first_open_row;
+   }
+
    // Clears and resets the image handler
    clear() {
       this.images = [];
@@ -344,6 +350,11 @@ class TextSection {
       }
    }
 
+   // Returns true if this section has images, false otherwise
+   contains_image() {
+      return this.images.length != 0;   
+   }
+
    // Prints this section to the grid at the given row.
    // Returns the row directly after this section
    print_to_grid(row) {
@@ -368,7 +379,7 @@ class TextSection {
 
    print_images(row) {
       // Do nothing if there are no images
-      if(this.images.length == 0) {
+      if(!this.contains_image()) {
          return row;
       }
 
@@ -383,7 +394,7 @@ class TextSection {
 
       // Draw the image bracket
       let col = GRIDWIDTH - 1;
-      this.grid.set_char(new GridChar(UL, null), start_row, col);
+      this.grid.set_char(new GridChar(UT, null), start_row, col);
       this.grid.set_char(new GridChar(LL, null), row - 1, col);
       for(let i = start_row + 1; i < row - 1; i++) {
          this.grid.set_char(new GridChar(VE, null), i, col);
@@ -445,9 +456,18 @@ class Page {
 
       let print_row = 0;
       for(let section of this.text_sections) {
-         let image_row = section.print_images(print_row);
-         let grid_row = section.print_to_grid(print_row);
-         print_row = Math.max(image_row, grid_row) + 1;
+         // For text sections (no image), print to the next open row
+         if(!section.contains_image()) {
+            print_row = section.print_to_grid(print_row) + 1;
+         }
+
+         // For image sections, print at either the next open image row or the
+         // next text row, lowest row takes precedent.
+         else {
+            print_row = Math.max(this.image_handler.get_first_open_row(), print_row);
+            section.print_images(print_row);
+            print_row = section.print_to_grid(print_row) + 1;
+         }
       }
    }
 
