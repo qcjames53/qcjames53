@@ -319,6 +319,11 @@ class SectionWord {
    // Print this word to the grid at the given coords
    // Returns the character directly after this word
    print_to_grid(row, col) {
+      // If the word is a newline, execute a newline and return
+      if(this.text == "\n") {
+         return [row + 1, 0];
+      }
+
       // Three wrap possibilities
       // 1 - the word can fit on the current line. Start at row, col.
       // 2 - the word can fit on the next line. Start at row + 1, col = 0.
@@ -357,7 +362,7 @@ class TextSection {
 
       // parse the div word-by-word. Handle links.
       // regex matches markdown links, markdown images, space-seperated words
-      let div_elems = div.innerText.match(/(\([^)]+\)\[[^\]]+\])|((\[[^\]]+\]\([^)]+\)))|([^ ]+)/g);
+      let div_elems = div.innerText.match(/(\\n)|(\([^)]+\)\[[^\]]+\])|((\[[^\]]+\]\([^)]+\)))|([^ ]+)/g);
 
       for(let word_text of div_elems) {
          // if is an a markdown link, get address and text
@@ -461,37 +466,42 @@ class Page {
       // Print the text sections to the grid
       this.print_to_grid();
 
-      // DEBUG - blit rendered screen
-      // this.grid.blit();
-      // this.image_handler.blit();
+      // Try the SVD animation. If any step fails, render the page normally
+      try {
+         // Get the singular values of this grid
+         let sv = this.grid.get_singular_values();
+         this.U = sv.U;
+         this.S = sv.S;
+         this.V = sv.V;
+         this.n = this.grid.get_rows();
 
-      // Get the singular values of this grid
-      let sv = this.grid.get_singular_values();
-      this.U = sv.U;
-      this.S = sv.S;
-      this.V = sv.V;
-      this.n = this.grid.get_rows();
+         // Remove trailing 0s from S
+         while(this.S[this.S.length - 1] == 0) {
+            this.S.pop();
+         }
 
-      // Remove trailing 0s from S
-      while(this.S[this.S.length - 1] == 0) {
-         this.S.pop();
+         // resize U to size n x n
+         this.U = resize_matrix(this.U, this.n, this.n);
+
+         // transpose V, resize V to size d x d
+         this.V = numeric.transpose(this.V);
+         this.V = resize_matrix(this.V, GRIDWIDTH, GRIDWIDTH);
+
+         // Quickly blit and unblit images to request resource load from browser
+         this.image_handler.blit();
+         this.image_handler.clear();
+         this.image_handler.blit();
+
+         // run svd animation on page load
+         let start_i = Math.max(1, this.S.length - SVD_ANIMATION_FRAMES);
+         this.animate_svd(this, start_i, 75, start_i);
       }
-
-      // resize U to size n x n
-      this.U = resize_matrix(this.U, this.n, this.n);
-
-      // transpose V, resize V to size d x d
-      this.V = numeric.transpose(this.V);
-      this.V = resize_matrix(this.V, GRIDWIDTH, GRIDWIDTH);
-
-      // Quickly blit and unblit images to request resource load from browser
-      this.image_handler.blit();
-      this.image_handler.clear();
-      this.image_handler.blit();
-
-      // run svd animation on page load
-      let start_i = Math.max(1, this.S.length - SVD_ANIMATION_FRAMES);
-      this.animate_svd(this, start_i, 75, start_i);
+      catch (error) {
+         // Blit the rendered screen without animation
+         this.print_to_grid();
+         this.grid.blit();
+         this.image_handler.blit();
+      }
    }
 
    // Prints all of the text sections to the grid
