@@ -54,8 +54,7 @@ const FOOTER_COPYRIGHT = "Copyright © 2022 <a href=\"https://quinnjam.es\">Quin
 const FOOTER_MODIFY_PREF = "This webpage was last modified on ";
 
 // HTML access variables
-let main = document.getElementById("ttr");
-let images = document.getElementById("ttr-images");
+let main = document.getElementById("ttr-body");
 let header = document.getElementById("ttr-header");
 let footer = document.getElementById("ttr-footer");
 
@@ -238,68 +237,6 @@ class Grid {
    }
 }
 
-// A class which handles image placement on screen right
-class ImageHandler {
-   constructor(html_elem) {
-      this.html_elem = html_elem;
-      this.images = []; // 2d array holding [link, alt]
-      this.first_open_row = 0;
-   }
-
-   // Put the stored contents of the image handler on screen
-   blit() {
-      let output = "";
-      for(let entry of this.images) {
-         if(entry != null) {
-            output += "<img src=\"" + entry[0] + "\" alt=\"" + entry[1] + "\"/>";
-
-            // If this image has a caption, display it with left padding
-            if(entry[1] != null) {
-               let padding_text = Array(IMAGE_WIDTH + 1).join(' ');
-               let caption_left_pad = String(padding_text + entry[1]).slice(-IMAGE_WIDTH);
-               output += "<br/>" + caption_left_pad.replaceAll(" ", "&nbsp;");
-            }
-         }
-         output += "<br/>";
-      }
-      this.html_elem.innerHTML = output;
-   }
-
-   // Adds an image to the image handler
-   // Returns the row after the image stops
-   add_image(link, alt, row_requested) {      
-      // Add newlines until the image is in line with (or beyond) the requested row.
-      let row = this.first_open_row;
-      while(row < row_requested) {
-         this.images.push(null);
-         row++;
-      }
-      
-      // Add the image and return the next open row
-      this.images.push([link, alt]);
-      this.first_open_row = row + IMAGE_HEIGHT;
-
-      // If the image has a caption, add one line
-      if(alt != null) {
-         this.first_open_row++;
-      }
-
-      return this.first_open_row;
-   }
-
-   // Returns the next open image row
-   get_first_open_row() {
-      return this.first_open_row;
-   }
-
-   // Clears and resets the image handler
-   clear() {
-      this.images = [];
-      this.first_open_row = 0;
-   }
-
-}
-
 // One character on the grid
 class GridChar {
    constructor(char, link) {
@@ -353,9 +290,8 @@ class SectionWord {
 
 // Text section object
 class TextSection {
-   constructor(grid, image_handler, div) {
+   constructor(grid, div) {
       this.grid = grid;
-      this.image_handler = image_handler;
       this.words = [];
       this.images = [];
       this.image_alts = [];
@@ -448,20 +384,16 @@ class TextSection {
    }
 }
 
-// Handles page-wide operations like animations
-class Page {
-   constructor(main, images, header) {
-      // Build the image handler
-      this.image_handler = new ImageHandler(images);
-      this.header = header;
-      
+// Handles header-wide operations like animations
+class Header {
+   constructor(header_dom) {
       // Build the grid and load the text sections from main
-      this.grid = new Grid(main);
+      this.grid = new Grid(header_dom);
       this.text_sections = [];
-      for(let child of main.children) {
-         let temp_text_section = new TextSection(this.grid, this.image_handler, child);
-         this.text_sections.push(temp_text_section);
-      }
+      // for(let child of main.children) {
+      //    let temp_text_section = new TextSection(this.grid, child);
+      //    this.text_sections.push(temp_text_section);
+      // }
 
       // Print the text sections to the grid
       this.print_to_grid();
@@ -500,14 +432,12 @@ class Page {
          // Blit the rendered screen without animation
          this.print_to_grid();
          this.grid.blit();
-         this.image_handler.blit();
       }
    }
 
    // Prints all of the text sections to the grid
    print_to_grid() {
       this.grid.clear();
-      this.image_handler.clear();
 
       let print_row = 0;
       for(let section of this.text_sections) {
@@ -575,4 +505,4 @@ class Page {
    }
 }
 
-let page = new Page(main, images, header);
+let page = new Header(header);
