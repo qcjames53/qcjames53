@@ -95,14 +95,14 @@ code {
     flex-grow: 1;
 }
 
-.ttr-body-h1 {
+#ttr-body-h1 {
     font-weight:400;
     font-size: 40px;
     letter-spacing: 4px;
     margin-bottom: 20px;
 }
 
-.ttr-body-h1-sub {
+#ttr-body-h1-sub {
     margin-left: 10px;
     margin-bottom: 20px;
 }
@@ -187,4 +187,8 @@ code {
 
     order: 3;
     flex-basis: 100%;
+}
+
+#ttr-gallery-overlay {
+
 }
