@@ -11,13 +11,14 @@
 		<div id="ttr-body">
 			<div class="ttr-body-h1">Article Header</div>
 			<div class="ttr-body-h1-sub">Created: Mar 2021 | Updated: Apr 2022</div>
+			<div class="ttr-bar"></div>
 			<div class="ttr-body-h2">Section 1</div>
-			<div>
+			<p>
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Elementum sagittis vitae et leo duis ut diam quam nulla. Condimentum mattis pellentesque id nibh. Nec feugiat nisl pretium fusce id velit ut tortor. Risus pretium quam vulputate dignissim. Leo vel fringilla est ullamcorper eget. Sed velit dignissim sodales ut eu sem. Nunc pulvinar sapien et ligula ullamcorper malesuada proin. Pharetra convallis posuere morbi leo urna molestie at elementum. Sodales ut eu sem integer vitae justo eget magna fermentum. Sapien pellentesque habitant morbi tristique senectus et netus et malesuada. Amet nisl suscipit adipiscing bibendum est ultricies integer quis. Purus in massa tempor nec feugiat nisl pretium fusce id. Sem fringilla ut morbi tincidunt. Accumsan tortor posuere ac ut consequat semper viverra nam. Amet porttitor eget dolor morbi non. Sed odio morbi quis commodo odio aenean.
-			</div>
-			<div>
+			</p>
+			<p>
 				Integer vitae justo eget magna fermentum iaculis eu non. Consequat mauris nunc congue nisi. Varius sit amet mattis vulputate enim nulla aliquet porttitor lacus. Vitae semper quis lectus nulla at volutpat diam. Nisl vel pretium lectus quam id. Cursus in hac habitasse platea dictumst quisque sagittis. Amet luctus venenatis lectus magna fringilla urna porttitor. Felis eget velit aliquet sagittis. Egestas congue quisque egestas diam in arcu cursus. Eget mi proin sed libero. Pretium viverra suspendisse potenti nullam ac tortor vitae. Posuere lorem ipsum dolor sit amet consectetur. Commodo sed egestas egestas fringilla phasellus faucibus scelerisque eleifend. Placerat vestibulum lectus mauris ultrices eros in cursus. Quam id leo in vitae turpis.
-			</div>
+			</p>
 			<div class="ttr-body-h2">Section 2</div>
 			<ul>
 				<li>Item A</li>
@@ -30,9 +31,9 @@
 				<li>Item C</li>
 			</ol>
 			<div class="ttr-body-h2">Section 3</div>
-			<div>
+			<p>
 				A code segment:
-			</div>
+			</p>
 
 <pre><code>function leftpad (str, len, ch) {
 	str = String(str);
@@ -46,11 +47,21 @@
 	// This really long comment is designed to test how my code block handles overflow of text
 }</code></pre>
 
-			<div>
+			<p>
 				Aint that neat?
-			</div>
+			</p>
 			<div class="ttr-body-h2">Section 4</div>
-			<div class="ttr-gallery"></div>
+			<div class="ttr-gallery" onclick="console.log('hi');">
+				<div class="ttr-gallery-container"><img src="./resources/kodim21.png" alt="alt"/></div>
+				<div class="ttr-gallery-container"><img src="./resources/kodim22.png" alt="alt"/></div>
+				<div class="ttr-gallery-container"><img src="./resources/kodim23.png" alt="alt"/></div>
+				<div class="ttr-gallery-container"><img src="./resources/qr.jpg" alt="alt"/></div>
+			</div>
+			<div class="ttr-gallery">
+				<div class="ttr-gallery-container"><img src="./resources/kodim21.png" alt="alt"/></div>
+				<div class="ttr-gallery-container"><img src="./resources/kodim22.png" alt="alt"/></div>
+				<div class="ttr-gallery-container"><img src="./resources/kodim23.png" alt="alt"/></div>
+			</div>
 		</div>
 		<div id="ttr-links">
 			<a href="https://google.com"><div class="ttr-button">Google</div></a>
@@ -64,4 +75,5 @@
 
 <script src="./node_modules/numeric/numeric-1.2.6.js"></script>
 <!--<script src="./resources/ttr.js"></script>-->
+<script src="./resources/ttr-gallery.js"></script>
 </html>
