@@ -189,6 +189,16 @@ code {
     flex-basis: 100%;
 }
 
-#ttr-gallery-overlay {
+#ttr-gallery-overlay-outer {
+    position: fixed;
+    background-color: red;
+    z-index: 100;
+    left: 0px;
+    right: 0px;
+}
 
+#ttr-gallery-overlay-inner {
+    background-color: green;
+    width: 80ch;
+    margin: auto;
 }
