@@ -37,6 +37,8 @@ code {
     display: block;
     padding: 1ch;
     overflow: auto;
+
+    max-width: 80ch;
 }
 
 #bg {
@@ -47,7 +49,7 @@ code {
     height: 200%;
 }
 
-#textWrapper {
+#text-wrapper {
     width:100%;
     max-width: 152ch;
     min-width: 105ch;
@@ -81,6 +83,7 @@ code {
 .ttr-bar {
     width: 100%;
     border-top: 1px solid var(--primary-color);
+    max-width: 80ch;
 }
 
 #ttr-body {
@@ -89,10 +92,14 @@ code {
 
     font-family: var(--sans-font);
     font-size: 14px;
-    line-height: 16px;
+    line-height: 20px;
 
     order: 1;
     flex-grow: 1;
+}
+
+#ttr-body p {
+    max-width: 80ch;
 }
 
 #ttr-body-h1 {
@@ -191,14 +198,29 @@ code {
 
 #ttr-gallery-overlay-outer {
     position: fixed;
-    background-color: red;
+    background-color: rgba(0,0,0,0.5);
     z-index: 100;
     left: 0px;
     right: 0px;
+    top: 0px;
+    bottom: 0px;
+    padding-top: 5ch;
+    padding-bottom: 5ch;
+    display: none;
 }
 
 #ttr-gallery-overlay-inner {
-    background-color: green;
+    border: 1px solid var(--primary-color);
+    background-color: var(--background-color);
     width: 80ch;
     margin: auto;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#ttr-gallery-overlay-inner img {
+    display: block;
+    padding-bottom: 1px;
+    width: 100%;
 }
