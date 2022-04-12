@@ -28,14 +28,8 @@
 // SOFTWARE.
 
 // Constants
-const GRIDWIDTH = 80;
-const TEXTWIDTH = 78;
 const DEFAULT_CHAR = ' ';
 const SVD_ANIMATION_FRAMES = 50;
-const IMAGE_HEIGHT = 23;
-const IMAGE_WIDTH = 80;
-const HEADER_WIDTH = 162;
-const HEADER_HEIGHT = 10;
 const UL = '┌';
 const UR = '┐';
 const LL = '└';
@@ -49,14 +43,17 @@ const DLT = '╞';
 const DRT = '╡';
 const DHO = '═';
 const HEADER_LOGO = "&nbsp;#######&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########&nbsp;&nbsp;######&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#######&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########<br/>##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;##&nbsp;###&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;###&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;###&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;##&nbsp;##<br/>##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;&nbsp;##&nbsp;####&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;####&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;&nbsp;##&nbsp;##<br/>##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;###&nbsp;##&nbsp;######&nbsp;&nbsp;&nbsp;&nbsp;######&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;##&nbsp;##&nbsp;######<br/>##&nbsp;&nbsp;##&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;##&nbsp;&nbsp;####&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;#########&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;####&nbsp;##<br/>##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;###&nbsp;##<br/>&nbsp;#####&nbsp;##&nbsp;&nbsp;#######&nbsp;&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;######&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########&nbsp;&nbsp;######&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#######&nbsp;&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########&nbsp;####&nbsp;##&nbsp;&nbsp;&nbsp;&nbsp;##&nbsp;########<br/>";
-const HEADER_LINKS = "<br/><a href=\"https://quinnjam.es\">Homepage</a><br/><br/>";
-const FOOTER_COPYRIGHT = "Copyright © 2022 <a href=\"https://quinnjam.es\">Quinn James</a> | ";
-const FOOTER_MODIFY_PREF = "This webpage was last modified on ";
+const LINKS = [
+    ["Home", "https://quinnjam.es"],
+    ["Personal Projects", "https://quinnjam.es/coding"],
+    ["CSGO Level Design", "https://quinnjam.es"],
+    ["Minecraft Maps", "https://quinnjam.es"]
+]
+const CHAR_WIDTH = 7.113;
+const CHAR_HEIGHT = 15.4;
 
 // HTML access variables
-let main = document.getElementById("ttr-body");
 let header = document.getElementById("ttr-header");
-let footer = document.getElementById("ttr-footer");
 
 // Utility function to resize a matrix and fill empty space with 0s
 function resize_matrix(matrix, rows, cols) {
@@ -97,6 +94,22 @@ class Grid {
    constructor(html_elem) {
       this.html_elem = html_elem;
       this.grid = [];
+      this.width;
+      this.height;
+
+      this.resize();
+      this.blit();
+   }
+
+   test() {
+      console.log("test");
+   }
+
+   // resizes the grid to the current DOM object size
+   resize() {
+      this.width = Math.floor(this.html_elem.clientWidth / CHAR_WIDTH);
+      this.height = Math.floor(this.html_elem.clientHeight / CHAR_HEIGHT);
+      this.clear();
    }
 
    // Get a GridChar at given coordinates
@@ -113,9 +126,9 @@ class Grid {
    // Return the grid as a character code matrix
    get_grid_as_char_code() {
       let output = [];
-      for(let row = 0; row < this.grid.length; row++) {
+      for(let row = 0; row < this.height; row++) {
          let temp_row = [];
-         for(let col = 0; col < GRIDWIDTH; col++) {
+         for(let col = 0; col < this.width; col++) {
             temp_row.push(this.grid[row][col].char.charCodeAt(0));
          }
          output.push(temp_row);
@@ -130,7 +143,12 @@ class Grid {
 
    // Returns the row count of the grid
    get_rows() {
-      return this.grid.length;
+      return this.height;
+   }
+
+   // Returns the col count of the grid
+   get_cols() {
+      return this.width;
    }
 
    // Sets a linkless grid from a grid of char codes. Only overwrites provided
@@ -154,10 +172,10 @@ class Grid {
 
    // Add a GridChar to the grid, extend if neccesary, filling with default char
    set_char(char, row, col) {
-      // extend grid until row is reached
-      while(row >= this.grid.length) {
-         let temp_row = new Array(GRIDWIDTH).fill(new GridChar(DEFAULT_CHAR, null));
-         this.grid.push(temp_row);
+      // do nothing if out of bounds
+      if (row >= this.height || col >= this.width) {
+         console.error("Tried to draw outside grid: " + row + "," + col);
+         return;
       }
 
       // put the character in position
@@ -182,15 +200,19 @@ class Grid {
 
    // Draws a string of text at given coordinates. No wrapping
    draw_text(text, row, col) {
-      for(let c = 0; c < text.length && c + col < GRIDWIDTH; c++) {
+      for(let c = 0; c < text.length && c + col < this.width; c++) {
          this.set_char(new GridChar(text[c], null), row, col + c)
       }
    }
 
    // Clears the grid with the default character
    clear() {
-      for(let row = 0; row < this.grid.length; row++) {
-         for(let col = 0; col < GRIDWIDTH; col++) {
+      this.grid = [];
+      for(let row = 0; row < this.height; row++) {
+         let temp_row = new Array(this.width).fill(new GridChar(DEFAULT_CHAR, null));
+         this.grid.push(temp_row);
+
+         for(let col = 0; col < this.width; col++) {
             this.set_char(new GridChar(DEFAULT_CHAR, null), row, col);
          }
       }
@@ -202,8 +224,8 @@ class Grid {
       let output = "";
 
       // run left to right for every character on the grid
-      for(let row = 0; row < this.grid.length; row++) {
-         for(let col = 0; col < GRIDWIDTH; col++) {
+      for(let row = 0; row < this.height; row++) {
+         for(let col = 0; col < this.width; col++) {
             // handle opening and closing a tags if previous link is different
             // from the current link
             let curr_link = this.grid[row][col].link;
@@ -244,265 +266,3 @@ class GridChar {
       this.link = link;
    }
 }
-
-// One word in a text section
-class SectionWord {
-   constructor(grid, text, link) {
-      this.grid = grid;
-      this.text = text;
-      this.link = link;
-   }
-
-   // Print this word to the grid at the given coords
-   // Returns the character directly after this word
-   print_to_grid(row, col) {
-      // If the word is a newline, execute a newline and return
-      if(this.text == "\n") {
-         return [row + 1, 0];
-      }
-
-      // Three wrap possibilities
-      // 1 - the word can fit on the current line. Start at row, col.
-      // 2 - the word can fit on the next line. Start at row + 1, col = 0.
-      // 3 - the word won't fit on any line. Start at row, col and wrap at a random char.
-      if(col + this.text.length > TEXTWIDTH && this.text.length <= TEXTWIDTH) {
-         row++;
-         col = 0;
-      }
-
-      // Print to grid, with wrapping when hitting max col
-      for(let char of this.text) {
-         let temp_char = new GridChar(char, this.link);
-         this.grid.set_char(temp_char, row, col);
-         
-         // adjust next letter pos
-         col++;
-         if(col >= TEXTWIDTH) {
-            col = 0;
-            row++;
-         }
-      }
-
-      // Return the next row, col
-      return [row, col];
-   }
-}
-
-// Text section object
-class TextSection {
-   constructor(grid, div) {
-      this.grid = grid;
-      this.words = [];
-      this.images = [];
-      this.image_alts = [];
-
-      // parse the div word-by-word. Handle links.
-      // regex matches markdown links, markdown images, space-seperated words
-      let div_elems = div.innerText.match(/(\\n)|(\([^)]+\)\[[^\]]+\])|((\[[^\]]+\]\([^)]+\)))|([^ ]+)/g);
-
-      for(let word_text of div_elems) {
-         // if is an a markdown link, get address and text
-         let link = null;
-         if(word_text.slice(0,1) == "(") {
-            link = word_text.match(/\[[^\]]+\]/g)[0];
-            link = link.slice(1, link.length - 1);
-            word_text = word_text.match(/\([^)]+\)/g)[0];
-            word_text = word_text.slice(1, word_text.length - 1);
-         }
-
-         // if it is an image, get address and add to section
-         if(word_text.slice(0,1) == "[") {
-            let alt = word_text.match(/\[[^\]]+\]/g);
-            if(alt != null) {
-               alt = alt[0].slice(1, alt[0].length - 1);
-            }
-            this.image_alts.push(alt);
-            let url = word_text.match(/\([^)]+\)/g)[0];
-            url = url.slice(1, url.length - 1);
-            this.images.push(url);
-         }
-
-         // create and push the word
-         else {
-            let temp_word = new SectionWord(grid, word_text, link);
-            this.words.push(temp_word);
-         }
-      }
-   }
-
-   // Returns true if this section has images, false otherwise
-   contains_image() {
-      return this.images.length != 0;   
-   }
-
-   // Prints this section to the grid at the given row.
-   // Returns the row directly after this section
-   print_to_grid(row) {
-      let col = 0;
-      for(let word of this.words) {
-         let new_pos = word.print_to_grid(row, col);
-
-         // adjust next position
-         row = new_pos[0];
-         col = new_pos[1];
-         if(col != 0) {  // add space unless first word in row
-            col++;
-         }
-      }
-
-      // If first word in row, return current row, otherwise return next row
-      if(col == 0) {
-         return row ;
-      }
-      return row + 1;
-   }
-
-   print_images(row) {
-      // Do nothing if there are no images
-      if(!this.contains_image()) {
-         return row;
-      }
-
-      let start_row = row;
-
-      // Add the images to the image handler
-      for(let i = 0; i < this.images.length; i++) {
-         let link = this.images[i];
-         let alt = this.image_alts[i];
-         row = this.image_handler.add_image(link, alt, row);
-      }
-
-      // Draw the image bracket
-      let col = GRIDWIDTH - 1;
-      this.grid.set_char(new GridChar(UT, null), start_row, col);
-      this.grid.set_char(new GridChar(LL, null), row - 1, col);
-      for(let i = start_row + 1; i < row - 1; i++) {
-         this.grid.set_char(new GridChar(VE, null), i, col);
-      }
-
-      return row;
-   }
-}
-
-// Handles header-wide operations like animations
-class Header {
-   constructor(header_dom) {
-      // Build the grid and load the text sections from main
-      this.grid = new Grid(header_dom);
-      this.text_sections = [];
-      // for(let child of main.children) {
-      //    let temp_text_section = new TextSection(this.grid, child);
-      //    this.text_sections.push(temp_text_section);
-      // }
-
-      // Print the text sections to the grid
-      this.print_to_grid();
-
-      // Try the SVD animation. If any step fails, render the page normally
-      try {
-         // Get the singular values of this grid
-         let sv = this.grid.get_singular_values();
-         this.U = sv.U;
-         this.S = sv.S;
-         this.V = sv.V;
-         this.n = this.grid.get_rows();
-
-         // Remove trailing 0s from S
-         while(this.S[this.S.length - 1] == 0) {
-            this.S.pop();
-         }
-
-         // resize U to size n x n
-         this.U = resize_matrix(this.U, this.n, this.n);
-
-         // transpose V, resize V to size d x d
-         this.V = numeric.transpose(this.V);
-         this.V = resize_matrix(this.V, GRIDWIDTH, GRIDWIDTH);
-
-         // Quickly blit and unblit images to request resource load from browser
-         this.image_handler.blit();
-         this.image_handler.clear();
-         this.image_handler.blit();
-
-         // run svd animation on page load
-         let start_i = Math.max(1, this.S.length - SVD_ANIMATION_FRAMES);
-         this.animate_svd(this, start_i, 75, start_i);
-      }
-      catch (error) {
-         // Blit the rendered screen without animation
-         this.print_to_grid();
-         this.grid.blit();
-      }
-   }
-
-   // Prints all of the text sections to the grid
-   print_to_grid() {
-      this.grid.clear();
-
-      let print_row = 0;
-      for(let section of this.text_sections) {
-         // For text sections (no image), print to the next open row
-         if(!section.contains_image()) {
-            print_row = section.print_to_grid(print_row) + 1;
-         }
-
-         // For image sections, print at either the next open image row or the
-         // next text row, lowest row takes precedent.
-         else {
-            print_row = Math.max(this.image_handler.get_first_open_row() + 1, print_row);
-            section.print_images(print_row);
-            print_row = section.print_to_grid(print_row) + 1;
-         }
-      }
-
-      // Print the header and footer
-      header.innerHTML = HEADER_LOGO + HEADER_LINKS;
-      footer.innerHTML = FOOTER_COPYRIGHT + FOOTER_MODIFY_PREF + new Date(document.lastModified).toDateString();
-   }
-
-   animate_svd(self, i, max_delay, start_i) {
-      // Check for exit, base case run full print to grid
-      if(i > self.S.length) {
-         self.print_to_grid();
-         self.grid.blit();
-         self.image_handler.blit();
-         return;
-      }
-      
-      // limit S to an arbitrary numer of values
-      let new_S = self.S.slice(0, i);
-   
-      // diagonalize S, resize to size n x d
-      new_S = resize_matrix(numeric.diag(new_S), self.n, GRIDWIDTH);
-   
-      // Compute U * S * V
-      let result = numeric.dot(numeric.dot(self.U, new_S), self.V);
-   
-      // Round values to nearest int
-      result = round_matrix(result);
-   
-      // Load the result
-      self.grid.set_grid_from_char_code(result);
-
-      // Display the progress
-      let progress_text = "Projecting singular values (" + i + "/" + self.S.length + "): "
-      let progress_perc = (i - start_i) / (self.S.length - start_i);
-
-      let bar_width = HEADER_WIDTH - 2 - progress_text.length;
-      let bar_progress = Math.round(progress_perc * bar_width);
-      let bar_text = new Array(bar_progress + 1).join('#');
-      let newline_text = new Array(HEADER_HEIGHT + 1).join("<br/>")
-      let header_text = "&nbsp;" + progress_text + bar_text + newline_text;
-      self.header.innerHTML = header_text
-   
-      // Blit the grid
-      self.grid.blit();
-      
-      // Calculate delay
-      let delay = Math.round(progress_perc * max_delay);
-
-      setTimeout(self.animate_svd, delay, self, i+1, max_delay, start_i); 
-   }
-}
-
-let page = new Header(header);
