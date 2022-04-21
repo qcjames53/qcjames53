@@ -68,9 +68,9 @@ code {
     font-family: var(--mono-font);
     font-size: 12px;
     line-height: 14px;
+    padding: 1ch;
 
     height: 140px;
-    padding: 1ch;
     border: 1px solid var(--primary-color);
     overflow: hidden;
     white-space:nowrap;

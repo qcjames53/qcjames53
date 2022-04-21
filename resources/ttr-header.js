@@ -18,6 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// HTML access variables
+let header = document.getElementById("ttr-header");
+
 function center_start(text_len, start, end) {
 
 }
@@ -133,12 +136,12 @@ class Header {
  let header_manager = new Header(header);
  
  // Handle resizing window
- let resize_timeout;
+ let header_resize_timeout;
  window.onresize = function() {
-    clearTimeout(resize_timeout);
-    resize_timeout = setTimeout(resize2, 500);
+    clearTimeout(header_resize_timeout);
+    header_resize_timeout = setTimeout(header_resize2, 500);
  }
  
- function resize2 () {
+ function header_resize2 () {
     header_manager.resize();
  }

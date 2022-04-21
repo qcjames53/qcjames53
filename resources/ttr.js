@@ -52,9 +52,6 @@ const LINKS = [
 const CHAR_WIDTH = 7.113;
 const CHAR_HEIGHT = 15.4;
 
-// HTML access variables
-let header = document.getElementById("ttr-header");
-
 // Utility function to resize a matrix and fill empty space with 0s
 function resize_matrix(matrix, rows, cols) {
    // check that matrix is smaller than rows and cols count
