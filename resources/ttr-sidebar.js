@@ -39,7 +39,7 @@ const PAGE_TREE = [
     ]},
 ];
 
-// Handles header-wide operations like animations
+// Handles sidebar operations such as retaining the current page and drawing the page tree
 class Sidebar {
     constructor(sidebar_dom) {
        // Build the grid and load the text sections from main
@@ -47,11 +47,61 @@ class Sidebar {
     }
 
     set_page_id(id) {
+        // Sets the ID of the current page and draws the sidebar to screen
         this.page_id = id;
         this.draw();
     }
 
+    get_page_html(id) {
+        // Returns formatted html for a single page table entry, respectng the current active page id
+        let name = "";
+        let url = null;
+        let output = "";
+        
+        if(id.length == 1) {
+            name = PAGE_TREE[id[0]].name;
+            url = PAGE_TREE[id[0]].url;
+        }
+        else if(id.length == 2) {
+            name = PAGE_TREE[id[0]].children[id[1]].name;
+            url = PAGE_TREE[id[0]].children[id[1]].url;
+        }
+        else {
+            name = PAGE_TREE[id[0]].children[id[1]].children[id[2]].name;
+            url = PAGE_TREE[id[0]].children[id[1]].children[id[2]].url;
+        }
+
+        output += "<span class=\"inline-mono\">";
+
+        if(id.toString() == this.page_id.toString()) {
+            output += "&gt;"
+        }
+        else {
+            output += "&nbsp;"
+        }
+
+        output += "</span>"
+
+        output += "&nbsp;".repeat(4 * id.length - 4);
+
+        if (url != null) {
+            output += "<a href=\"" + url + "\">";
+        }
+
+        output += name
+
+        if (url != null) {
+            output += "</a>";
+        }
+
+        output += "<br/>";
+
+        return output;
+        
+    }
+
     draw() {
+        // Draws the sidebar links into the sidebar
         let output = "";
 
         for(let a = 0; a < PAGE_TREE.length; a++) {
@@ -59,14 +109,14 @@ class Sidebar {
                 continue;
             }
 
-            output += PAGE_TREE[a].name + "<br/>";
+            output += this.get_page_html([a]);
 
             for(let b = 0; b < PAGE_TREE[a].children.length; b++) {
                 if(PAGE_TREE[a].children[b].invisible && this.page_id[1] != b) {
                     continue;
                 }
 
-                output += "&nbsp;".repeat(4) + PAGE_TREE[a].children[b].name + "<br/>";
+                output += this.get_page_html([a, b]);
 
                 for(let c = 0; c < PAGE_TREE[a].children[b].children.length; c++) {
                     if(PAGE_TREE[a].children[b].children[c].invisible && 
@@ -74,7 +124,7 @@ class Sidebar {
                         continue;
                     }
 
-                    output += "&nbsp;".repeat(8) + PAGE_TREE[a].children[b].children[c].name + "<br/>";
+                    output += this.get_page_html([a, b, c]);
                 }
             }
 

@@ -41,6 +41,10 @@ code {
     max-width: 80ch;
 }
 
+.inline-mono {
+    font-family: var(--mono-font);
+}
+
 #bg {
     position: fixed;
     top: -50%;
